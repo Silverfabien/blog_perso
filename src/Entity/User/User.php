@@ -26,11 +26,6 @@ class User implements UserInterface
     private $email;
 
     /**
-     * @ORM\Column(type="json")
-     */
-    private $roles = [];
-
-    /**
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
@@ -57,7 +52,7 @@ class User implements UserInterface
     private $updatedAt;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      */
     private $ip;
 
@@ -72,7 +67,7 @@ class User implements UserInterface
     private $confirmationAccount;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      */
     private $confirmationAccountToken;
 
@@ -146,14 +141,19 @@ class User implements UserInterface
      */
     private $blockeds;
 
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+        $this->confirmationAccount = false;
+        $this->deleted = false;
+        $this->connectionAttempt = 0;
+        $this->connectionAttemptDef = false;
+        $this->blockeds = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function __construct()
-    {
-        $this->blockeds = new ArrayCollection();
     }
 
     public function getEmail(): ?string
@@ -183,18 +183,7 @@ class User implements UserInterface
      */
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
-    }
-
-    public function setRoles(array $roles): self
-    {
-        $this->roles = $roles;
-
-        return $this;
+        return $this->rank->getRole();
     }
 
     /**
