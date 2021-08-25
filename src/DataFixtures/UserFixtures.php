@@ -45,7 +45,7 @@ class UserFixtures extends Fixture
                 "Autheur",
                 "Autheur",
                 "123456789",
-                "",
+                "127.0.0.1",
                 $this->tokenGenerator->generateToken(),
                 $this->getReference(RankFixtures::RANK_REFERENCE.'1')
             ],
