@@ -24,7 +24,7 @@ class UserPicture
     private $filename;
 
     /**
-     * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"}, inversedBy="picture")
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
