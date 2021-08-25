@@ -143,7 +143,7 @@ class User implements UserInterface
 
     public function __construct()
     {
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new \DateTimeImmutable();
         $this->confirmationAccount = false;
         $this->deleted = false;
         $this->connectionAttempt = 0;
