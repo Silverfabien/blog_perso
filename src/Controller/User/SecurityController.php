@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
@@ -53,7 +54,8 @@ class SecurityController extends AbstractController
         Request $request,
         GuardAuthenticatorHandler $guardAuthenticatorHandler,
         LoginFormAuthenticator $loginFormAuthenticator,
-        RegistrationHandler $registrationHandler
+        RegistrationHandler $registrationHandler,
+        \Swift_Mailer $mailer
     )
     {
         if ($this->getUser()) {
@@ -63,8 +65,24 @@ class SecurityController extends AbstractController
         $user = new User();
         $form = $this->createForm(RegistrationType::class, $user)->handleRequest($request);
 
-
         if ($registrationHandler->registerHandle($form, $user)) {
+            // Génération du mail
+            $confirmUrl = $this->generateUrl('confirmation_account', ['token' => $user->getConfirmationAccountToken()], UrlGeneratorInterface::ABSOLUTE_URL);
+            $deleteUrl = $this->generateUrl('delete_account', ['token' => $user->getConfirmationAccountToken()], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            $mail = (new \Swift_Message('Validation de votre compte'))
+                ->setFrom('hollebeque.fabien@silversat.ovh')
+                ->setTo($user->getEmail())
+                ->setBody(
+                    $this->renderView(
+                        'security/_confirmationMail.html.twig',
+                        compact('confirmUrl', 'deleteUrl', 'user')
+                    ), 'text/html'
+                )
+            ;
+
+            $mailer->send($mail);
+
             return $guardAuthenticatorHandler->authenticateUserAndHandleSuccess(
                 $user,
                 $request,
@@ -76,5 +94,21 @@ class SecurityController extends AbstractController
         return $this->render('security/register.html.twig', [
             'form' => $form->createView()
         ]);
+    }
+
+    /**
+     * @Route("/confirmation_account/{token}", name="confirmation_account")
+     */
+    public function confirmationAccount()
+    {
+
+    }
+
+    /**
+     * @Route("/delete_account/{token}", name="delete_account")
+     */
+    public function deleteAccountIfInvalid()
+    {
+
     }
 }
