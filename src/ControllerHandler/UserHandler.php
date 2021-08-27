@@ -7,6 +7,11 @@ use App\Repository\User\UserRepository;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
+/**
+ * Class RegistrationHandler
+ *
+ * Gestion des données à envoyer dans la bdd
+ */
 class UserHandler
 {
     private $userPasswordEncoder;
@@ -19,6 +24,23 @@ class UserHandler
     {
         $this->userPasswordEncoder = $userPasswordEncoder;
         $this->userRepository = $userRepository;
+    }
+
+    public function editUserHandle(
+        FormInterface $form,
+        User $user
+    )
+    {
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user->setUpdatedAt(new \DateTimeImmutable());
+            $user->getPicture()->setFilename($user->getPicture()->getPictureFile());
+
+            $this->userRepository->update($user);
+
+            return true;
+        }
+
+        return false;
     }
 
     public function editPasswordHandle(
@@ -38,5 +60,17 @@ class UserHandler
         }
 
         return false;
+    }
+
+    public function deletedHandle(
+        User $user
+    )
+    {
+        $user->setDeleted(true);
+        $user->setDeletedAt(new \DateTimeImmutable());
+
+        $this->userRepository->update($user);
+
+        return true;
     }
 }

@@ -57,7 +57,7 @@ class SecurityController extends AbstractController
      * @param \Swift_Mailer $mailer
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response|null
      *
-     * @Route("/register", name="app_register")
+     * @Route("/register", name="app_register", methods={"GET", "POST"})
      */
     public function register(
         Request $request,
@@ -120,7 +120,7 @@ class SecurityController extends AbstractController
      * @param RegistrationHandler $registrationHandler
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      *
-     * @Route("/confirmation_account/{token}", name="confirmation_account")
+     * @Route("/confirmation_account/{token}", name="confirmation_account",methods={"POST"})
      */
     public function confirmationAccount(
         String $token,
@@ -150,7 +150,7 @@ class SecurityController extends AbstractController
      * @param RegistrationHandler $registrationHandler
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      *
-     * @Route("/delete_account/{token}", name="delete_account")
+     * @Route("/delete_account/{token}", name="delete_account", methods={"POST"})
      */
     public function deleteAccountIfInvalid(RegistrationHandler $registrationHandler)
     {
@@ -181,7 +181,7 @@ class SecurityController extends AbstractController
      * @param RegistrationHandler $registrationHandler
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      *
-     * @Route("/reply_confirmation_account", name="reply_confirmation_account")
+     * @Route("/reply_confirmation_account", name="reply_confirmation_account", methods={"POST"})
      */
     public function replyEmailConfirmationAccount(
         \Swift_Mailer $mailer,

@@ -1,6 +1,16 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+
+    <div class="container style-form">
+        <h1>Changer les informations</h1>
+
+        {{ form_start(userForm) }}
+        {{ form_widget(userForm) }}
+        <button class="btn btn-info">{{ button_label|default('Sign Up') }}</button>
+        {{ form_end(userForm) }}
+    </div>
+
     <div class="container style-form">
         <h1>Changer de mot de passe</h1>
 
@@ -9,5 +19,7 @@
         <button class="btn btn-info">{{ button_label|default('Sign Up') }}</button>
         {{ form_end(passwordForm) }}
     </div>
+
+    {{ include('user/_remove_form.html.twig') }}
 
 {% endblock %}
