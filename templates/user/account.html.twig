@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container style-form">
+        <h1>Changer de mot de passe</h1>
+
+        {{ form_start(passwordForm) }}
+        {{ form_widget(passwordForm) }}
+        <button class="btn btn-info">{{ button_label|default('Sign Up') }}</button>
+        {{ form_end(passwordForm) }}
+    </div>
+
+{% endblock %}
