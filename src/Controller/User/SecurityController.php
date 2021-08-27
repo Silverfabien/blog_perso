@@ -22,6 +22,7 @@ class SecurityController extends AbstractController
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
          if ($this->getUser()) {
+             // TODO addFlash warning
              return $this->redirectToRoute('default');
          }
 
@@ -38,6 +39,7 @@ class SecurityController extends AbstractController
      */
     public function logout()
     {
+        // TODO addFlash warning
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
@@ -59,6 +61,7 @@ class SecurityController extends AbstractController
     )
     {
         if ($this->getUser()) {
+            // TODO addFlash warning
             return $this->redirectToRoute('default');
         }
 
@@ -83,6 +86,7 @@ class SecurityController extends AbstractController
 
             $mailer->send($mail);
 
+            // TODO addFlash success
             return $guardAuthenticatorHandler->authenticateUserAndHandleSuccess(
                 $user,
                 $request,
@@ -108,15 +112,18 @@ class SecurityController extends AbstractController
         $user = $this->getUser();
 
         if ($user === null) {
+            // TODO addFlash danger
             return $this->redirectToRoute('default');
         }
 
         if ($token === $user->getConfirmationAccountToken()) {
             $registrationHandler->confirmationAccount($user);
 
+            // TODO addFlash success
             return $this->redirectToRoute('default');
         }
 
+        // TODO addFlash warning
         return $this->redirectToRoute('default');
     }
 
@@ -129,6 +136,7 @@ class SecurityController extends AbstractController
         $user = $this->getUser();
 
         if ($user === null) {
+            // TODO addFlash danger
             return $this->redirectToRoute('default');
         }
 
@@ -138,9 +146,11 @@ class SecurityController extends AbstractController
 
             $registrationHandler->deleteAccount($user);
 
+            // TODO addFlash success
             return $this->redirectToRoute('default');
         }
 
+        // TODO addFlash warning
         return $this->redirectToRoute('default');
     }
 }
