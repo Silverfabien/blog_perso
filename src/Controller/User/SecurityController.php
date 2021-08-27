@@ -123,8 +123,24 @@ class SecurityController extends AbstractController
     /**
      * @Route("/delete_account/{token}", name="delete_account")
      */
-    public function deleteAccountIfInvalid()
+    public function deleteAccountIfInvalid(RegistrationHandler $registrationHandler)
     {
+        /* @var $user User */
+        $user = $this->getUser();
 
+        if ($user === null) {
+            return $this->redirectToRoute('default');
+        }
+
+        if ($user->getConfirmationAccount() === false) {
+            // Déconnexion forcer de l'utilisateur avant la suppression
+            $this->container->get('security.token_storage')->setToken(null);
+
+            $registrationHandler->deleteAccount($user);
+
+            return $this->redirectToRoute('default');
+        }
+
+        return $this->redirectToRoute('default');
     }
 }

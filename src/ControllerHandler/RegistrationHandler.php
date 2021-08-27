@@ -4,6 +4,7 @@ namespace App\ControllerHandler;
 
 use App\Entity\User\User;
 use App\Repository\User\RankRepository;
+use App\Repository\User\UserPictureRepository;
 use App\Repository\User\UserRepository;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,18 +14,21 @@ use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 class RegistrationHandler
 {
     private $userRepository;
+    private $userPictureRepository;
     private $userPasswordEncoder;
     private $rankRepository;
     private $tokenGenerator;
 
     public function __construct(
         UserRepository $userRepository,
+        UserPictureRepository $userPictureRepository,
         UserPasswordEncoderInterface $userPasswordEncoder,
         RankRepository $rankRepository,
         TokenGeneratorInterface $tokenGenerator
     )
     {
         $this->userRepository = $userRepository;
+        $this->userPictureRepository = $userPictureRepository;
         $this->userPasswordEncoder = $userPasswordEncoder;
         $this->rankRepository = $rankRepository;
         $this->tokenGenerator = $tokenGenerator;
@@ -63,6 +67,14 @@ class RegistrationHandler
         $user->setConfirmationAccountAt(new \DateTimeImmutable());
 
         $this->userRepository->update($user);
+
+        return true;
+    }
+
+    public function deleteAccount(User $user)
+    {
+        $this->userPictureRepository->removeIfInvalidAccount($user->getPicture());
+        $this->userRepository->removeIfInvalidAccount($user);
 
         return true;
     }
