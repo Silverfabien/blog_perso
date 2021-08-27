@@ -14,9 +14,15 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
+/**
+ * SecurityController
+ */
 class SecurityController extends AbstractController
 {
     /**
+     * @param AuthenticationUtils $authenticationUtils
+     * @return Response
+     *
      * @Route("/login", name="app_login")
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
@@ -48,6 +54,7 @@ class SecurityController extends AbstractController
      * @param GuardAuthenticatorHandler $guardAuthenticatorHandler
      * @param LoginFormAuthenticator $loginFormAuthenticator
      * @param RegistrationHandler $registrationHandler
+     * @param \Swift_Mailer $mailer
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response|null
      *
      * @Route("/register", name="app_register")
@@ -70,8 +77,16 @@ class SecurityController extends AbstractController
 
         if ($registrationHandler->registerHandle($form, $user)) {
             // Génération du mail
-            $confirmUrl = $this->generateUrl('confirmation_account', ['token' => $user->getConfirmationAccountToken()], UrlGeneratorInterface::ABSOLUTE_URL);
-            $deleteUrl = $this->generateUrl('delete_account', ['token' => $user->getConfirmationAccountToken()], UrlGeneratorInterface::ABSOLUTE_URL);
+            $confirmUrl = $this->generateUrl(
+                'confirmation_account',
+                ['token' => $user->getConfirmationAccountToken()],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+            $deleteUrl = $this->generateUrl(
+                'delete_account',
+                ['token' => $user->getConfirmationAccountToken()],
+                UrlGeneratorInterface::ABSOLUTE_URL)
+            ;
 
             $mail = (new \Swift_Message('Validation de votre compte'))
                 ->setFrom('hollebeque.fabien@silversat.ovh')
@@ -101,6 +116,10 @@ class SecurityController extends AbstractController
     }
 
     /**
+     * @param String $token
+     * @param RegistrationHandler $registrationHandler
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     *
      * @Route("/confirmation_account/{token}", name="confirmation_account")
      */
     public function confirmationAccount(
@@ -128,6 +147,9 @@ class SecurityController extends AbstractController
     }
 
     /**
+     * @param RegistrationHandler $registrationHandler
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     *
      * @Route("/delete_account/{token}", name="delete_account")
      */
     public function deleteAccountIfInvalid(RegistrationHandler $registrationHandler)
@@ -151,6 +173,59 @@ class SecurityController extends AbstractController
         }
 
         // TODO addFlash warning
+        return $this->redirectToRoute('default');
+    }
+
+    /**
+     * @param \Swift_Mailer $mailer
+     * @param RegistrationHandler $registrationHandler
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @Route("/reply_confirmation_account", name="reply_confirmation_account")
+     */
+    public function replyEmailConfirmationAccount(
+        \Swift_Mailer $mailer,
+        RegistrationHandler $registrationHandler
+    )
+    {
+        /* @var $user User */
+        $user = $this->getUser();
+
+        if ($user === null) {
+            // TODO addFlash danger
+            return $this->redirectToRoute('default');
+        }
+
+        if ($user->getConfirmationAccount() === false and $registrationHandler->replyToken($user)) {
+            $confirmUrl = $this->generateUrl(
+                'confirmation_account',
+                ['token' => $user->getConfirmationAccountToken()],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+            $deleteUrl = $this->generateUrl(
+                'delete_account',
+                ['token' => $user->getConfirmationAccountToken()],
+                UrlGeneratorInterface::ABSOLUTE_URL)
+            ;
+
+            $mail = (new \Swift_Message('Validation de votre compte'))
+                ->setFrom('hollebeque.fabien@silversat.ovh')
+                ->setTo($user->getEmail())
+                ->setBody(
+                    $this->renderView(
+                        'security/_confirmationMail.html.twig',
+                        compact('confirmUrl', 'deleteUrl', 'user')
+                    ), 'text/html'
+                )
+            ;
+
+            $mailer->send($mail);
+
+            // TODO addFlash success
+            return $this->redirectToRoute('default');
+        }
+
+        // TODO addFlash danger
         return $this->redirectToRoute('default');
     }
 }

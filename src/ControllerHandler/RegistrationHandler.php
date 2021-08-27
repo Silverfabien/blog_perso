@@ -11,6 +11,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 
+/**
+ * Class RegistrationHandler
+ *
+ * Gestion des données à envoyer dans la bdd
+ */
 class RegistrationHandler
 {
     private $userRepository;
@@ -19,6 +24,13 @@ class RegistrationHandler
     private $rankRepository;
     private $tokenGenerator;
 
+    /**
+     * @param UserRepository $userRepository
+     * @param UserPictureRepository $userPictureRepository
+     * @param UserPasswordEncoderInterface $userPasswordEncoder
+     * @param RankRepository $rankRepository
+     * @param TokenGeneratorInterface $tokenGenerator
+     */
     public function __construct(
         UserRepository $userRepository,
         UserPictureRepository $userPictureRepository,
@@ -34,10 +46,15 @@ class RegistrationHandler
         $this->tokenGenerator = $tokenGenerator;
     }
 
+    /**
+     * @param FormInterface $form
+     * @param User $user
+     * @return bool
+     */
     public function registerHandle(
         FormInterface $form,
         User $user
-    )
+    ): bool
     {
         $findRank = $this->rankRepository->findOneByRolename('Utilisateur');
 
@@ -60,7 +77,13 @@ class RegistrationHandler
         return false;
     }
 
-    public function confirmationAccount(User $user)
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function confirmationAccount(
+        User $user
+    ): bool
     {
         $user->setConfirmationAccountToken(null);
         $user->setConfirmationAccount(true);
@@ -71,10 +94,33 @@ class RegistrationHandler
         return true;
     }
 
-    public function deleteAccount(User $user)
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function deleteAccount(
+        User $user
+    ): bool
     {
         $this->userPictureRepository->removeIfInvalidAccount($user->getPicture());
         $this->userRepository->removeIfInvalidAccount($user);
+
+        return true;
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function replyToken(
+        User $user
+    ): bool
+    {
+        $token = $this->tokenGenerator->generateToken();
+
+        $user->setConfirmationAccountToken($token);
+
+        $this->userRepository->update($user);
 
         return true;
     }

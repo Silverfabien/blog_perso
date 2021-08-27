@@ -19,6 +19,11 @@ class UserPictureRepository extends ServiceEntityRepository
         parent::__construct($registry, UserPicture::class);
     }
 
+    /**
+     * @param $userPicture
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function removeIfInvalidAccount($userPicture)
     {
         $this->_em->remove($userPicture);

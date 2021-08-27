@@ -36,17 +36,32 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
+    /**
+     * @param $user
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function save($user)
     {
         $this->_em->persist($user);
         $this->_em->flush();
     }
 
+    /**
+     * @param $user
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function update($user)
     {
         $this->_em->flush();
     }
 
+    /**
+     * @param $user
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function removeIfInvalidAccount($user)
     {
         $this->_em->remove($user);
