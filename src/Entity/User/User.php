@@ -67,14 +67,14 @@ class User implements UserInterface
     private $confirmationAccount;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $confirmationAccountToken;
 
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true)
      */
-    private $confirmationAccountTokenAt;
+    private $confirmationAccountAt;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -317,14 +317,14 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getConfirmationAccountTokenAt(): ?\DateTimeImmutable
+    public function getConfirmationAccountAt(): ?\DateTimeImmutable
     {
-        return $this->confirmationAccountTokenAt;
+        return $this->confirmationAccountAt;
     }
 
-    public function setConfirmationAccountTokenAt(?\DateTimeImmutable $confirmationAccountTokenAt): self
+    public function setConfirmationAccountAt(?\DateTimeImmutable $confirmationAccountAt): self
     {
-        $this->confirmationAccountTokenAt = $confirmationAccountTokenAt;
+        $this->confirmationAccountAt = $confirmationAccountAt;
 
         return $this;
     }

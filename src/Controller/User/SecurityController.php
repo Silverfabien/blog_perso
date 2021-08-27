@@ -99,9 +99,25 @@ class SecurityController extends AbstractController
     /**
      * @Route("/confirmation_account/{token}", name="confirmation_account")
      */
-    public function confirmationAccount()
+    public function confirmationAccount(
+        String $token,
+        RegistrationHandler $registrationHandler
+    )
     {
+        /* @var $user User */
+        $user = $this->getUser();
 
+        if ($user === null) {
+            return $this->redirectToRoute('default');
+        }
+
+        if ($token === $user->getConfirmationAccountToken()) {
+            $registrationHandler->confirmationAccount($user);
+
+            return $this->redirectToRoute('default');
+        }
+
+        return $this->redirectToRoute('default');
     }
 
     /**

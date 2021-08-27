@@ -55,4 +55,15 @@ class RegistrationHandler
 
         return false;
     }
+
+    public function confirmationAccount(User $user)
+    {
+        $user->setConfirmationAccountToken(null);
+        $user->setConfirmationAccount(true);
+        $user->setConfirmationAccountAt(new \DateTimeImmutable());
+
+        $this->userRepository->update($user);
+
+        return true;
+    }
 }
