@@ -3,14 +3,18 @@
 namespace App\Controller\User;
 
 use App\ControllerHandler\RegistrationHandler;
+use App\ControllerHandler\UserHandler;
 use App\Entity\User\User;
+use App\Form\User\ForgotPasswordType;
 use App\Form\User\RegistrationType;
+use App\Repository\User\UserRepository;
 use App\Security\LoginFormAuthenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
@@ -227,5 +231,69 @@ class SecurityController extends AbstractController
 
         // TODO addFlash danger
         return $this->redirectToRoute('default');
+    }
+
+    /**
+     * @param Request $request
+     * @param \Swift_Mailer $mailer
+     * @param TokenGeneratorInterface $tokenGenerator
+     * @param UserHandler $userHandler
+     *
+     * @Route("/forgot_password", name="forgot_password", methods={"GET", "POST"})
+     */
+    public function forgotPassword(
+        Request $request,
+        \Swift_Mailer $mailer,
+        UserHandler $userHandler,
+        UserRepository $userRepository
+    )
+    {
+        $form = $this->createForm(ForgotPasswordType::class)->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $email = $form->getData()->getEmail();
+            $user = $userRepository->findOneByEmail($email);
+
+            if ($user === null) {
+                // TODO addFlash success
+                return $this->redirectToRoute('default');
+            }
+
+            if ($userHandler->generateResetToken($user)) {
+                $url = $this->generateUrl(
+                    'reset_forgot_password',
+                    ['token' => $user->getResetToken()],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+
+                $mail = (new \Swift_Message('Reset du mot de passe'))
+                    ->setFrom('hollebeque.fabien@silversat.ovh')
+                    ->setTo($user->getEmail())
+                    ->setBody(
+                        $this->renderView(
+                            'user/_resetPasswordMail.html.twig',
+                            compact('url', 'user')
+                        ), 'text/html'
+                    )
+                ;
+
+                $mailer->send($mail);
+
+                // TODO addFlash success
+                return $this->redirectToRoute('default');
+            }
+        }
+
+        return $this->render('user/forgotPassword.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/reset_forgot_password/{token}", name="reset_forgot_password", methods={"GET", "POST"})
+     */
+    public function resetForgotPassword()
+    {
+
     }
 }

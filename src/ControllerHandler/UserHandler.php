@@ -6,6 +6,7 @@ use App\Entity\User\User;
 use App\Repository\User\UserRepository;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 
 /**
  * Class RegistrationHandler
@@ -16,20 +17,23 @@ class UserHandler
 {
     private $userPasswordEncoder;
     private $userRepository;
+    private $tokenGenerator;
 
     public function __construct(
         UserPasswordEncoderInterface $userPasswordEncoder,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        TokenGeneratorInterface $tokenGenerator
     )
     {
         $this->userPasswordEncoder = $userPasswordEncoder;
         $this->userRepository = $userRepository;
+        $this->tokenGenerator = $tokenGenerator;
     }
 
     public function editUserHandle(
         FormInterface $form,
         User $user
-    )
+    ): bool
     {
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setUpdatedAt(new \DateTimeImmutable());
@@ -46,7 +50,7 @@ class UserHandler
     public function editPasswordHandle(
         FormInterface $form,
         User $user
-    )
+    ): bool
     {
         if ($form->isSubmitted() && $form->isValid()) {
             $password = $this->userPasswordEncoder->encodePassword($user, $user->getPassword());
@@ -64,10 +68,25 @@ class UserHandler
 
     public function deletedHandle(
         User $user
-    )
+    ): bool
     {
         $user->setDeleted(true);
         $user->setDeletedAt(new \DateTimeImmutable());
+
+        $this->userRepository->update($user);
+
+        return true;
+    }
+
+    public function generateResetToken(
+        User $user
+    ): bool
+    {
+        $token = $this->tokenGenerator->generateToken();
+
+        $user->setResetToken($token);
+        $user->setResetTokenCreatedAt(new \DateTimeImmutable());
+        $user->setResetTokenExpiredAt(new \DateTimeImmutable('+1 Hour'));
 
         $this->userRepository->update($user);
 
