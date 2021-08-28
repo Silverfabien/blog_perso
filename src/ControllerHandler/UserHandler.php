@@ -155,7 +155,7 @@ class UserHandler
         User $user
     ): bool
     {
-        $password = $this->userPasswordEncoder->encodePassword($user, $user->getPassword());
+        $password = $this->userPasswordEncoder->encodePassword($user, $form->getData()->getPassword());
 
         $user->setResetToken(null);
         $user->setResetTokenCreatedAt(null);

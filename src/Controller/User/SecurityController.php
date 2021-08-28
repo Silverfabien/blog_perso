@@ -255,6 +255,11 @@ class SecurityController extends AbstractController
         UserRepository $userRepository
     ): Response
     {
+        if ($this->getUser()) {
+            // TODO addFlash warning
+            return $this->redirectToRoute('default');
+        }
+
         $form = $this->createForm(ForgotPasswordType::class)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -314,6 +319,11 @@ class SecurityController extends AbstractController
         $token
     ): Response
     {
+        if ($this->getUser()) {
+            // TODO addFlash warning
+            return $this->redirectToRoute('default');
+        }
+
         $form = $this->createForm(ResetForgotPasswordType::class)->handleRequest($request);
         $user = $userRepository->findOneByResetToken($token);
 
