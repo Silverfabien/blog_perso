@@ -15,7 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
@@ -30,7 +29,9 @@ class SecurityController extends AbstractController
      *
      * @Route("/login", name="app_login")
      */
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(
+        AuthenticationUtils $authenticationUtils
+    ): Response
     {
          if ($this->getUser()) {
              // TODO addFlash warning
@@ -48,7 +49,7 @@ class SecurityController extends AbstractController
     /**
      * @Route("/logout", name="app_logout")
      */
-    public function logout()
+    public function logout(): void
     {
         // TODO addFlash warning
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
@@ -60,7 +61,7 @@ class SecurityController extends AbstractController
      * @param LoginFormAuthenticator $loginFormAuthenticator
      * @param RegistrationHandler $registrationHandler
      * @param \Swift_Mailer $mailer
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response|null
+     * @return Response
      *
      * @Route("/register", name="app_register", methods={"GET", "POST"})
      */
@@ -70,7 +71,7 @@ class SecurityController extends AbstractController
         LoginFormAuthenticator $loginFormAuthenticator,
         RegistrationHandler $registrationHandler,
         \Swift_Mailer $mailer
-    )
+    ): Response
     {
         if ($this->getUser()) {
             // TODO addFlash warning
@@ -123,14 +124,14 @@ class SecurityController extends AbstractController
     /**
      * @param String $token
      * @param RegistrationHandler $registrationHandler
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return Response
      *
      * @Route("/confirmation_account/{token}", name="confirmation_account",methods={"POST"})
      */
     public function confirmationAccount(
         String $token,
         RegistrationHandler $registrationHandler
-    )
+    ): Response
     {
         /* @var $user User */
         $user = $this->getUser();
@@ -153,11 +154,13 @@ class SecurityController extends AbstractController
 
     /**
      * @param RegistrationHandler $registrationHandler
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return Response
      *
      * @Route("/delete_account/{token}", name="delete_account", methods={"POST"})
      */
-    public function deleteAccountIfInvalid(RegistrationHandler $registrationHandler)
+    public function deleteAccountIfInvalid(
+        RegistrationHandler $registrationHandler
+    ): Response
     {
         /* @var $user User */
         $user = $this->getUser();
@@ -184,14 +187,14 @@ class SecurityController extends AbstractController
     /**
      * @param \Swift_Mailer $mailer
      * @param RegistrationHandler $registrationHandler
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return Response
      *
      * @Route("/reply_confirmation_account", name="reply_confirmation_account", methods={"POST"})
      */
     public function replyEmailConfirmationAccount(
         \Swift_Mailer $mailer,
         RegistrationHandler $registrationHandler
-    )
+    ): Response
     {
         /* @var $user User */
         $user = $this->getUser();
@@ -237,8 +240,11 @@ class SecurityController extends AbstractController
     /**
      * @param Request $request
      * @param \Swift_Mailer $mailer
-     * @param TokenGeneratorInterface $tokenGenerator
      * @param UserHandler $userHandler
+     * @param UserRepository $userRepository
+     * @return Response
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      *
      * @Route("/forgot_password", name="forgot_password", methods={"GET", "POST"})
      */
@@ -247,7 +253,7 @@ class SecurityController extends AbstractController
         \Swift_Mailer $mailer,
         UserHandler $userHandler,
         UserRepository $userRepository
-    )
+    ): Response
     {
         $form = $this->createForm(ForgotPasswordType::class)->handleRequest($request);
 
@@ -260,7 +266,7 @@ class SecurityController extends AbstractController
                 return $this->redirectToRoute('default');
             }
 
-            if ($userHandler->generateResetToken($user)) {
+            if ($userHandler->generateResetTokenHandle($user)) {
                 $url = $this->generateUrl(
                     'reset_forgot_password',
                     ['token' => $user->getResetToken()],
@@ -291,6 +297,14 @@ class SecurityController extends AbstractController
     }
 
     /**
+     * @param Request $request
+     * @param UserRepository $userRepository
+     * @param UserHandler $userHandler
+     * @param $token
+     * @return Response
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     *
      * @Route("/reset_forgot_password/{token}", name="reset_forgot_password", methods={"GET", "POST"})
      */
     public function resetForgotPassword(
@@ -298,7 +312,7 @@ class SecurityController extends AbstractController
         UserRepository $userRepository,
         UserHandler $userHandler,
         $token
-    )
+    ): Response
     {
         $form = $this->createForm(ResetForgotPasswordType::class)->handleRequest($request);
         $user = $userRepository->findOneByResetToken($token);
@@ -311,7 +325,7 @@ class SecurityController extends AbstractController
 
         // Si le token est expiré
         if (date_timestamp_get($user->getResetTokenExpiredAt()) <= date_timestamp_get(new \DateTimeImmutable())) {
-            $userHandler->expiredResetToken($user);
+            $userHandler->expiredResetTokenHandle($user);
 
             // TODO addFlash warning
             return $this->redirectToRoute('default');

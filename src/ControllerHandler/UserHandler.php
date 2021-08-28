@@ -19,6 +19,11 @@ class UserHandler
     private $userRepository;
     private $tokenGenerator;
 
+    /**
+     * @param UserPasswordEncoderInterface $userPasswordEncoder
+     * @param UserRepository $userRepository
+     * @param TokenGeneratorInterface $tokenGenerator
+     */
     public function __construct(
         UserPasswordEncoderInterface $userPasswordEncoder,
         UserRepository $userRepository,
@@ -30,6 +35,13 @@ class UserHandler
         $this->tokenGenerator = $tokenGenerator;
     }
 
+    /**
+     * @param FormInterface $form
+     * @param User $user
+     * @return bool
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function editUserHandle(
         FormInterface $form,
         User $user
@@ -47,6 +59,13 @@ class UserHandler
         return false;
     }
 
+    /**
+     * @param FormInterface $form
+     * @param User $user
+     * @return bool
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function editPasswordHandle(
         FormInterface $form,
         User $user
@@ -66,6 +85,12 @@ class UserHandler
         return false;
     }
 
+    /**
+     * @param User $user
+     * @return bool
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function deletedHandle(
         User $user
     ): bool
@@ -78,7 +103,13 @@ class UserHandler
         return true;
     }
 
-    public function generateResetToken(
+    /**
+     * @param User $user
+     * @return bool
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function generateResetTokenHandle(
         User $user
     ): bool
     {
@@ -93,7 +124,13 @@ class UserHandler
         return true;
     }
 
-    public function expiredResetToken(
+    /**
+     * @param User $user
+     * @return bool
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function expiredResetTokenHandle(
         User $user
     ): bool
     {
@@ -106,6 +143,13 @@ class UserHandler
         return true;
     }
 
+    /**
+     * @param FormInterface $form
+     * @param User $user
+     * @return bool
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function resetPasswordHandle(
         FormInterface $form,
         User $user
