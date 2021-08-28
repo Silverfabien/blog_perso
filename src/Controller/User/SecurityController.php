@@ -7,6 +7,7 @@ use App\ControllerHandler\UserHandler;
 use App\Entity\User\User;
 use App\Form\User\ForgotPasswordType;
 use App\Form\User\RegistrationType;
+use App\Form\User\ResetForgotPasswordType;
 use App\Repository\User\UserRepository;
 use App\Security\LoginFormAuthenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -292,8 +293,45 @@ class SecurityController extends AbstractController
     /**
      * @Route("/reset_forgot_password/{token}", name="reset_forgot_password", methods={"GET", "POST"})
      */
-    public function resetForgotPassword()
+    public function resetForgotPassword(
+        Request $request,
+        UserRepository $userRepository,
+        UserHandler $userHandler,
+        $token
+    )
     {
+        $form = $this->createForm(ResetForgotPasswordType::class)->handleRequest($request);
+        $user = $userRepository->findOneByResetToken($token);
 
+        // Si le token n'existe pas
+        if ($user === null) {
+            // TODO addFlash danger
+            return $this->redirectToRoute('default');
+        }
+
+        // Si le token est expiré
+        if (date_timestamp_get($user->getResetTokenExpiredAt()) <= date_timestamp_get(new \DateTimeImmutable())) {
+            $userHandler->expiredResetToken($user);
+
+            // TODO addFlash warning
+            return $this->redirectToRoute('default');
+        }
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $email = $form->getData()->getEmail();
+
+            if ($email === $user->getEmail()) {
+                $userHandler->resetPasswordHandle($form, $user);
+
+                // TODO addFlash success
+                return $this->redirectToRoute('default');
+            }
+            // TODO addFlash error
+            return $this->redirectToRoute('default');
+        }
+
+        return $this->render('user/resetForgotPassword.html.twig', [
+            'form' => $form->createView()
+        ]);
     }
 }

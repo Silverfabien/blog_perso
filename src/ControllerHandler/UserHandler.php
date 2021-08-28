@@ -92,4 +92,36 @@ class UserHandler
 
         return true;
     }
+
+    public function expiredResetToken(
+        User $user
+    ): bool
+    {
+        $user->setResetToken(null);
+        $user->setResetTokenCreatedAt(null);
+        $user->setResetTokenExpiredAt(null);
+
+        $this->userRepository->update($user);
+
+        return true;
+    }
+
+    public function resetPasswordHandle(
+        FormInterface $form,
+        User $user
+    ): bool
+    {
+        $password = $this->userPasswordEncoder->encodePassword($user, $user->getPassword());
+
+        $user->setResetToken(null);
+        $user->setResetTokenCreatedAt(null);
+        $user->setResetTokenExpiredAt(null);
+        $user->setResetLastAt(new \DateTimeImmutable());
+        $user->setUpdatedAt(new \DateTimeImmutable());
+        $user->setPassword($password);
+
+        $this->userRepository->update($user);
+
+        return true;
+    }
 }
