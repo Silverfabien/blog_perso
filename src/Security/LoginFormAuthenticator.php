@@ -3,12 +3,15 @@
 namespace App\Security;
 
 use App\Entity\User\User;
+use App\Repository\User\BlockedRepository;
+use App\Security\Handler\ConnectionAttemptHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\Security;
@@ -30,13 +33,24 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     private $urlGenerator;
     private $csrfTokenManager;
     private $passwordEncoder;
+    private $connectionAttemptHandler;
+    private $blockedRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        UrlGeneratorInterface $urlGenerator,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        UserPasswordEncoderInterface $passwordEncoder,
+        ConnectionAttemptHandler $connectionAttemptHandler,
+        BlockedRepository $blockedRepository
+    )
     {
         $this->entityManager = $entityManager;
         $this->urlGenerator = $urlGenerator;
         $this->csrfTokenManager = $csrfTokenManager;
         $this->passwordEncoder = $passwordEncoder;
+        $this->connectionAttemptHandler = $connectionAttemptHandler;
+        $this->blockedRepository = $blockedRepository;
     }
 
     public function supports(Request $request)
@@ -78,6 +92,39 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
     public function checkCredentials($credentials, UserInterface $user)
     {
+        $findUserBlocked = $this->blockedRepository->findOneBy(['user' => $user, 'blocked' => true], ['id' => 'DESC']);
+
+        if ($this->passwordEncoder->isPasswordValid($user, $credentials['password']) === false) {
+            if ($findUserBlocked) {
+                // Si unblockedat est supérieur à now
+                if ($findUserBlocked->getUnblockedAt() >= new \DateTimeImmutable() || !$findUserBlocked->getUnblockedAt()) {
+                    throw new CustomUserMessageAuthenticationException($findUserBlocked->getBlockedReason());
+                }
+            }
+
+            // Si compte non bloqué
+            $this->connectionAttemptHandler->connectAttemptHandle($user);
+
+            return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
+        }
+
+        if ($this->passwordEncoder->isPasswordValid($user, $credentials['password']) && $findUserBlocked) {
+            // Si bloqué définitivement
+            if (!$findUserBlocked->getUnblockedAt()) {
+                throw new CustomUserMessageAuthenticationException($findUserBlocked->getBlockedReason());
+            }
+
+            // Si unblockedat est inférieur à now
+            if ($user->getConnectionAttempt() > 0 && $findUserBlocked->getUnblockedAt() <= new \DateTimeImmutable()) {
+                $this->connectionAttemptHandler->resetConnectionAttemptHandle($user);
+
+                return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
+            }
+
+            // Si unblockedat est supérieur à now
+            throw new CustomUserMessageAuthenticationException($findUserBlocked->getBlockedReason());
+        }
+
         return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
     }
 
