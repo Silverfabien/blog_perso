@@ -38,7 +38,7 @@ class UserBlockedListener
         $currentUser = $this->security->getUser();
 
         if($currentUser !== null) {
-            $userBlocked = $this->blockedRepository->findOneByUser($currentUser);
+            $userBlocked = $this->blockedRepository->findOneBy(['user' => $currentUser, 'blocked' => true]);
 
             if ($userBlocked !== null) {
                 $this->security->getToken()->setAuthenticated(false);

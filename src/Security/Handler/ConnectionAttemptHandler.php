@@ -32,7 +32,7 @@ class ConnectionAttemptHandler
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function connectAttempt(
+    public function connectAttemptHandle(
         User $user
     ): bool
     {
@@ -75,6 +75,30 @@ class ConnectionAttemptHandler
 
         $user->setConnectionAttempt($user->getConnectionAttempt() +1);
 
+        $this->userRepository->update($user);
+
+        return true;
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function resetConnectionAttemptHandle(
+        User $user
+    ): bool
+    {
+        $blockeds = $this->blockedRepository->findBy(['user' => $user, 'blocked' => true]);
+        $user->setConnectionAttempt(0);
+
+        if ($blockeds) {
+            foreach ($blockeds as $blocked) {
+                $blocked->setBlocked(false);
+                $this->blockedRepository->update($blocked);
+            }
+        }
         $this->userRepository->update($user);
 
         return true;

@@ -24,4 +24,9 @@ class BlockedRepository extends ServiceEntityRepository
         $this->_em->persist($blocked);
         $this->_em->flush();
     }
+
+    public function update($blocked)
+    {
+        $this->_em->flush();
+    }
 }

@@ -92,16 +92,37 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
     public function checkCredentials($credentials, UserInterface $user)
     {
-        if ($this->passwordEncoder->isPasswordValid($user, $credentials['password']) === false) {
-            $findUserBlocked = $this->blockedRepository->findOneByUser($user);
+        $findUserBlocked = $this->blockedRepository->findOneBy(['user' => $user, 'blocked' => true], ['id' => 'DESC']);
 
-            if ($findUserBlocked !== null) {
-                if ($findUserBlocked->getUnblockedAt() >= new \DateTimeImmutable()) {
+        if ($this->passwordEncoder->isPasswordValid($user, $credentials['password']) === false) {
+            if ($findUserBlocked) {
+                // Si unblockedat est supérieur à now
+                if ($findUserBlocked->getUnblockedAt() >= new \DateTimeImmutable() || !$findUserBlocked->getUnblockedAt()) {
                     throw new CustomUserMessageAuthenticationException($findUserBlocked->getBlockedReason());
                 }
             }
 
-            $this->connectionAttemptHandler->connectAttempt($user);
+            // Si compte non bloqué
+            $this->connectionAttemptHandler->connectAttemptHandle($user);
+
+            return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
+        }
+
+        if ($this->passwordEncoder->isPasswordValid($user, $credentials['password']) && $findUserBlocked) {
+            // Si bloqué définitivement
+            if (!$findUserBlocked->getUnblockedAt()) {
+                throw new CustomUserMessageAuthenticationException($findUserBlocked->getBlockedReason());
+            }
+
+            // Si unblockedat est inférieur à now
+            if ($user->getConnectionAttempt() > 0 && $findUserBlocked->getUnblockedAt() <= new \DateTimeImmutable()) {
+                $this->connectionAttemptHandler->resetConnectionAttemptHandle($user);
+
+                return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
+            }
+
+            // Si unblockedat est supérieur à now
+            throw new CustomUserMessageAuthenticationException($findUserBlocked->getBlockedReason());
         }
 
         return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
