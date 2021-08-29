@@ -19,32 +19,9 @@ class BlockedRepository extends ServiceEntityRepository
         parent::__construct($registry, Blocked::class);
     }
 
-    // /**
-    //  * @return Blocked[] Returns an array of Blocked objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function save($blocked)
     {
-        return $this->createQueryBuilder('b')
-            ->andWhere('b.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('b.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $this->_em->persist($blocked);
+        $this->_em->flush();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Blocked
-    {
-        return $this->createQueryBuilder('b')
-            ->andWhere('b.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }
