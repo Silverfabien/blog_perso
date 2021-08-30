@@ -28,7 +28,7 @@ class Article
     private $title;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $filename;
 
@@ -77,6 +77,12 @@ class Article
      * @ORM\ManyToOne(targetEntity=User::class, cascade={"persist"})
      */
     private $author;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $authorEdit;
 
     /**
      * @ORM\ManyToMany(targetEntity=Tags::class, inversedBy="article")
@@ -230,6 +236,18 @@ class Article
     public function setAuthor(?User $author): self
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function getAuthorEdit(): ?User
+    {
+        return $this->authorEdit;
+    }
+
+    public function setAuthorEdit(?User $authorEdit): self
+    {
+        $this->authorEdit = $authorEdit;
 
         return $this;
     }
