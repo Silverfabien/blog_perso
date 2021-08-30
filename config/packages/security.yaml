@@ -33,6 +33,7 @@ security:
         ROLE_AUTHOR: [ROLE_USER]
 
     access_control:
+        - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/forgot_password, roles: IS_AUTHENTICATED_ANONYMOUSLY }
