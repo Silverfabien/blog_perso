@@ -2,7 +2,10 @@
 
 namespace App\Entity\Article;
 
+use App\Entity\User\User;
 use App\Repository\Article\ArticleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -61,7 +64,7 @@ class Article
     private $see;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="integer")
      */
     private $publish;
 
@@ -69,6 +72,24 @@ class Article
      * @ORM\Column(type="datetime_immutable", nullable=true)
      */
     private $publishedAt;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, cascade={"persist"})
+     */
+    private $author;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Tags::class, inversedBy="article")
+     */
+    private $tags;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->see = 0;
+        $this->publish = 0;
+        $this->tags = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -197,6 +218,45 @@ class Article
     public function setPublishedAt(?\DateTimeImmutable $publishedAt): self
     {
         $this->publishedAt = $publishedAt;
+
+        return $this;
+    }
+
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?User $author): self
+    {
+        $this->author = $author;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Tags[]
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tags $tag): self
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags[] = $tag;
+            $tag->addArticle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tags $tag): self
+    {
+        if ($this->tags->removeElement($tag)) {
+            $tag->removeArticle($this);
+        }
 
         return $this;
     }
