@@ -1,5 +1,8 @@
 @import "~bootstrap/scss/bootstrap";
 
+@import "utils/variables";
+@import "layouts/navbar";
+
 body {
     background-color: lightgray;
 }
