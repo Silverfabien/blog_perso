@@ -34,7 +34,14 @@ class ArticleController extends AbstractController
         $form = $this->createForm(ArticleType::class, $article)->handleRequest($request);
 
         if ($articleHandler->createArticleHandle($form, $article, $user)) {
-            // TODO addFlash success + redirect
+            $this->addFlash(
+                'success',
+                sprintf(
+                    "L'ajout de l'article \"%s\" à bien été effectué, il est en attente de validation.",
+                    $article->getTitle()
+                )
+            );
+            // TODO redirect
             return $this->redirectToRoute('default');
         }
 
@@ -78,7 +85,13 @@ class ArticleController extends AbstractController
         $form = $this->createForm(ArticleType::class, $article)->handleRequest($request);
 
         if ($articleHandler->editArticleHandle($form, $article, $user)) {
-            // TODO addFlash success
+            $this->addFlash(
+                'success',
+                sprintf(
+                    "L'édition de l'article \"%s\" à bien été effectué.",
+                    $article->getTitle()
+                )
+            );
 
             return $this->redirectToRoute('default');
         }
@@ -100,7 +113,14 @@ class ArticleController extends AbstractController
     {
         if ($this->isCsrfTokenValid('delete'.$article->getId(), $request->request->get('_token'))) {
             $articleHandler->deleteArticleHandle($article);
-            // TODO addFlash success
+
+            $this->addFlash(
+                'success',
+                sprintf(
+                    "La suppression de l'article \"%s\" à bien été effectué.",
+                    $article->getTitle()
+                )
+            );
         }
 
         return $this->redirectToRoute('default');

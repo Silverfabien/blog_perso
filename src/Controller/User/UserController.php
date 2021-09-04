@@ -38,7 +38,10 @@ class UserController extends AbstractController
         $userForm = $this->createForm(UserEditType::class, $user)->handleRequest($request);
 
         if ($userHandler->editUserHandle($userForm, $user)) {
-            // TODO addFlash success
+            $this->addFlash(
+                'success',
+                "La modification de vos données a bien été effectué."
+            );
 
             return $this->redirectToRoute('user_account');
         }
@@ -48,7 +51,10 @@ class UserController extends AbstractController
         $passwordForm = $this->createForm(ResetPasswordType::class, $user)->handleRequest($request);
 
         if ($userHandler->editPasswordHandle($passwordForm, $user)) {
-            // TODO addFlash success
+            $this->addFlash(
+                'success',
+                "La modification de votre mot de passe a bien été effectué."
+            );
 
             return $this->redirectToRoute('user_account');
         }
@@ -75,8 +81,12 @@ class UserController extends AbstractController
         if ($this->isCsrfTokenValid('remove'.$user->getId(), $request->request->get('_token'))) {
             $userHandler->deletedHandle($user);
 
-            // TODO addFlash success
             $this->container->get('security.token_storage')->setToken(null);
+
+            $this->addFlash(
+                'success',
+                "La suppression de votre compte a bien été effectué."
+            );
         }
 
        return $this->redirectToRoute('default');

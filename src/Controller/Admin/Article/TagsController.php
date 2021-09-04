@@ -49,7 +49,13 @@ class TagsController extends AbstractController
         $form = $this->createForm(TagsType::class, $tag)->handleRequest($request);
 
         if ($tagsHandler->createTagsHandle($form, $tag)) {
-            // TODO addFlash success
+            $this->addFlash(
+                'success',
+                sprintf(
+                    "L'ajout du tag \"%s\" à bien été effectué.",
+                    $tag->getName()
+                )
+            );
             return $this->redirectToRoute('admin_tags_article_index');
         }
 
@@ -91,7 +97,14 @@ class TagsController extends AbstractController
         $form = $this->createForm(TagsType::class, $tag)->handleRequest($request);
 
         if ($tagsHandler->editTagsHandle($form, $tag)) {
-            // TODO addFlash success
+            $this->addFlash(
+                'success',
+                sprintf(
+                    "L'édition du tag \"%s\" à bien été effectué.",
+                    $tag->getName()
+                )
+            );
+
             return $this->redirectToRoute('admin_tags_article_index');
         }
 
@@ -117,6 +130,14 @@ class TagsController extends AbstractController
     {
         if ($this->isCsrfTokenValid('delete'.$tag->getId(), $request->request->get('_token'))) {
             $tagsHandler->deleteTasHandle($tag);
+
+            $this->addFlash(
+                'success',
+                sprintf(
+                    "La suppression du tag \"%s\" à bien été effectué.",
+                    $tag->getName()
+                )
+            );
         }
 
         return $this->redirectToRoute('admin_tags_article_index');

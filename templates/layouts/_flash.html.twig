@@ -1,0 +1,20 @@
+{% block flash %}
+   {% for label, messages in app.flashes %}
+      {% for message in messages %}
+         <div id="b-flash">
+            <div class="flash-position">
+               <div class="alert alert-{{ label }} flash-block" id="m-flash">
+                  <button type="button" class="close" href="#" id="delete" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+                  {{ message }}
+               </div>
+            </div>
+         </div>
+      {% endfor%}
+   {% endfor %}
+{% endblock %}
+
+{% block javascipts %}
+   {{ encore_entry_script_tags('flash') }}
+{% endblock %}
