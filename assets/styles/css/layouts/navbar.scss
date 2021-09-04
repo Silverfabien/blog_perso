@@ -1,12 +1,11 @@
 .myNav {
-  width: 100%;
-  height: 65px;
-  position: fixed;
-  line-height: 65px;
-  text-align: center;
   padding-top: 20px;
   padding-bottom: 20px;
   transition: all 0.4s ease;
+  width: 100%;
+  position: fixed;
+  line-height: 65px;
+  text-align: center;
 
   .navTitle {
     float: left;
@@ -53,12 +52,20 @@
     cursor: pointer;
     width: 30px;
     height: 25px;
-    margin: auto;
     position: absolute;
     right: 30px;
-    top: 0;
+    top: 35px;
     bottom: 0;
     display: none;
+
+    i {
+      background-color: #fff;
+      border-radius: 2px;
+      content: '';
+      display: block;
+      width: 100%;
+      height: 4px;
+    }
   }
 }
 
@@ -68,26 +75,6 @@
   background-image: url("https://images.unsplash.com/photo-1498550744921-75f79806b8a7?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=b0f6908fa5e81286213c7211276e6b3d&auto=format&fit=crop&w=1500&q=80");
   background-position: center top;
   background-size: cover;
-}
-
-.navTrigger {
-  cursor: pointer;
-  width: 30px;
-  height: 25px;
-  margin: auto;
-  position: absolute;
-  right: 30px;
-  top: 0;
-  bottom: 0;
-}
-
-.navTrigger i {
-  background-color: #fff;
-  border-radius: 2px;
-  content: '';
-  display: block;
-  width: 100%;
-  height: 4px;
 }
 
 .navTrigger i:nth-child(1) {
@@ -127,16 +114,25 @@
   animation: inBtm 0.8s forwards;
 }
 
+.navScroll {
+  padding: 0;
+  background-color: $bg-navbar-black;
+}
+
 @media screen and (max-width: 768px) {
+  .navTitle {
+    padding-left: 15px!important;
+  }
+
   .navList {
     width: 100%;
-    height: 0;
+    height: 0!important;
     overflow: hidden;
 
-    .navLinks {
+    ul {
       flex-direction: column;
       width: 100%;
-      height: 100%;
+      height: 100vh!important;
       right: 0;
       left: 0;
       bottom: 0;
@@ -157,23 +153,14 @@
     }
   }
 
-  // Class de navbar.js
-  .showList {
-    height: auto;
-    display: none;
+  .navTrigger {
+    display: block!important;
   }
 
-  .navTrigger {
-    display: block;
-
-    i {
-      background-color: $white;
-      border-radius: 2px;
-      content: '';
-      display: block;
-      width: 100%;
-      height: 4px;
-    }
+  // Class de navbar.js
+  .showList {
+    height: auto!important;
+    display: none;
   }
 }
 
