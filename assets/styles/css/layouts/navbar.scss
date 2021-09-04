@@ -52,10 +52,7 @@
     cursor: pointer;
     width: 30px;
     height: 25px;
-    position: absolute;
-    right: 30px;
-    top: 35px;
-    bottom: 0;
+    margin: 22px 40px auto auto;
     display: none;
 
     i {
@@ -116,7 +113,7 @@
 
 .navScroll {
   padding: 0;
-  background-color: $bg-navbar-black;
+  background-color: $bg-black;
 }
 
 @media screen and (max-width: 768px) {
@@ -136,7 +133,7 @@
       right: 0;
       left: 0;
       bottom: 0;
-      background-color: $bg-navbar-black;
+      background-color: $bg-black;
       background-position: center top;
 
       li {
