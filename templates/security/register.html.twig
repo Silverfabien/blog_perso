@@ -1,8 +1,25 @@
-<div class="container style-form">
-   <h1>Register</h1>
+{% extends 'base.html.twig' %}
 
-   {{ form_start(form) }}
-   {{ form_widget(form) }}
-   <button class="btn btn-info">{{ button_label|default('Sign Up') }}</button>
-   {{ form_end(form) }}
-</div>
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+   <div class="banner">
+      <div class="wrapper">
+         <div class="container login-form">
+            <form method="post">
+               <h1 class="h3 mb-3 font-weight-normal">S'inscrire</h1>
+
+               {{ form_start(form) }}
+               {{ form_errors(form.password) }}
+               {{ form_widget(form) }}
+               <button class="btn btn-primary mt-3">{{ button_label|default("S\inscrire") }}</button>
+               {{ form_end(form) }}
+            </form>
+            <div class="text-center pt-2">
+               Vous avez déjà un compte ?
+               <a href="{{ path('app_login') }}">Se connecter</a>
+            </div>
+         </div>
+      </div>
+   </div>
+{% endblock %}
