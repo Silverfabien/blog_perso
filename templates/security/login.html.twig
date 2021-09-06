@@ -12,8 +12,10 @@
                {% endif %}
 
                <h1 class="h3 mb-3 font-weight-normal">Se connecter</h1>
+
                <label for="inputEmail">Votre email</label>
                <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+
                <label class="pt-3" for="inputPassword">Votre mot de passe</label>
                <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
                <a href="{{ path('forgot_password') }}">Vous avez oublié votre mot de passe ?</a>
@@ -30,12 +32,11 @@
                   Se connecter
                </button>
             </form>
-            <div class="text-center">
+            <div class="text-center pt-2">
                Vous n'avez pas de compte ?
                <a href="{{ path('app_register') }}">S'inscrire</a>
             </div>
          </div>
       </div>
    </div>
-
 {% endblock %}
