@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Connexion{% endblock %}
+{% block title %}Inscription{% endblock %}
 
 {% block body %}
    <div class="banner">
@@ -10,7 +10,6 @@
                <h1 class="h3 mb-3 font-weight-normal">S'inscrire</h1>
 
                {{ form_start(form) }}
-               {{ form_errors(form.password) }}
                {{ form_widget(form) }}
                <button class="btn btn-primary mt-3">{{ button_label|default("S\inscrire") }}</button>
                {{ form_end(form) }}

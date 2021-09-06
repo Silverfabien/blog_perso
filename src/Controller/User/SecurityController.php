@@ -328,7 +328,7 @@ class SecurityController extends AbstractController
                     "Un email de confirmation vous a été envoyé."
                 );
 
-                return $this->redirectToRoute('default');
+                return $this->redirectToRoute('forgot_password');
             }
 
             if ($userHandler->generateResetTokenHandle($user)) {
@@ -356,7 +356,7 @@ class SecurityController extends AbstractController
                     "Un email de confirmation vous a été envoyé."
                 );
 
-                return $this->redirectToRoute('default');
+                return $this->redirectToRoute('forgot_password');
             }
         }
 
@@ -435,7 +435,7 @@ class SecurityController extends AbstractController
                 'warning',
                 "L'email que vous avez indiqué ne correspond pas à votre compte."
             );
-            return $this->redirectToRoute('default');
+            return $this->redirectToRoute('reset_forgot_password', ['token' => $token]);
         }
 
         return $this->render('user/resetForgotPassword.html.twig', [
