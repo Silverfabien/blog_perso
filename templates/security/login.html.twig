@@ -1,35 +1,41 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}Connexion{% endblock %}
 
 {% block body %}
-<form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+   <div class="banner">
+      <div class="wrapper">
+         <div class="container login-form">
+            <form method="post">
+               {% if error %}
+                  <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+               {% endif %}
 
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
-        </div>
-    {% endif %}
+               <h1 class="h3 mb-3 font-weight-normal">Se connecter</h1>
+               <label for="inputEmail">Votre email</label>
+               <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+               <label class="pt-3" for="inputPassword">Votre mot de passe</label>
+               <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+               <a href="{{ path('forgot_password') }}">Vous avez oublié votre mot de passe ?</a>
 
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+               <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+               <div class="checkbox mb-3 pt-3">
+                  <label class="form-check form-switch">
+                     <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="_remember_me">
+                     <label class="form-check-label" for="flexSwitchCheckDefault">Se souvenir de moi</label>
+                  </label>
+               </div>
 
-    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+               <button class="btn btn-primary" type="submit">
+                  Se connecter
+               </button>
+            </form>
+            <div class="text-center">
+               Vous n'avez pas de compte ?
+               <a href="{{ path('app_register') }}">S'inscrire</a>
+            </div>
+         </div>
+      </div>
+   </div>
 
-    <div class="checkbox mb-3">
-       <label>
-          <input type="checkbox" name="_remember_me"> Remember me
-       </label>
-    </div>
-
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
-</form>
 {% endblock %}
