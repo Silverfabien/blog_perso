@@ -343,7 +343,7 @@ class SecurityController extends AbstractController
                     ->setTo($user->getEmail())
                     ->setBody(
                         $this->renderView(
-                            'user/_resetPasswordMail.html.twig',
+                            'security/_resetPasswordMail.html.twig',
                             compact('url', 'user')
                         ), 'text/html'
                     )
@@ -360,7 +360,7 @@ class SecurityController extends AbstractController
             }
         }
 
-        return $this->render('user/forgotPassword.html.twig', [
+        return $this->render('security/forgotPassword.html.twig', [
             'form' => $form->createView()
         ]);
     }
@@ -438,7 +438,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('reset_forgot_password', ['token' => $token]);
         }
 
-        return $this->render('user/resetForgotPassword.html.twig', [
+        return $this->render('security/resetForgotPassword.html.twig', [
             'form' => $form->createView()
         ]);
     }
