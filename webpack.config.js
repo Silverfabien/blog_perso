@@ -22,6 +22,7 @@ Encore
      */
     .addEntry('app', './assets/styles/js/app.js')
     .addEntry('navbar', './assets/styles/js/layouts/navbar.js')
+    .addEntry('navbarDefault', './assets/styles/js/layouts/navbarDefault.js')
     .addEntry('flash', './assets/styles/js/components/_flash.js')
 
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)

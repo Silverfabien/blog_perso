@@ -1,25 +1,102 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-
-    <div class="container style-form">
-        <h1>Changer les informations</h1>
-
-        {{ form_start(userForm) }}
-        {{ form_widget(userForm) }}
-        <button class="btn btn-info">{{ button_label|default('Sign Up') }}</button>
-        {{ form_end(userForm) }}
+    <div class="container">
+        <div class="account">
+            <div class="account-header">
+                <h3>Mes informations</h3>
+            </div>
+            <hr>
+            <div class="account-body">
+                <div class="row">
+                    <div class="col-12 col-lg-2">
+                        <img src="" alt="Image de profil">
+                    </div>
+                    <div class="col-12 col-lg-10">
+                        <p>
+                            <b>Nom Prénom</b> : {{ app.user.lastname }} {{ app.user.firstname }}
+                        </p>
+                        <p>
+                            <b>Email</b> : {{ app.user.email }}
+                        </p>
+                        <p>
+                            <b>Compte crée le</b> : {{ app.user.createdAt|date('d/m/Y à H:i') }}
+                        </p>
+                        <p>
+                            <b>Dernière modification le</b> :
+                            {% if app.user.updatedAt %}
+                                {{ app.user.updatedAt|date('d/m/Y à H:i') }}
+                            {% else %}
+                                {{ app.user.createdAt|date('d/m/Y à H:i') }}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#information">Modifier mes informations</button>
+                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#password">Modifier mon mot de passe</button>
+                    {{ include('user/_remove_form.html.twig') }}
+                </div>
+            </div>
+            <hr>
+            <div class="account-header">
+                <h3>mes statistique</h3>
+            </div>
+            <hr>
+            <div class="account-body">
+                <p>
+                    <b>Nombre de message</b> : 0
+                </p>
+                <p>
+                    <b>Nombre de like</b> : 0
+                </p>
+            </div>
+        </div>
     </div>
 
-    <div class="container style-form">
-        <h1>Changer de mot de passe</h1>
-
-        {{ form_start(passwordForm) }}
-        {{ form_widget(passwordForm) }}
-        <button class="btn btn-info">{{ button_label|default('Sign Up') }}</button>
-        {{ form_end(passwordForm) }}
+    <!--Information Modal-->
+    <div class="modal fade" id="information" tabindex="-1" aria-labelledby="informationLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="informationLabel">Modifier mes informations</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(userForm) }}
+                    {{ form_widget(userForm) }}
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary">{{ button_label|default('Modifier') }}</button>
+                    {{ form_end(userForm) }}
+                </div>
+            </div>
+        </div>
     </div>
 
-    {{ include('user/_remove_form.html.twig') }}
+    <!--Password Modal-->
+    <div class="modal fade" id="password" tabindex="-1"  aria-labelledby="passwordLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="passwordLabel">Modifier mon mot de passe</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(passwordForm) }}
+                    {{ form_widget(passwordForm) }}
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary">{{ button_label|default('Modifier') }}</button>
+                    {{ form_end(passwordForm) }}
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
+

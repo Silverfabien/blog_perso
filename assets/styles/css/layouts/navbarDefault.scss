@@ -1,4 +1,4 @@
-.myNav {
+.myNavDefault {
   padding-top: 20px;
   padding-bottom: 20px;
   transition: all 0.4s ease;
@@ -6,8 +6,6 @@
   position: fixed;
   line-height: 65px;
   text-align: center;
-  background-color: $bg-gray;
-  top: 0;
 
   .navTitle {
     float: left;

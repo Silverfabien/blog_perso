@@ -1,0 +1,27 @@
+<nav class="myNavDefault">
+   <div class="navTitle">
+      <a href="{{ path('default') }}">Blog</a>
+   </div>
+   <div id="navList" class="navList">
+      <ul class="navLinks">
+         <li><a href="{{ path('default') }}">Accueil</a></li>
+         <li><a href="#">À propos</a></li>
+         <li><a href="#">Blog</a></li>
+         <li><a href="#">Contact</a></li>
+         {% if app.user %}
+            <li><a href="{{ path('user_account') }}">Compte</a></li>
+         {% else %}
+            <li><a href="{{ path('app_login') }}">Connexion</a></li>
+         {% endif %}
+      </ul>
+   </div>
+   <div class="navTrigger">
+      <i></i>
+      <i></i>
+      <i></i>
+   </div>
+</nav>
+
+{% block javascripts %}
+   {{ encore_entry_script_tags('navbarDefault') }}
+{% endblock %}
