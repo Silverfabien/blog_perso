@@ -1,0 +1,40 @@
+{% if article.publish or is_granted('ROLE_ADMIN') %}
+   <div class="col">
+      <div class="card">
+         <a href="#">
+            <img src="{{ article.pictureFile }}" alt="" class="card-img-top">
+         </a>
+         <div class="card-body">
+            <a href="#">
+               <h5 class="card-title">{{ article.title|truncate(100, false) }}</h5>
+            </a>
+            <p class="card-text">{{ article.description|truncate(400, false) }}</p>
+         </div>
+         <div class="card-body">
+            {% for tag in article.tags %}
+               <span class="card-tags">{{ tag.name }}</span>
+            {% endfor %}
+         </div>
+         <div class="card-footer">
+            <small class="text-muted">
+               {% if article.publish %}
+                  Publié le {{ article.publishedAt|localizeddate('none', 'none', null, null, 'd MMMM Y à HH:mm') }}
+               {% else %}
+                  Crée le {{ article.createdAt|localizeddate('none', 'none', null, null, 'd MMMM Y à HH:mm') }}
+               {% endif %}
+
+               {% if is_granted('ROLE_ADMIN') %}
+                  <i class="fas fa-plus"
+                     title="Créer le {{ article.createdAt|localizeddate('none', 'none', null, null, 'd MMMM Y à HH:mm') }}">
+                  </i>
+                  {% if article.updatedAt %}
+                     <i class="fas fa-pencil-alt"
+                        title="Modifier le {{ article.updatedAt|localizeddate('none', 'none', null, null, 'd MMMM Y à HH:mm') }}">
+                     </i>
+                  {% endif%}
+               {% endif %}
+            </small>
+         </div>
+      </div>
+   </div>
+{% endif %}

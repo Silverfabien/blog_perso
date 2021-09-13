@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+   <div class="container">
+      <div class="article_index">
+         <h1>Actualitées</h1>
+         <div class="row row-cols-1 row-cols-lg-2 g-4">
+            {% for article in articles %}
+               {{ include('article/_articleItem.html.twig') }}
+            {% endfor %}
+         </div>
+      </div>
+   </div>
+{% endblock %}

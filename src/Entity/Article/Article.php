@@ -64,7 +64,7 @@ class Article
     private $see;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="boolean")
      */
     private $publish;
 
@@ -93,7 +93,7 @@ class Article
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->see = 0;
-        $this->publish = 0;
+        $this->publish = false;
         $this->tags = new ArrayCollection();
     }
 
