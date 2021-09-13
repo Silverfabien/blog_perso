@@ -3,6 +3,26 @@
   background-color: $bg-account;
   padding: 15px;
   margin-bottom: 42px;
+
+  .btn-action-delete {
+    display: inline-block;
+  }
+
+  @media screen and (max-width: 992px) {
+    .btn-action-delete {
+      margin-top: 5px;
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .btn-action-delete {
+      margin-top: 0;
+    }
+
+    .btn-account>span {
+      display: none;
+    }
+  }
 }
 
 .close {

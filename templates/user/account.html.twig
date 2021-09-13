@@ -33,14 +33,18 @@
                     </div>
                 </div>
                 <div>
-                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#information">Modifier mes informations</button>
-                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#password">Modifier mon mot de passe</button>
+                    <button type="button" class="btn btn-info btn-account" data-bs-toggle="modal" data-bs-target="#information">
+                        <i class="fas fa-pencil-alt"></i> <span>Modifier mes informations</span>
+                    </button>
+                    <button type="button" class="btn btn-info btn-account" data-bs-toggle="modal" data-bs-target="#password">
+                        <i class="fas fa-pencil-alt"></i> <span>Modifier mon mot de passe</span>
+                    </button>
                     {{ include('user/_remove_form.html.twig') }}
                 </div>
             </div>
             <hr>
             <div class="account-header">
-                <h3>mes statistique</h3>
+                <h3>Mes statistique</h3>
             </div>
             <hr>
             <div class="account-body">
@@ -99,4 +103,3 @@
     </div>
 
 {% endblock %}
-
