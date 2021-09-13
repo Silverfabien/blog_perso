@@ -21,7 +21,11 @@ class ResetForgotPasswordType extends AbstractType
                 'required' => true,
                 'attr' => [
                     'placeholder' => 'Votre email'
-                ], 'constraints' => [
+                ],
+                'row_attr' => [
+                    'class' => 'pt-3'
+                ],
+                'constraints' => [
                     new Length([
                         'max' => 255,
                         'maxMessage' => 'Votre email ne doit pas dépasser {{ limit }} caractères !'
@@ -36,6 +40,9 @@ class ResetForgotPasswordType extends AbstractType
                     'attr' => [
                         'placeholder' => 'Tapez votre mot de passe'
                     ],
+                    'row_attr' => [
+                        'class' => 'pt-3'
+                    ],
                     'constraints' => [
                         new Length([
                             'min' => 8,
@@ -49,6 +56,9 @@ class ResetForgotPasswordType extends AbstractType
                     'label' => 'Tapez le mot de passe à nouveau',
                     'attr' => [
                         'placeholder' => 'Tapez à nouveau votre mot de passe'
+                    ],
+                    'row_attr' => [
+                        'class' => 'pt-3'
                     ],
                     'constraints' => [
                         new Length([

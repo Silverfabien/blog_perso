@@ -29,6 +29,9 @@ class RegistrationType extends AbstractType
                 'required' => true,
                 'attr' => [
                     'placeholder' => 'Votre Nom'
+                ],
+                'row_attr' => [
+                    'class' => 'pt-3'
                 ]
             ])
             ->add('email', EmailType::class, [
@@ -36,6 +39,9 @@ class RegistrationType extends AbstractType
                 'required' => true,
                 'attr' => [
                     'placeholder' => 'Votre email'
+                ],
+                'row_attr' => [
+                    'class' => 'pt-3'
                 ],
                 'constraints' => [
                     new Length([
@@ -52,6 +58,9 @@ class RegistrationType extends AbstractType
                     'attr' => [
                         'placeholder' => 'Tapez votre mot de passe'
                     ],
+                    'row_attr' => [
+                        'class' => 'pt-3'
+                    ],
                     'constraints' => [
                         new Length([
                             'min' => 8,
@@ -66,6 +75,9 @@ class RegistrationType extends AbstractType
                     'attr' => [
                         'placeholder' => 'Tapez à nouveau votre mot de passe'
                     ],
+                    'row_attr' => [
+                        'class' => 'pt-3'
+                    ],
                     'constraints' => [
                         new Length([
                             'min' => 8,
@@ -77,7 +89,10 @@ class RegistrationType extends AbstractType
                 ]
             ])
             ->add('picture', UserPictureType::class, [
-                'label' => false
+                'label' => false,
+                'row_attr' => [
+                    'class' => 'pt-3'
+                ]
             ])
         ;
     }

@@ -1,0 +1,17 @@
+@import "~bootstrap/scss/bootstrap";
+
+@import "utils/variables";
+@import "layouts/navbar";
+@import "layouts/navbarDefault";
+@import "layouts/footer";
+@import "content/user/security";
+@import "content/user/account";
+@import "components/flash";
+
+body {
+    background-color: lightgray;
+
+    a {
+        text-decoration: none;
+    }
+}

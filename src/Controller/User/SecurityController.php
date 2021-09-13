@@ -34,7 +34,11 @@ class SecurityController extends AbstractController
     ): Response
     {
          if ($this->getUser()) {
-             // TODO addFlash warning
+             $this->addFlash(
+                 'warning',
+                 "Vous êtes déjà connecté."
+             );
+
              return $this->redirectToRoute('default');
          }
 
@@ -51,7 +55,6 @@ class SecurityController extends AbstractController
      */
     public function logout(): void
     {
-        // TODO addFlash warning
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
@@ -74,7 +77,11 @@ class SecurityController extends AbstractController
     ): Response
     {
         if ($this->getUser()) {
-            // TODO addFlash warning
+            $this->addFlash(
+                'warning',
+                "Vous êtes déjà connecté."
+            );
+
             return $this->redirectToRoute('default');
         }
 
@@ -107,7 +114,14 @@ class SecurityController extends AbstractController
 
             $mailer->send($mail);
 
-            // TODO addFlash success
+            $this->addFlash(
+                'success',
+                sprintf(
+                    "Un email de confirmation à l'adresse mail \"%s\" vous a été envoyé.",
+                    $user->getEmail()
+                )
+            );
+
             return $guardAuthenticatorHandler->authenticateUserAndHandleSuccess(
                 $user,
                 $request,
@@ -137,18 +151,30 @@ class SecurityController extends AbstractController
         $user = $this->getUser();
 
         if ($user === null) {
-            // TODO addFlash danger
+            $this->addFlash(
+                'danger',
+                "Une erreur est survenue."
+            );
+
             return $this->redirectToRoute('default');
         }
 
         if ($token === $user->getConfirmationAccountToken()) {
             $registrationHandler->confirmationAccount($user);
 
-            // TODO addFlash success
+            $this->addFlash(
+                'success',
+                "Votre compte à bien été confirmé."
+            );
+
             return $this->redirectToRoute('default');
         }
 
-        // TODO addFlash warning
+        $this->addFlash(
+            'warning',
+            "Votre devez être connecté à votre compte pour le validé."
+        );
+
         return $this->redirectToRoute('default');
     }
 
@@ -166,7 +192,11 @@ class SecurityController extends AbstractController
         $user = $this->getUser();
 
         if ($user === null) {
-            // TODO addFlash danger
+            $this->addFlash(
+                'danger',
+                "Une erreur est survenue."
+            );
+
             return $this->redirectToRoute('default');
         }
 
@@ -176,11 +206,18 @@ class SecurityController extends AbstractController
 
             $registrationHandler->deleteAccount($user);
 
-            // TODO addFlash success
+            $this->addFlash(
+                'success',
+                "le compte a bien été supprimé."
+            );
+
             return $this->redirectToRoute('default');
         }
 
-        // TODO addFlash warning
+        $this->addFlash(
+            'warning',
+            "Vous êtes connecté, la suppression ne sera pas effectué."
+        );
         return $this->redirectToRoute('default');
     }
 
@@ -200,7 +237,11 @@ class SecurityController extends AbstractController
         $user = $this->getUser();
 
         if ($user === null) {
-            // TODO addFlash danger
+            $this->addFlash(
+                'danger',
+                "Une erreur est survenue."
+            );
+
             return $this->redirectToRoute('default');
         }
 
@@ -229,11 +270,22 @@ class SecurityController extends AbstractController
 
             $mailer->send($mail);
 
-            // TODO addFlash success
+            $this->addFlash(
+                'success',
+                sprintf(
+                    "Un email de confirmation à l'adresse mail \"%s\" vous a été envoyé.",
+                    $user->getEmail()
+                )
+            );
+
             return $this->redirectToRoute('default');
         }
 
-        // TODO addFlash danger
+        $this->addFlash(
+            'danger',
+            "Votre compte est déjà confirmé."
+        );
+
         return $this->redirectToRoute('default');
     }
 
@@ -256,7 +308,11 @@ class SecurityController extends AbstractController
     ): Response
     {
         if ($this->getUser()) {
-            // TODO addFlash warning
+            $this->addFlash(
+                'warning',
+                "Vous êtes déjà connecté."
+            );
+
             return $this->redirectToRoute('default');
         }
 
@@ -267,8 +323,12 @@ class SecurityController extends AbstractController
             $user = $userRepository->findOneByEmail($email);
 
             if ($user === null) {
-                // TODO addFlash success
-                return $this->redirectToRoute('default');
+                $this->addFlash(
+                    'success',
+                    "Un email de confirmation vous a été envoyé."
+                );
+
+                return $this->redirectToRoute('forgot_password');
             }
 
             if ($userHandler->generateResetTokenHandle($user)) {
@@ -283,7 +343,7 @@ class SecurityController extends AbstractController
                     ->setTo($user->getEmail())
                     ->setBody(
                         $this->renderView(
-                            'user/_resetPasswordMail.html.twig',
+                            'security/_resetPasswordMail.html.twig',
                             compact('url', 'user')
                         ), 'text/html'
                     )
@@ -291,12 +351,16 @@ class SecurityController extends AbstractController
 
                 $mailer->send($mail);
 
-                // TODO addFlash success
-                return $this->redirectToRoute('default');
+                $this->addFlash(
+                    'success',
+                    "Un email de confirmation vous a été envoyé."
+                );
+
+                return $this->redirectToRoute('forgot_password');
             }
         }
 
-        return $this->render('user/forgotPassword.html.twig', [
+        return $this->render('security/forgotPassword.html.twig', [
             'form' => $form->createView()
         ]);
     }
@@ -320,7 +384,11 @@ class SecurityController extends AbstractController
     ): Response
     {
         if ($this->getUser()) {
-            // TODO addFlash warning
+            $this->addFlash(
+                'warning',
+                "Vous êtes déjà connecté."
+            );
+
             return $this->redirectToRoute('default');
         }
 
@@ -329,7 +397,11 @@ class SecurityController extends AbstractController
 
         // Si le token n'existe pas
         if ($user === null) {
-            // TODO addFlash danger
+            $this->addFlash(
+                'warning',
+                "Le lien que vous avez demandé n'existe pas ou a été expiré."
+            );
+
             return $this->redirectToRoute('default');
         }
 
@@ -337,7 +409,11 @@ class SecurityController extends AbstractController
         if (date_timestamp_get($user->getResetTokenExpiredAt()) <= date_timestamp_get(new \DateTimeImmutable())) {
             $userHandler->expiredResetTokenHandle($user);
 
-            // TODO addFlash warning
+            $this->addFlash(
+                'warning',
+                "Le lien que vous avez demandé n'existe pas ou a été expiré."
+            );
+
             return $this->redirectToRoute('default');
         }
 
@@ -347,14 +423,22 @@ class SecurityController extends AbstractController
             if ($email === $user->getEmail()) {
                 $userHandler->resetPasswordHandle($form, $user);
 
-                // TODO addFlash success
+
+                $this->addFlash(
+                    'success',
+                    "La réinitialisation de votre mot de passe a bien été effectué."
+                );
                 return $this->redirectToRoute('default');
             }
-            // TODO addFlash error
-            return $this->redirectToRoute('default');
+
+            $this->addFlash(
+                'warning',
+                "L'email que vous avez indiqué ne correspond pas à votre compte."
+            );
+            return $this->redirectToRoute('reset_forgot_password', ['token' => $token]);
         }
 
-        return $this->render('user/resetForgotPassword.html.twig', [
+        return $this->render('security/resetForgotPassword.html.twig', [
             'form' => $form->createView()
         ]);
     }

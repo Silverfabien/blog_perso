@@ -1,0 +1,61 @@
+.wrapper {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+
+  .login-form {
+    max-width: 50%;
+    background-color: rgba(228, 231, 234, 0.8);
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    .remember_info {
+      background-color: #5eb5e0;
+      padding: 2px;
+      border-radius: 10px;
+    }
+  }
+
+  @media screen and (max-width: 1200px) {
+    .login-form {
+      max-width: 75%;
+    }
+  }
+
+  @media screen and (max-width: 800px) {
+    .login-form {
+      max-width: 90%;
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .login-form {
+      max-width: 100%;
+    }
+  }
+}
+
+@media screen and (max-height: 800px){
+  .banner {
+    min-height: 110vh;
+
+    .login-form {
+      margin-top: 20%;
+    }
+  }
+}
+
+@media screen and (max-height: 700px){
+  .banner {
+    min-height: 130vh;
+
+    .login-form {
+      margin-top: 40%;
+
+      @media screen and (max-width: 300px){
+        margin-top: 60%;
+      }
+    }
+  }
+}
