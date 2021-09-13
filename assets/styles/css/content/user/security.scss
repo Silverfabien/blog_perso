@@ -27,10 +27,34 @@
     .login-form {
       max-width: 90%;
     }
+  }
 
-    @media screen and (max-width: 600px) {
-      .login-form {
-        max-width: 100%;
+  @media screen and (max-width: 600px) {
+    .login-form {
+      max-width: 100%;
+    }
+  }
+}
+
+@media screen and (max-height: 800px){
+  .banner {
+    min-height: 110vh;
+
+    .login-form {
+      margin-top: 20%;
+    }
+  }
+}
+
+@media screen and (max-height: 700px){
+  .banner {
+    min-height: 130vh;
+
+    .login-form {
+      margin-top: 40%;
+
+      @media screen and (max-width: 300px){
+        margin-top: 60%;
       }
     }
   }

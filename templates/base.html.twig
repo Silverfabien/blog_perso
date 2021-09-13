@@ -11,10 +11,25 @@
 
         {# JS #}
         {{ encore_entry_script_tags('app') }}
+        <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" data-auto-a11y="true"></script>
         {% block javascripts %}{% endblock %}
     </head>
     <body>
-        {{ include('layouts/navbar.html.twig') }}
+        {% set routes =
+            ['default', 'app_login', 'app_register', 'forgot_password', 'reset_forgot_password']
+        %}
+        {% set countRoute = 0 %}
+        {% for route in routes %}
+           {% if app.request.get('_route') == route %}
+              {{ include('layouts/navbarDefault.html.twig') }}
+           {% else %}
+              {% set countRoute = countRoute + 1 %}
+              {% if countRoute == 5 %}
+                 {{ include('layouts/navbar.html.twig') }}
+              {% endif %}
+           {% endif %}
+        {% endfor %}
+
         {% block body %}{% endblock %}
         {{ include('layouts/footer.html.twig') }}
         {{ include('layouts/_flash.html.twig') }}
