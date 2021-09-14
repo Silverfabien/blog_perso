@@ -44,3 +44,7 @@ services:
     App\EventListener\UserBlockedListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request }
+
+    App\EventListener\PictureCacheSubscriber:
+        tags:
+            - { name: doctrine.event_subscriber }

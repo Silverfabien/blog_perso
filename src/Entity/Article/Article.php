@@ -10,9 +10,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+
 
 /**
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
+ *
+ * @Vich\Uploadable()
  */
 class Article
 {
@@ -35,13 +39,14 @@ class Article
     private $slug;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      */
     private $filename;
 
     /**
      * @var File|null
      * @Assert\Image(mimeTypes={"image/jpeg", "image/png"}, mimeTypesMessage="Seule les images en .jpg et .png sont acceptées")
+     * @Vich\UploadableField(mapping="article_image", fileNameProperty="filename")
      */
     private $pictureFile;
 
@@ -121,12 +126,19 @@ class Article
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getFilename(): ?string
     {
         return $this->filename;
     }
 
-    public function setFilename(string $filename): self
+    /**
+     * @param string $filename
+     * @return Article
+     */
+    public function setFilename(string $filename): Article
     {
         $this->filename = $filename;
 

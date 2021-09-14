@@ -25,7 +25,9 @@
            {% else %}
               {% set countRoute = countRoute + 1 %}
               {% if countRoute == 5 %}
-                 {{ include('layouts/navbar.html.twig') }}
+                  <div class="wrapper">
+                      {{ include('layouts/navbar.html.twig') }}
+                  </div>
               {% endif %}
            {% endif %}
         {% endfor %}

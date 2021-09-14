@@ -2,7 +2,13 @@
    <div class="col">
       <div class="card">
          <a href="{{ path('article_show', {'slug' : article.slug}) }}">
-            <img src="#" alt="" class="card-img-top">
+            <img src="
+               {% if article.filename %}
+                  {{ vich_uploader_asset(article, 'pictureFile')|imagine_filter('thumb') }}
+               {% else %}
+                  {{ asset('pictures/article/default/noImageAvailable.png')|imagine_filter('thumb') }}
+               {% endif %}
+            " alt="" class="card-img-top">
          </a>
          <div class="card-body">
             <a href="{{ path('article_show', {'slug' : article.slug}) }}">
