@@ -1,0 +1,44 @@
+# Read the documentation: https://symfony.com/doc/current/bundles/FOSCKEditorBundle/index.html
+
+twig:
+    form_themes:
+        - '@FOSCKEditor/Form/ckeditor_widget.html.twig'
+
+fos_ck_editor:
+    configs:
+        article_description_config:
+            uiColor: "#BBBBBB"
+            toolbar: "article_description_config"
+            extraPlugins: "wordcount"
+
+        article_content_config:
+            uiColor: "#BBBBBB"
+            toolbar: "article_content_config"
+            extraPlugins: "wordcount"
+
+    toolbars:
+        configs:
+            article_content_config: [
+                [
+                    'Bold', 'Italic', 'Underline', 'Strike', '-',
+                    'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-',
+                    'NumberedList', 'BulletedList', '-',
+                    'Blockquote', 'CreateDiv', 'Preview', '-',
+                    'Copy', 'Paste', 'Cut', 'PasteText', 'PasteFromWord', '-',
+                    'Undo', 'Redo'
+                ], '/', [
+                    'Find', 'Replace', '-',
+                    'SelectAll', '-',
+                    'Scayt', '-',
+                    'Link', 'Unlink', 'Anchor', '-',
+                    'TextColor', 'BGColor', '-',
+                    'FontSize', '-',
+                    'Image'
+                ]
+            ]
+
+            article_description_config: [
+                [
+                    'Bold', 'Italic', 'Underline', 'Strike'
+                ]
+            ]
