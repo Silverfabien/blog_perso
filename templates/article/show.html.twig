@@ -2,9 +2,34 @@
 
 {% block body %}
    <div class="container">
-      <div class="article_index">
-         <h1>{{ article.title }}</h1>
-
+      {% if not article.publish %}
+         <div class="alert alert-warning">
+            <span>L'article n'est pas encore publié. Les données ne sont pas pris en compte.</span>
+         </div>
+      {% endif %}
+      <div class="article-show">
+         <div class="article-show-title">
+            <h3>{{ article.title }}</h3>
+         </div>
+         <hr>
+         <div class="article-show-body">
+            {{ article.content|raw }}
+         </div>
+         <div class="article-show-footer">
+            <span class="text-muted">
+               {% if article.publish %}
+                  Publié le {{ article.publishedAt|localizeddate('none', 'none', null, null, 'd MMMM Y à H:m') }}
+               {% else %}
+                  Crée le {{ article.createdAt|localizeddate('none', 'none', null, null, 'd MMMM Y à H:m') }}
+               {% endif %}
+               {% if is_granted('ROLE_ADMIN') %}
+                  {% if article.updatedAt %}
+                     <i class="fas fa-pencil-alt" title="Modifier le {{ article.updatedAt|localizeddate('none', 'none', null, null, 'd MMMM Y à H:m') }}"></i>
+                  {% endif%}
+                     <i class="fas fa-plus" title="Créer le {{ article.createdAt|localizeddate('none', 'none', null, null, 'd MMMM Y à H:m') }}"></i>
+               {% endif %}
+            </span>
+         </div>
       </div>
    </div>
 {% endblock %}
