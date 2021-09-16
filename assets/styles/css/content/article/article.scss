@@ -35,5 +35,13 @@
   .article-show-footer {
     background-color: rgba(0, 0, 0, 0.03);
     padding: 5px 15px;
+
+    .btn-like {
+      color: $black;
+
+      .thumbs-like {
+        color: #28a745;
+      }
+    }
   }
 }

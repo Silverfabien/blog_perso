@@ -18,18 +18,46 @@
          <div class="article-show-footer">
             <span class="text-muted">
                {% if article.publish %}
-                  Publié le {{ article.publishedAt|localizeddate('none', 'none', null, null, 'd MMMM Y à H:m') }}
+                  Publié le {{ article.publishedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
                {% else %}
-                  Crée le {{ article.createdAt|localizeddate('none', 'none', null, null, 'd MMMM Y à H:m') }}
+                  Crée le {{ article.createdAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
                {% endif %}
                {% if is_granted('ROLE_ADMIN') %}
                   {% if article.updatedAt %}
-                     <i class="fas fa-pencil-alt" title="Modifier le {{ article.updatedAt|localizeddate('none', 'none', null, null, 'd MMMM Y à H:m') }}"></i>
+                     <i class="fas fa-pencil-alt" title="Modifier le {{ article.updatedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}"></i>
                   {% endif%}
-                     <i class="fas fa-plus" title="Créer le {{ article.createdAt|localizeddate('none', 'none', null, null, 'd MMMM Y à H:m') }}"></i>
+                     <i class="fas fa-plus" title="Créer le {{ article.createdAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}"></i>
                {% endif %}
+               <span class="float-end text-muted">
+                  {% if app.user and article.publish %}
+                     <a
+                        href="{{ path('article_like_unlike', {'slug' : article.slug}) }}"
+                        class="btn-like"
+                        title="Nombre de like de l'article"
+                        id="article-like"
+                        data-entity-slug="{{ article.slug }}"
+                        data-csrf-token="{{ csrf_token('article' ~ article.slug) }}"
+                     >
+                     <i class="fas fa-thumbs-up
+                        {% for like in likes %}
+                           {% if like.user == app.user %}
+                              thumbs-like
+                           {% endif %}
+                        {% endfor %}
+                     "></i>
+                     <span>{{ articleLike }}</span>
+                  </a>
+                  {% else %}
+                     <i class="fas fa-thumbs-up thumbs-like"></i>
+                     <span>{{ articleLike }}</span>
+                  {% endif %}
+               </span>
             </span>
          </div>
       </div>
    </div>
+{% endblock %}
+
+{% block javascripts %}
+   {{ encore_entry_script_tags('likeArticle') }}
 {% endblock %}

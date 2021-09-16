@@ -24,18 +24,18 @@
          <div class="card-footer">
             <small class="text-muted">
                {% if article.publish %}
-                  Publié le {{ article.publishedAt|localizeddate('none', 'none', null, null, 'd MMMM Y à HH:mm') }}
+                  Publié le {{ article.publishedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
                {% else %}
-                  Crée le {{ article.createdAt|localizeddate('none', 'none', null, null, 'd MMMM Y à HH:mm') }}
+                  Crée le {{ article.createdAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
                {% endif %}
 
                {% if is_granted('ROLE_ADMIN') %}
                   <i class="fas fa-plus"
-                     title="Créer le {{ article.createdAt|localizeddate('none', 'none', null, null, 'd MMMM Y à HH:mm') }}">
+                     title="Créer le {{ article.createdAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}">
                   </i>
                   {% if article.updatedAt %}
                      <i class="fas fa-pencil-alt"
-                        title="Modifier le {{ article.updatedAt|localizeddate('none', 'none', null, null, 'd MMMM Y à HH:mm') }}">
+                        title="Modifier le {{ article.updatedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}">
                      </i>
                   {% endif%}
                {% endif %}
