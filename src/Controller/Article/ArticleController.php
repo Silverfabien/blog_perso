@@ -36,13 +36,21 @@ class ArticleController extends AbstractController
      */
     public function show(
         Article $article,
-        LikeRepository $likeRepository
+        LikeRepository $likeRepository,
+        ArticleHandler $articleHandler
     )
     {
         if (!$article->getPublish() && !$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('article_index');
         }
 
+        // Count visitor
+        if ($article->getPublish()) {
+            $articleHandler->seeArticleHandle($article);
+        }
+
+
+        // Var count
         $articleLike = $likeRepository->findByArticle($article);
 
         return $this->render('article/show.html.twig', [

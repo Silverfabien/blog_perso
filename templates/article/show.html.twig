@@ -24,15 +24,16 @@
                {% endif %}
                {% if is_granted('ROLE_ADMIN') %}
                   {% if article.updatedAt %}
-                     <i class="fas fa-pencil-alt" title="Modifier le {{ article.updatedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}"></i>
+                     <i class="fas fa-pencil-alt ms-2" title="Modifier le {{ article.updatedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}"></i>
                   {% endif%}
-                     <i class="fas fa-plus" title="Créer le {{ article.createdAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}"></i>
+                     <i class="fas fa-plus ms-2" title="Créer le {{ article.createdAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}"></i>
                {% endif %}
                <span class="float-end text-muted">
+                  <i class="far fa-eye"></i> {{ article.see }}
                   {% if app.user and article.publish %}
                      <a
                         href="{{ path('article_like_unlike', {'slug' : article.slug}) }}"
-                        class="btn-like"
+                        class="btn-like ms-2"
                         title="Nombre de like de l'article"
                         id="article-like"
                         data-entity-slug="{{ article.slug }}"
@@ -48,7 +49,7 @@
                      <span>{{ articleLike }}</span>
                   </a>
                   {% else %}
-                     <i class="fas fa-thumbs-up thumbs-like"></i>
+                     <i class="fas fa-thumbs-up thumbs-like ms-2"></i>
                      <span>{{ articleLike }}</span>
                   {% endif %}
                </span>

@@ -80,4 +80,15 @@ class ArticleHandler
 
         return true;
     }
+
+    public function seeArticleHandle(
+        Article $article
+    )
+    {
+        $article->setSee($article->getSee()+1);
+
+        $this->articleRepository->see($article);
+
+        return true;
+    }
 }
