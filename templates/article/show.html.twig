@@ -29,7 +29,8 @@
                      <i class="fas fa-plus ms-2" title="Créer le {{ article.createdAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}"></i>
                {% endif %}
                <span class="float-end text-muted">
-                  <i class="far fa-eye"></i> {{ article.see }}
+                  <i class="far fa-comment"></i> {{ countComment }}
+                  <i class="far fa-eye ms-2"></i> {{ article.see }}
                   {% if app.user and article.publish %}
                      <a
                         href="{{ path('article_like_unlike', {'slug' : article.slug}) }}"
@@ -55,6 +56,15 @@
                </span>
             </span>
          </div>
+      </div>
+   </div>
+
+   <div class="container">
+      <div class="comment-article">
+         <h3>Commentaire</h3>
+         <hr>
+         {{ include('article/comment/index.html.twig') }}
+         {{ include('article/comment/new.html.twig') }}
       </div>
    </div>
 {% endblock %}

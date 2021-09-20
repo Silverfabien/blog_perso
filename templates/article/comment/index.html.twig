@@ -1,0 +1,54 @@
+{% set nbComment = 0 %}
+{% for comment in comments %}
+   <div class="comment-block">
+      <div class="row">
+         <div class="col-lg-2 col-md-3 col-12">
+            <div class="comment-profil">
+               <img src="
+{#                  {% if comment.user.picture.filename != null %}
+                     #
+                  {% else %}
+                     #
+                  {% endif %}#}
+               " alt="Image de profil de {{ comment.user.lastname }} {{ comment.user.firstname }}"
+               >
+               <p>
+                  <span class="comment-profil-fullname">{{ comment.user.lastname }}</span>
+                  <span class="comment-profil-fullname">{{ comment.user.firstname }}</span>
+               </p>
+               {% if comment.user.roles == ['ROLE_ADMIN'] %}
+                  <p class="grade-profil-admin">Administrateur</p>
+               {% elseif comment.user.roles == ['ROLE_AUTHOR'] %}
+                  <p class="grade-profil-author">Rédacteur</p>
+               {% endif %}
+            </div>
+         </div>
+         <div class="col-lg-10 col-md-9 col-12">
+            <div class="comment-body">
+               <div class="comment-content">
+                  {% set nbComment = nbComment + 1 %}
+                  <p class="number-comment">#{{ nbComment }}</p>
+                  <p>{{ comment.content|raw }}</p>
+               </div>
+               <hr>
+               <div class="comment-footer">
+                  <p class="comment-footer-info">
+                     {{ comment.user.lastname }} {{ comment.user.firstname }}, le
+                     {{ comment.createdAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
+                  </p>
+                  {% if comment.updatedAt != null and is_granted('ROLE_ADMIN') %}
+                     <i class="fas fa-pencil-alt" title="Modifier le {{ comment.updatedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}"></i>
+                  {% endif %}
+                  <div class="comment-footer-button">
+                     {% if app.user and app.user.email == comment.user.email or is_granted('ROLE_ADMIN') %}
+                        <a class="btn btn-info" href="#">
+                           <i class="fas fa-pencil-alt"></i>
+                        </a>
+                     {% endif %}
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+{% endfor %}

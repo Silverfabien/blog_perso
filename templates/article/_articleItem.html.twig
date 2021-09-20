@@ -39,6 +39,26 @@
                      </i>
                   {% endif%}
                {% endif %}
+               <span class="float-end">
+                  {# Commentaire #}
+                  {% set countComment = 0 %}
+                  {% for comment in comments %}
+                     {% if comment.article == article %}
+                        {% set countComment = countComment + 1 %}
+                     {% endif %}
+                  {% endfor %}
+                  <i class="far fa-comment"></i> {{ countComment }}
+                  {# Vue #}
+                  <i class="fas fa-eye ms-1"></i> {{ article.see }}
+                  {# Like #}
+                  {% set countLike = 0 %}
+                  {% for like in likes %}
+                     {% if like.article == article %}
+                        {% set countLike = countLike + 1 %}
+                     {% endif %}
+                  {% endfor %}
+                  <i class="far fa-thumbs-up ms-1"></i> {{ countLike }}
+               </span>
             </small>
          </div>
       </div>

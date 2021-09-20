@@ -1,0 +1,20 @@
+{% if app.user and app.user.confirmationAccount and article.publish %}
+   <div class="form-comment">
+      {{ form_start(form) }}
+      {{ form_widget(form) }}
+      <button class="btn btn-success">{{ button_label|default('Envoyer') }}</button>
+      {{ form_end(form) }}
+   </div>
+{% elseif not article.publish %}
+   <div class="alert alert-warning">
+      L'article n'est pas encore publié.
+   </div>
+{% elseif app.user and not app.user.confirmationAccount %}
+   <div class="alert alert-warning">
+      Veuillez confirmer votre compte pour envoyer un message.
+   </div>
+{% else %}
+   <div class="alert alert-warning">
+      Veuillez vous connecter pour envoyer un message.
+   </div>
+{% endif %}

@@ -16,6 +16,11 @@ fos_ck_editor:
             toolbar: "article_content_config"
             extraPlugins: "wordcount"
 
+        article_comment_config:
+            uiColor: "#BBBBBB"
+            toolbar: "article_comment_config"
+            extraPlugins: "wordcount"
+
     toolbars:
         configs:
             article_content_config: [
@@ -40,5 +45,11 @@ fos_ck_editor:
             article_description_config: [
                 [
                     'Bold', 'Italic', 'Underline', 'Strike'
+                ]
+            ]
+
+            article_comment_config: [
+                [
+                        'Bold', 'Italic', 'Underline', 'Strike'
                 ]
             ]

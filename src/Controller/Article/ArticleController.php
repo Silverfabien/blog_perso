@@ -3,10 +3,14 @@
 namespace App\Controller\Article;
 
 use App\ControllerHandler\Admin\Article\ArticleHandler;
+use App\ControllerHandler\Article\ArticleCommentHandler;
 use App\Entity\Article\Article;
+use App\Entity\Article\Comment;
 use App\Entity\Article\Like;
 use App\Entity\User\User;
+use App\Form\Article\ArticleCommentType;
 use App\Repository\Article\ArticleRepository;
+use App\Repository\Article\CommentRepository;
 use App\Repository\Article\LikeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,11 +27,15 @@ class ArticleController extends AbstractController
      * @Route("/", name="index")
      */
     public function index(
-        ArticleRepository $articleRepository
+        ArticleRepository $articleRepository,
+        CommentRepository $commentRepository,
+        LikeRepository $likeRepository
     ): Response
     {
         return $this->render('article/index.html.twig', [
-            'articles' => $articleRepository->findAll()
+            'articles' => $articleRepository->findAll(),
+            'comments' => $commentRepository->findAll(),
+            'likes' => $likeRepository->findAll()
         ]);
     }
 
@@ -37,11 +45,25 @@ class ArticleController extends AbstractController
     public function show(
         Article $article,
         LikeRepository $likeRepository,
-        ArticleHandler $articleHandler
+        ArticleHandler $articleHandler,
+        Request $request,
+        ArticleCommentHandler $commentHandler,
+        CommentRepository $commentRepository
     )
     {
+        /* @var $user User */
+        $user = $this->getUser();
+
         if (!$article->getPublish() && !$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('article_index');
+        }
+
+        // Formulaire des commentaires
+        $commentArticle = new Comment();
+        $form = $this->createForm(ArticleCommentType::class, $commentArticle)->handleRequest($request);
+
+        if ($this->getUser() && $commentHandler->createCommentHandler($form, $commentArticle, $article, $user)) {
+            return $this->redirectToRoute('article_show', ['slug' => $article->getSlug()]);
         }
 
         // Count visitor
@@ -49,14 +71,13 @@ class ArticleController extends AbstractController
             $articleHandler->seeArticleHandle($article);
         }
 
-
-        // Var count
-        $articleLike = $likeRepository->findByArticle($article);
-
         return $this->render('article/show.html.twig', [
             'article' => $article,
             'likes' => $likeRepository->findByArticle([$article]),
-            'articleLike' => count($articleLike)
+            'articleLike' => count($likeRepository->findByArticle($article)),
+            'form' => $form->createView(),
+            'comments' => $commentRepository->findByArticle($article),
+            'countComment' => count($commentRepository->findByArticle($article))
         ]);
     }
 
@@ -92,9 +113,7 @@ class ArticleController extends AbstractController
                 ]);
 
                 if ($articleAlreadyLiked) {
-                    dump($articleAlreadyLiked);
                     $likeRepository->unlike($articleAlreadyLiked);
-                    dump($articleAlreadyLiked);
                     $result = 'delete';
                 } else {
                     $like = new Like();
