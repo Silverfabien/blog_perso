@@ -24,4 +24,9 @@ class CommentRepository extends ServiceEntityRepository
         $this->_em->persist($comment);
         $this->_em->flush();
     }
+
+    public function update($comment)
+    {
+        $this->_em->flush();
+    }
 }

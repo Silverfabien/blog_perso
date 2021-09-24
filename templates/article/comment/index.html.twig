@@ -41,7 +41,13 @@
                   {% endif %}
                   <div class="comment-footer-button">
                      {% if app.user and app.user.email == comment.user.email or is_granted('ROLE_ADMIN') %}
-                        <a class="btn btn-info" href="#">
+                        <a
+                           class="btn btn-info"
+                           href="{{ path('article_edit_comment', {'slug' : article.slug, 'id' : comment.id}) }}"
+                           id="editComment"
+                           data-entity-id="{{ comment.id }}"
+                           data-csrf-token="{{ csrf_token('comment' ~ comment.id) }}"
+                        >
                            <i class="fas fa-pencil-alt"></i>
                         </a>
                      {% endif %}
@@ -51,4 +57,11 @@
          </div>
       </div>
    </div>
+   <div id="mod">
+
+   </div>
 {% endfor %}
+
+{% block javascripts %}
+   {{ encore_entry_script_tags('editComment') }}
+{% endblock %}

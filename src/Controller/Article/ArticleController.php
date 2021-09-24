@@ -9,6 +9,7 @@ use App\Entity\Article\Comment;
 use App\Entity\Article\Like;
 use App\Entity\User\User;
 use App\Form\Article\ArticleCommentType;
+use App\Form\Article\ArticleEditCommentType;
 use App\Repository\Article\ArticleRepository;
 use App\Repository\Article\CommentRepository;
 use App\Repository\Article\LikeRepository;
@@ -48,7 +49,8 @@ class ArticleController extends AbstractController
         ArticleHandler $articleHandler,
         Request $request,
         ArticleCommentHandler $commentHandler,
-        CommentRepository $commentRepository
+        CommentRepository $commentRepository,
+        Comment $comment
     )
     {
         /* @var $user User */
@@ -71,14 +73,48 @@ class ArticleController extends AbstractController
             $articleHandler->seeArticleHandle($article);
         }
 
+        // Édition d'un commentaire
+        $editForm = $this->createForm(ArticleEditCommentType::class, $comment)->handleRequest($request);
+        if ($commentHandler->editCommentHandler($editForm, $comment)) {
+            return $this->redirectToRoute('article_show', ['slug' => $article->getSlug()]);
+        }
+
         return $this->render('article/show.html.twig', [
             'article' => $article,
             'likes' => $likeRepository->findByArticle([$article]),
             'articleLike' => count($likeRepository->findByArticle($article)),
             'form' => $form->createView(),
             'comments' => $commentRepository->findByArticle($article),
-            'countComment' => count($commentRepository->findByArticle($article))
+            'countComment' => count($commentRepository->findByArticle($article)),
+            'editForm' => $editForm->createView()
         ]);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @Route("/{slug}/editComment/{id}", name="edit_comment")
+     */
+    public function editComment(
+        Request $request,
+        CommentRepository $commentRepository
+    )
+    {
+        if ($this->getUser() && $request->getMethod() === 'POST' && $request->isXmlHttpRequest()) {
+            $commentId = $request->request->get('commentId');
+            $comment = $commentRepository->findOneById($commentId);
+
+            $submittedToken = $request->request->get('csrfToken');
+            if ($this->isCsrfTokenValid('comment' . $comment->getId(), $submittedToken)) {
+                $form = $this->createForm(ArticleEditCommentType::class, $comment)->handleRequest($request);
+
+                return new JsonResponse($this->renderView('article/comment/_modal.html.twig', [
+                    'editForm' => $form->createView()
+                ]));
+            }
+        }
+
+        return new JsonResponse();
     }
 
     /**

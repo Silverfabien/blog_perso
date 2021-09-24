@@ -37,4 +37,20 @@ class ArticleCommentHandler
 
         return false;
     }
+
+    public function editCommentHandler(
+        FormInterface $form,
+        Comment $comment
+    )
+    {
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment->setUpdatedAt(new \DateTimeImmutable());
+
+            $this->commentRepository->update($comment);
+
+            return true;
+        }
+
+        return false;
+    }
 }
