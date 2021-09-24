@@ -19,7 +19,7 @@ class ArticleCommentHandler
         $this->commentRepository = $commentRepository;
     }
 
-    public function createCommentHandler(
+    public function createCommentHandle(
         FormInterface $form,
         Comment $comment,
         Article $article,
@@ -38,7 +38,7 @@ class ArticleCommentHandler
         return false;
     }
 
-    public function editCommentHandler(
+    public function editCommentHandle(
         FormInterface $form,
         Comment $comment
     )
@@ -52,5 +52,40 @@ class ArticleCommentHandler
         }
 
         return false;
+    }
+
+    public function removeCommentHandle(
+        Comment $comment,
+        UserInterface $user
+    )
+    {
+        $comment->setDeleted(true);
+        $comment->setDeletedAt(new \DateTimeImmutable());
+        $comment->setDeletedByUser($user);
+
+        $this->commentRepository->update($comment);
+
+        return true;
+    }
+
+    public function unRemoveCommentHandle(
+        Comment $comment
+    )
+    {
+        $comment->setDeleted(false);
+        $comment->setUndeletedAt(new \DateTimeImmutable());
+
+        $this->commentRepository->update($comment);
+
+        return true;
+    }
+
+    public function removeDefinitely(
+        Comment $comment
+    )
+    {
+        $this->commentRepository->remove($comment);
+
+        return true;
     }
 }

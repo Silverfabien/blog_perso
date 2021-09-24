@@ -43,7 +43,7 @@
                   {# Commentaire #}
                   {% set countComment = 0 %}
                   {% for comment in comments %}
-                     {% if comment.article == article %}
+                     {% if comment.article == article and not comment.deleted %}
                         {% set countComment = countComment + 1 %}
                      {% endif %}
                   {% endfor %}

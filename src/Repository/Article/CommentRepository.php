@@ -29,4 +29,10 @@ class CommentRepository extends ServiceEntityRepository
     {
         $this->_em->flush();
     }
+
+    public function remove($comment)
+    {
+        $this->_em->remove($comment);
+        $this->_em->flush();
+    }
 }

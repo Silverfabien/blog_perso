@@ -4,6 +4,8 @@ namespace App\Entity\Article;
 
 use App\Entity\User\User;
 use App\Repository\Article\CommentRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -43,9 +45,30 @@ class Comment
      */
     private $user;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $deleted;
+
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private $deletedAt;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class)
+     */
+    private $deletedByUser;
+
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private $undeletedAt;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->deleted = false;
     }
 
     public function getId(): ?int
@@ -112,4 +135,57 @@ class Comment
 
         return $this;
     }
+
+    public function getDeleted(): ?bool
+    {
+        return $this->deleted;
+    }
+
+    public function setDeleted(bool $deleted): self
+    {
+        $this->deleted = $deleted;
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeImmutable $deletedAt): self
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDeletedByUser()
+    {
+        return $this->deletedByUser;
+    }
+
+    /**
+     * @param mixed $deletedByUser
+     */
+    public function setDeletedByUser($deletedByUser): void
+    {
+        $this->deletedByUser = $deletedByUser;
+    }
+
+    public function getUndeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->undeletedAt;
+    }
+
+    public function setUndeletedAt(?\DateTimeImmutable $undeletedAt): self
+    {
+        $this->undeletedAt = $undeletedAt;
+
+        return $this;
+    }
+
 }

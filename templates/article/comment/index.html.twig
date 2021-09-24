@@ -1,6 +1,6 @@
 {% set nbComment = 0 %}
-{% for comment in comments %}
-   <div class="comment-block">
+{% for comment in comments if not comment.deleted or is_granted('ROLE_ADMIN') %}
+   <div class="comment-block{% if comment.deleted %} comment-bg-deleted{% endif %}">
       <div class="row">
          <div class="col-lg-2 col-md-3 col-12">
             <div class="comment-profil">
@@ -26,8 +26,12 @@
          <div class="col-lg-10 col-md-9 col-12">
             <div class="comment-body">
                <div class="comment-content">
-                  {% set nbComment = nbComment + 1 %}
-                  <p class="number-comment">#{{ nbComment }}</p>
+                  {% if comment.deleted %}
+                     <p class="number-comment"><i class="fas fa-trash"></i></p>
+                  {% else %}
+                     {% set nbComment = nbComment + 1 %}
+                     <p class="number-comment">#{{ nbComment }}</p>
+                  {% endif %}
                   <p>{{ comment.content|raw }}</p>
                </div>
                <hr>
@@ -41,8 +45,12 @@
                   {% endif %}
                   <div class="comment-footer-button">
                      {% if app.user and app.user.email == comment.user.email or is_granted('ROLE_ADMIN') %}
+                        {% if comment.deleted and is_granted('ROLE_ADMIN') %}
+                           {{ include('article/comment/_undelete_form.html.twig') }}
+                           {{ include('article/comment/_deleteDefinitely_form.html.twig') }}
+                        {% else %}
                         <a
-                           class="btn btn-info"
+                           class="btn btn-info me-1"
                            href="{{ path('article_edit_comment', {'slug' : article.slug, 'id' : comment.id}) }}"
                            id="editComment"
                            data-entity-id="{{ comment.id }}"
@@ -50,6 +58,8 @@
                         >
                            <i class="fas fa-pencil-alt"></i>
                         </a>
+                        {{ include('article/comment/_delete_form.html.twig') }}
+                        {% endif %}
                      {% endif %}
                   </div>
                </div>

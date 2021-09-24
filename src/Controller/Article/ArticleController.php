@@ -64,7 +64,7 @@ class ArticleController extends AbstractController
         $commentArticle = new Comment();
         $form = $this->createForm(ArticleCommentType::class, $commentArticle)->handleRequest($request);
 
-        if ($this->getUser() && $commentHandler->createCommentHandler($form, $commentArticle, $article, $user)) {
+        if ($this->getUser() && $commentHandler->createCommentHandle($form, $commentArticle, $article, $user)) {
             return $this->redirectToRoute('article_show', ['slug' => $article->getSlug()]);
         }
 
@@ -75,17 +75,17 @@ class ArticleController extends AbstractController
 
         // Édition d'un commentaire
         $editForm = $this->createForm(ArticleEditCommentType::class, $comment)->handleRequest($request);
-        if ($commentHandler->editCommentHandler($editForm, $comment)) {
+        if ($commentHandler->editCommentHandle($editForm, $comment)) {
             return $this->redirectToRoute('article_show', ['slug' => $article->getSlug()]);
         }
 
         return $this->render('article/show.html.twig', [
             'article' => $article,
-            'likes' => $likeRepository->findByArticle([$article]),
+            'likes' => $likeRepository->findByArticle($article),
             'articleLike' => count($likeRepository->findByArticle($article)),
             'form' => $form->createView(),
             'comments' => $commentRepository->findByArticle($article),
-            'countComment' => count($commentRepository->findByArticle($article)),
+            'countComment' => count($commentRepository->findBy(['article' => $article, 'deleted' => false])),
             'editForm' => $editForm->createView()
         ]);
     }
@@ -100,6 +100,7 @@ class ArticleController extends AbstractController
         CommentRepository $commentRepository
     )
     {
+        //TODO A debug
         if ($this->getUser() && $request->getMethod() === 'POST' && $request->isXmlHttpRequest()) {
             $commentId = $request->request->get('commentId');
             $comment = $commentRepository->findOneById($commentId);
