@@ -6,6 +6,8 @@
 @import "layouts/footer";
 @import "content/user/security";
 @import "content/user/account";
+@import "content/article/article";
+@import "content/article/comment";
 @import "components/flash";
 
 body {
@@ -13,5 +15,10 @@ body {
 
     a {
         text-decoration: none;
+    }
+
+    .wrapper {
+        margin-top: 150px;
+        margin-bottom: 50px;
     }
 }

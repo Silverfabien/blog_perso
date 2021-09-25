@@ -1,0 +1,87 @@
+.comment-article {
+  background-color: #f5f5f5;
+  padding: 15px;
+  margin-bottom: 30px;
+
+  .comment-block {
+    border: 1px solid #cfcfcf;
+    margin-bottom: 5px;
+
+    .comment-profil {
+      border-right: 1px solid #d6d6d6;
+      padding-top: 10px;
+      background-color: #e4e4e4;
+      text-align: center;
+      height: 100%;
+
+      .comment-profil-fullname {
+        display: block;
+        font-weight: bold;
+      }
+
+      .grade-profil-admin {
+        background-color: #e10a0a;
+        font-weight: bold;
+      }
+
+      .grade-profil-author {
+        background-color: #22af05;
+        font-weight: bold;
+      }
+    }
+
+    .comment-body {
+      .comment-content {
+        min-height: 107px;
+        max-width: 96%;
+
+        .number-comment {
+          text-align: right;
+          margin-right: -3%;
+          float: right;
+          color: #a9a9a9;
+        }
+      }
+
+      hr {
+        margin-bottom: 5px;
+      }
+
+      .comment-footer {
+        margin-bottom: 3px;
+
+        .comment-footer-info {
+          display: inline-flex;
+        }
+
+        .comment-footer-button {
+          float: right;
+          display: flex;
+          margin-right: 10px;
+        }
+      }
+
+      @media screen and (max-width: 750px) {
+        .comment-content {
+          padding: 0 10px;
+
+          .number-comment {
+            margin-right: -5%;
+          }
+        }
+
+        hr {
+          margin-left: 10px;
+        }
+
+        .comment-footer-info {
+          padding-left: 10px;
+        }
+      }
+    }
+  }
+
+  .comment-bg-deleted {
+    background-color: #d3d3d3;
+  }
+}

@@ -34,8 +34,17 @@ services:
         tags:
             - { name: twig.extension }
 
+    twig.extension.text:
+        class: Twig_Extensions_Extension_Text
+        tags:
+            - { name: twig.extension }
+
     Symfony\Component\HttpFoundation\Request:
 
     App\EventListener\UserBlockedListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request }
+
+    App\EventListener\PictureCacheSubscriber:
+        tags:
+            - { name: doctrine.event_subscriber }

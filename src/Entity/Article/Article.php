@@ -9,9 +9,14 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+
 
 /**
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
+ *
+ * @Vich\Uploadable()
  */
 class Article
 {
@@ -28,13 +33,20 @@ class Article
     private $title;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Slug(fields={"title"})
+     * @ORM\Column(type="string", length=255)
+     */
+    private $slug;
+
+    /**
+     * @ORM\Column(type="string", length=255)
      */
     private $filename;
 
     /**
      * @var File|null
      * @Assert\Image(mimeTypes={"image/jpeg", "image/png"}, mimeTypesMessage="Seule les images en .jpg et .png sont acceptées")
+     * @Vich\UploadableField(mapping="article_image", fileNameProperty="filename")
      */
     private $pictureFile;
 
@@ -64,7 +76,7 @@ class Article
     private $see;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="boolean")
      */
     private $publish;
 
@@ -89,12 +101,24 @@ class Article
      */
     private $tags;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Like::class, mappedBy="article")
+     */
+    private $likes;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="article")
+     */
+    private $comments;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->see = 0;
-        $this->publish = 0;
+        $this->publish = false;
         $this->tags = new ArrayCollection();
+        $this->likes = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -114,12 +138,19 @@ class Article
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getFilename(): ?string
     {
         return $this->filename;
     }
 
-    public function setFilename(string $filename): self
+    /**
+     * @param string $filename
+     * @return Article
+     */
+    public function setFilename(string $filename): Article
     {
         $this->filename = $filename;
 
@@ -274,6 +305,78 @@ class Article
     {
         if ($this->tags->removeElement($tag)) {
             $tag->removeArticle($this);
+        }
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Like[]
+     */
+    public function getLikes(): Collection
+    {
+        return $this->likes;
+    }
+
+    public function addLike(Like $like): self
+    {
+        if (!$this->likes->contains($like)) {
+            $this->likes[] = $like;
+            $like->setArticle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLike(Like $like): self
+    {
+        if ($this->likes->removeElement($like)) {
+            // set the owning side to null (unless already changed)
+            if ($like->getArticle() === $this) {
+                $like->setArticle(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Comment[]
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setArticle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getArticle() === $this) {
+                $comment->setArticle(null);
+            }
         }
 
         return $this;

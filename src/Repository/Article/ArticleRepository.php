@@ -35,4 +35,9 @@ class ArticleRepository extends ServiceEntityRepository
         $this->_em->remove($article);
         $this->_em->flush();
     }
+
+    public function see($article)
+    {
+        $this->_em->flush();
+    }
 }

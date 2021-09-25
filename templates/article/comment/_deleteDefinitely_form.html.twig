@@ -1,0 +1,5 @@
+<form class="btn-delete-form" method="post" action="{{ path('article_comment_delete_definitely', {'id': comment.id}) }}" onsubmit="return confirm('Est-tu sûr de vouloir supprimer définitivement ce commentaire ?');">
+    <input type="hidden" name="_method" value="DELETE">
+    <input type="hidden" name="_token" value="{{ csrf_token('deleteDefinitely' ~ comment.id) }}">
+    <button class="btn btn-danger"><i class="fas fa-comment-slash"></i></button>
+</form>

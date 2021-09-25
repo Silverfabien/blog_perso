@@ -24,6 +24,8 @@ Encore
     .addEntry('navbar', './assets/styles/js/layouts/navbar.js')
     .addEntry('navbarDefault', './assets/styles/js/layouts/navbarDefault.js')
     .addEntry('flash', './assets/styles/js/components/_flash.js')
+    .addEntry('likeArticle', './assets/styles/js/components/_likeArticle.js')
+    .addEntry('editComment', './assets/styles/js/content/editComment.js')
 
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     //.enableStimulusBridge('./assets/controllers.json')

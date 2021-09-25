@@ -4,6 +4,7 @@ namespace App\Form\Admin\Article;
 
 use App\Entity\Article\Article;
 use App\Entity\Article\Tags;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -20,15 +21,28 @@ class ArticleType extends AbstractType
             ->add('title', TextType::class, [
                 'label' => 'Titre'
             ])
-            ->add('description', TextareaType::class, [
-                'label' => 'Description'
+            ->add('description', CKEditorType::class, [
+                'label' => 'Description',
+                'config' => [
+                    'toolbar' => 'article_description_config',
+                    'wordcount' => [
+                        'maxCharCount' => 2000,
+                        'showCharCount' => true
+                    ]
+                ]
             ])
             ->add('pictureFile', FileType::class, [
                 'label' => 'Image',
                 'required' => false
             ])
-            ->add('content', TextareaType::class, [
-                'label' => 'Contenu'
+            ->add('content', CKEditorType::class, [
+                'label' => 'Contenu',
+                'config' => [
+                    'toolbar' => 'article_content_config',
+                    'wordcount' => [
+                        'showCharCount' => true
+                    ]
+                ]
             ])
             ->add('tags', EntityType::class, [
                 'class' => Tags::class,
