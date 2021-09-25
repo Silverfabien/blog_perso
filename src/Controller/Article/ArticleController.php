@@ -49,8 +49,7 @@ class ArticleController extends AbstractController
         ArticleHandler $articleHandler,
         Request $request,
         ArticleCommentHandler $commentHandler,
-        CommentRepository $commentRepository,
-        Comment $comment
+        CommentRepository $commentRepository
     )
     {
         /* @var $user User */
@@ -73,11 +72,11 @@ class ArticleController extends AbstractController
             $articleHandler->seeArticleHandle($article);
         }
 
-        // Édition d'un commentaire
-        $editForm = $this->createForm(ArticleEditCommentType::class, $comment)->handleRequest($request);
-        if ($commentHandler->editCommentHandle($editForm, $comment)) {
-            return $this->redirectToRoute('article_show', ['slug' => $article->getSlug()]);
-        }
+//        // Édition d'un commentaire
+//        $editForm = $this->createForm(ArticleEditCommentType::class, $comment)->handleRequest($request);
+//        if ($commentHandler->editCommentHandle($editForm, $comment)) {
+//            return $this->redirectToRoute('article_show', ['slug' => $article->getSlug()]);
+//        }
 
         return $this->render('article/show.html.twig', [
             'article' => $article,
@@ -85,8 +84,7 @@ class ArticleController extends AbstractController
             'articleLike' => count($likeRepository->findByArticle($article)),
             'form' => $form->createView(),
             'comments' => $commentRepository->findByArticle($article),
-            'countComment' => count($commentRepository->findBy(['article' => $article, 'deleted' => false])),
-            'editForm' => $editForm->createView()
+            'countComment' => count($commentRepository->findBy(['article' => $article, 'deleted' => false]))
         ]);
     }
 
@@ -97,7 +95,8 @@ class ArticleController extends AbstractController
      */
     public function editComment(
         Request $request,
-        CommentRepository $commentRepository
+        CommentRepository $commentRepository,
+        ArticleCommentHandler $commentHandler
     )
     {
         //TODO A debug
@@ -108,6 +107,10 @@ class ArticleController extends AbstractController
             $submittedToken = $request->request->get('csrfToken');
             if ($this->isCsrfTokenValid('comment' . $comment->getId(), $submittedToken)) {
                 $form = $this->createForm(ArticleEditCommentType::class, $comment)->handleRequest($request);
+
+                if ($commentHandler->editCommentHandle($form, $comment)) {
+                    return $this->redirectToRoute('article_index');
+                }
 
                 return new JsonResponse($this->renderView('article/comment/_modal.html.twig', [
                     'editForm' => $form->createView()
