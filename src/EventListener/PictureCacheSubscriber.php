@@ -3,6 +3,7 @@
 namespace App\EventListener;
 
 use App\Entity\Article\Article;
+use App\Entity\User\UserPicture;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
@@ -28,7 +29,23 @@ class PictureCacheSubscriber implements EventSubscriber
      */
     public function getSubscribedEvents()
     {
-        return ['preUpdate'];
+        return ['preRemove', 'preUpdate'];
+    }
+
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    public function preRemove(
+        LifecycleEventArgs $args
+    ): void
+    {
+        $entity = $args->getEntity();
+
+        if (!$entity instanceof Article || !$entity instanceof UserPicture) {
+            return;
+        }
+
+        $this->cacheManager->remove($this->uploaderHelper->asset($entity, 'pictureFile'));
     }
 
     public function preUpdate(
@@ -37,7 +54,7 @@ class PictureCacheSubscriber implements EventSubscriber
     {
         $entity = $args->getEntity();
 
-        if (!$entity instanceof Article) {
+        if (!$entity instanceof Article || !$entity instanceof UserPicture) {
             return;
         }
 

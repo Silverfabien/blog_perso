@@ -10,7 +10,13 @@
             <div class="account-body">
                 <div class="row">
                     <div class="col-12 col-lg-2">
-                        <img src="" alt="Image de profil">
+                        <img src="
+                            {% if app.user.picture.filename %}
+                                {{ vich_uploader_asset(app.user.picture, 'pictureFile')|imagine_filter('account') }}
+                            {% else %}
+                                {{ asset('pictures/user/default/noImageAvailable.jpg')|imagine_filter('account') }}
+                            {% endif %}
+                        " alt="Image de profil">
                     </div>
                     <div class="col-12 col-lg-10">
                         <p>

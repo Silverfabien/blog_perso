@@ -46,7 +46,7 @@ class Article
     /**
      * @var File|null
      * @Assert\Image(mimeTypes={"image/jpeg", "image/png"}, mimeTypesMessage="Seule les images en .jpg et .png sont acceptées")
-     * @Vich\UploadableField(mapping="article_image", fileNameProperty="filename")
+     * @Vich\UploadableField(mapping="article_picture", fileNameProperty="filename")
      */
     private $pictureFile;
 

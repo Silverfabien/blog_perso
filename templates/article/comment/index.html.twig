@@ -5,11 +5,11 @@
          <div class="col-lg-2 col-md-3 col-12">
             <div class="comment-profil">
                <img src="
-{#                  {% if comment.user.picture.filename != null %}
-                     #
+                  {% if comment.user.picture.filename %}
+                     {{ vich_uploader_asset(comment.user.picture, 'pictureFile')|imagine_filter('comment') }}
                   {% else %}
-                     #
-                  {% endif %}#}
+                     {{ asset('pictures/user/default/noImageAvailable.jpg')|imagine_filter('comment') }}
+                  {% endif %}
                " alt="Image de profil de {{ comment.user.lastname }} {{ comment.user.firstname }}"
                >
                <p>
