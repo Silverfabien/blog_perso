@@ -2,7 +2,7 @@
 {% for comment in comments if not comment.deleted or is_granted('ROLE_ADMIN') %}
    <div class="comment-block{% if comment.deleted %} comment-bg-deleted{% endif %}">
       <div class="row">
-         <div class="col-lg-2 col-md-3 col-12">
+         <div class="col-xl-2 col-md-3 col-12">
             <div class="comment-profil">
                <img src="
                   {% if comment.user.picture.filename %}
@@ -23,7 +23,7 @@
                {% endif %}
             </div>
          </div>
-         <div class="col-lg-10 col-md-9 col-12">
+         <div class="col-xl-10 col-md-9 col-12">
             <div class="comment-body">
                <div class="comment-content">
                   {% if comment.deleted %}
