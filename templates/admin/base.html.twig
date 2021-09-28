@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Blog Personnel - Administration{% endblock %}</title>
+
+        {# CSS #}
+        {{ encore_entry_link_tags('appAdmin') }}
+        {% block stylesheets %}{% endblock %}
+
+        {# JS #}
+        {{ encore_entry_script_tags('appAdmin') }}
+        <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" data-auto-a11y="true"></script>
+        {% block javascripts %}{% endblock %}
+    </head>
+    <body>
+       <div class="wrapper">
+          {{ include('admin/layouts/navbar.html.twig') }}
+          {{ include('admin/layouts/sidebar.html.twig') }}
+       </div>
+
+        {% block body %}{% endblock %}
+        {{ include('admin/layouts/footer.html.twig') }}
+        {{ include('layouts/_flash.html.twig') }}
+    </body>
+</html>

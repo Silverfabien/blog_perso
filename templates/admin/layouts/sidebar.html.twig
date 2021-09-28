@@ -1,0 +1,52 @@
+<div id="sidebar-control-mini">
+   <div class="sidebar-open" id="sidebar-open">
+      <i class="fas fa-bars"></i>
+   </div>
+</div>
+<div class="sidebar" id="sidebar-control">
+   <div class="sidebar-content">
+      <div class="sidebar-header">
+         <div class="sidebar-title">
+            <a href="{{ path('admin_default') }}">Administration</a>
+            <div class="sidebar-close" id="sidebar-close">
+               <i class="fas fa-bars"></i>
+            </div>
+         </div>
+      </div>
+      <div class="sidebar-body">
+         <ul class="sidebar-list">
+            <li class="sidebar-menu" id="menu-user">
+               <a href="#" class="btn-submenu" id="btn-submenu-user">
+                  <i class="fas fa-user"></i>
+                  <span>Utilisateur</span>
+               </a>
+               <div class="sidebar-submenu" id="submenu-user">
+                  <ul class="submenu-ul">
+                     <li class="submenu-li">
+                        <a href="#" class="btn-submenu-list">Liste des utilisateurs</a>
+                     </li>
+                  </ul>
+               </div>
+            </li>
+
+            <li class="sidebar-menu" id="menu-rank">
+               <a href="#" class="btn-submenu" id="btn-submenu-rank">
+                  <i class="fas fa-list"></i>
+                  <span>Rank</span>
+               </a>
+               <div class="sidebar-submenu" id="submenu-rank">
+                  <ul class="submenu-ul">
+                     <li class="submenu-li">
+                        <a href="#" class="btn-submenu-list">Liste des ranks</a>
+                     </li>
+                  </ul>
+               </div>
+            </li>
+         </ul>
+      </div>
+   </div>
+</div>
+
+{% block javascripts %}
+   {{ encore_entry_script_tags('sidebarAdmin') }}
+{% endblock %}

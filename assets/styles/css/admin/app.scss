@@ -1,0 +1,19 @@
+@import "~bootstrap/scss/bootstrap";
+
+@import "utils/variables";
+@import "layouts/navbar";
+@import "layouts/sidebar";
+@import "layouts/footer";
+
+body {
+    background-color: lightgray;
+
+    a {
+        text-decoration: none;
+    }
+
+    .wrapper {
+        margin-top: 150px;
+        margin-bottom: 50px;
+    }
+}

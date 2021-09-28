@@ -1,0 +1,20 @@
+<nav class="myNav">
+   <div class="navTitle">
+      <a href="{{ path('admin_default') }}">Blog</a>
+   </div>
+   <div id="navList" class="navList">
+      <ul class="navLinks">
+         <li><a href="{{ path('admin_default') }}">Accueil</a></li>
+         <li><a href="{{ path('default') }}">Utilisateur</a></li>
+      </ul>
+   </div>
+   <div class="navTrigger">
+      <i></i>
+      <i></i>
+      <i></i>
+   </div>
+</nav>
+
+{% block javascripts %}
+   {{ encore_entry_script_tags('navbarAdmin') }}
+{% endblock %}
