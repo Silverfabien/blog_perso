@@ -1,5 +1,129 @@
 {% extends 'admin/base.html.twig' %}
 
 {% block body %}
+   {% set newArticleLastDay = 0 %}
+   {% set newArticleLastWeek = 0 %}
+   {% for article in articles %}
+      {% if article.createdAt.timestamp >= date().timestamp - 86400 %}
+         {% set newArticleLastDay = newArticleLastDay + 1 %}
+      {% endif %}
+      {% if article.createdAt.timestamp >= date().timestamp - 604800 %}
+         {% set newArticleLastWeek = newArticleLastWeek + 1 %}
+      {% endif %}
+   {% endfor %}
+   <div class="row row-card">
+      <div class="card-deck col-md-4 col-sm-6 col-12">
+         <div class="card card-article">
+            <div class="card-body">
+               <h5 class="card-title">Nombre d'article</h5>
+               <p class="card-text">{{ nbArticle }}</p>
+               <div class="icon">
+                  <i class="far fa-newspaper"></i>
+               </div>
+            </div>
+            <div class="card-footer">
+               <span class="card-footer-info">+{{ newArticleLastDay}} dans les dernières 24h</span>
+               <span>+{{ newArticleLastWeek}} dans les derniers 7 jours</span>
+            </div>
+         </div>
+      </div>
 
+      {% set newCommentLastDay = 0 %}
+      {% set newCommentLastWeek = 0 %}
+      {% for comment in comments %}
+         {% if comment.createdAt.timestamp >= date().timestamp - 86400 %}
+            {% set newCommentLastDay = newCommentLastDay + 1 %}
+         {% endif %}
+         {% if comment.createdAt.timestamp >= date().timestamp - 604800 %}
+            {% set newCommentLastWeek = newCommentLastWeek + 1 %}
+         {% endif %}
+      {% endfor %}
+      <div class="card-deck col-md-4 col-sm-6 col-12">
+         <div class="card card-comment">
+            <div class="card-body">
+               <h5 class="card-title">Nombre de commentaire</h5>
+               <p class="card-text">{{ nbComment }}</p>
+               <div class="icon">
+                  <i class="far fa-comment"></i>
+               </div>
+            </div>
+            <div class="card-footer">
+               <span class="card-footer-info">+{{ newCommentLastDay}} dans les dernières 24h</span>
+               <span>+{{ newCommentLastWeek}} dans les derniers 7 jours</span>
+            </div>
+         </div>
+      </div>
+
+      {% set newUserLastDay = 0 %}
+      {% set newUserLastWeek = 0 %}
+      {% for user in users %}
+         {% if user.createdAt.timestamp >= date().timestamp - 86400 %}
+            {% set newUserLastDay = newUserLastDay + 1 %}
+         {% endif %}
+         {% if user.createdAt.timestamp >= date().timestamp - 604800 %}
+            {% set newUserLastWeek = newUserLastWeek + 1 %}
+         {% endif %}
+      {% endfor %}
+      <div class="card-deck col-md-4 col-sm-6 col-12">
+         <div class="card card-user">
+            <div class="card-body">
+               <h5 class="card-title">Nombre d'utilisateur</h5>
+               <p class="card-text">{{ nbUser }}</p>
+               <div class="icon">
+                  <i class="far fa-user"></i>
+               </div>
+            </div>
+            <div class="card-footer">
+               <span class="card-footer-info">+{{ newUserLastDay}} dans les dernières 24h</span>
+               <span>+{{ newUserLastWeek}} dans les derniers 7 jours</span>
+            </div>
+         </div>
+      </div>
+
+      {% set newLikeLastDay = 0 %}
+      {% set newLikeLastWeek = 0 %}
+      {% for like in likes %}
+         {% if like.createdAt.timestamp >= date().timestamp - 86400 %}
+            {% set newLikeLastDay = newLikeLastDay + 1 %}
+         {% endif %}
+         {% if like.createdAt.timestamp >= date().timestamp - 604800 %}
+            {% set newLikeLastWeek = newLikeLastWeek + 1 %}
+         {% endif %}
+      {% endfor %}
+      <div class="card-deck col-md-4 col-sm-6 col-12">
+         <div class="card card-like">
+            <div class="card-body">
+               <h5 class="card-title">Nombre de like</h5>
+               <p class="card-text">{{ nbLike }}</p>
+               <div class="icon">
+                  <i class="far fa-thumbs-up"></i>
+               </div>
+            </div>
+            <div class="card-footer">
+               <span class="card-footer-info">+{{ newLikeLastDay}} dans les dernières 24h</span>
+               <span>+{{ newLikeLastWeek}} dans les derniers 7 jours</span>
+            </div>
+         </div>
+      </div>
+
+      {% set nbSee = 0 %}
+      {% for article in articles %}
+         {% set nbSee = nbSee + article.see %}
+      {% endfor %}
+      <div class="card-deck col-md-4 col-sm-6 col-12">
+         <div class="card card-see">
+            <div class="card-body">
+               <h5 class="card-title">Nombre de vue des articles</h5>
+               <p class="card-text">{{ nbSee }}</p>
+               <div class="icon">
+                  <i class="far fa-eye"></i>
+               </div>
+            </div>
+            <div class="card-footer">
+               <span class="card-footer-info">&nbsp;</span>
+               <span>&nbsp;</span>
+            </div>
+         </div>
+      </div>
+   </div>
 {% endblock %}
