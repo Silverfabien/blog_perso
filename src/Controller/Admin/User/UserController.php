@@ -74,6 +74,42 @@ class UserController extends AbstractController
     }
 
     /**
+     * @Route("/{id}/undelete", name="undelete", methods={"POST"})
+     */
+    public function undelete(
+        Request $request,
+        User $user,
+        UserHandler $userHandler
+    )
+    {
+        if ($this->isCsrfTokenValid('unremove'.$user->getId(), $request->request->get('_token'))) {
+            $userHandler->unremoveUserHandle($user);
+
+            $this->addFlash('success', "L'utilisateur à bien été réabilité.");
+        }
+
+        return $this->redirectToRoute('admin_user_index');
+    }
+
+    /**
+     * @Route("/{id}/deleteDefinitely", name="delete_definitely", methods={"POST"})
+     */
+    public function removeUserDefinitely(
+        Request $request,
+        User $user,
+        UserHandler $userHandler
+    )
+    {
+        if ($this->isCsrfTokenValid('removeDefinitely'.$user->getId(), $request->request->get('_token'))) {
+            $userHandler->removeUserDefinitely($user);
+
+            $this->addFlash('success', "L'utilisateur à bien été supprimé définitivement.");
+        }
+
+        return $this->redirectToRoute('admin_user_index');
+    }
+
+    /**
      * @param User $user
      *
      * @Route("/{id}/show", name="show", methods={"GET"})

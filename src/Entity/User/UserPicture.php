@@ -37,7 +37,6 @@ class UserPicture implements Serializable
 
     /**
      * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"}, inversedBy="picture")
-     * @ORM\JoinColumn(nullable=false)
      */
     private $user;
 
