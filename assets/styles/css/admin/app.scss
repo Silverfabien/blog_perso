@@ -1,10 +1,12 @@
 @import "~bootstrap/scss/bootstrap";
 
+@import "../components/flash";
 @import "utils/variables";
 @import "layouts/navbar";
 @import "layouts/sidebar";
 @import "layouts/footer";
 @import "content/index";
+@import "content/user";
 
 body {
     background-color: lightgray;
@@ -24,5 +26,9 @@ body {
 
     .admin-wrapper-full {
         margin-left: 30px;
+    }
+
+    .admin-content {
+        margin: 0 15px 15px 15px;
     }
 }

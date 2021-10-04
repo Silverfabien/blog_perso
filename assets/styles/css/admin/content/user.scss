@@ -1,0 +1,28 @@
+//Index
+.table-link {
+  color: #212529;
+}
+
+.bg-user-deleted {
+  --bs-table-accent-bg: rgba(255, 32, 32, 0.25)!important;
+}
+
+.btn-delete-form {
+  display: inline-block;
+}
+
+//Edit
+
+.form-group {
+  margin-bottom: 10px;
+
+  label {
+    margin-bottom: 5px;
+  }
+}
+
+//Show
+.bg-admin-content {
+  background-color: #f8f9fa;
+  padding: 5px 10px;
+}
