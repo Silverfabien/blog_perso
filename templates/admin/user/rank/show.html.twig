@@ -1,0 +1,29 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+   <div class="admin-content">
+      <div class="bg-admin-content">
+         <h3>Information du grade <b>{{ rank.rolename }}</b></h3>
+         <hr>
+         <p><b>Id</b>: {{ rank.id }}</p>
+         <p><b>Nom du grade</b>: {{ rank.rolename }}</p>
+         <p><b>Role</b>: {{ rank.role|json_encode }}</p>
+         <p><b>Nombre d'utilisateur</b>:
+            {% set countUserPerRank = 0 %}
+            {% for user in rank.users %}
+               {% if rank.rolename == user.rank.rolename %}
+                  {% set countUserPerRank = countUserPerRank + 1 %}
+               {% endif %}
+            {% endfor %}
+            {{ countUserPerRank }}
+         </p>
+         <p><b>Utilisateur ayant le role</b>:
+            {% for user in rank.users %}
+               <a href="{{ path('admin_user_show', {'id' : user.id}) }}" class="rank-user">
+                  - {{ user.firstname }} {{ user.lastname }}
+               </a>
+            {% endfor %}
+         </p>
+      </div>
+   </div>
+{% endblock %}
