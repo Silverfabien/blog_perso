@@ -7,6 +7,7 @@ use App\Entity\Article\Tags;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -48,6 +49,13 @@ class ArticleType extends AbstractType
                 'class' => Tags::class,
                 'choice_label' => 'name',
                 'multiple' => true
+            ])
+            ->add('publish', CheckboxType::class, [
+                'label' => "Publier l'article ?",
+                'required' => false,
+                'attr' => [
+                    'checked' => false
+                ]
             ])
         ;
     }

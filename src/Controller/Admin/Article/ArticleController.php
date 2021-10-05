@@ -5,6 +5,7 @@ namespace App\Controller\Admin\Article;
 use App\ControllerHandler\Admin\Article\ArticleHandler;
 use App\Entity\Article\Article;
 use App\Form\Admin\Article\ArticleType;
+use App\Repository\Article\ArticleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +17,21 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class ArticleController extends AbstractController
 {
+    /**
+     * @param ArticleRepository $articleRepository
+     * @return Response
+     *
+     * @Route("/", name="index", methods={"GET"})
+     */
+    public function index(
+        ArticleRepository $articleRepository
+    )
+    {
+        return $this->render('admin/article/index.html.twig', [
+            'articles' => $articleRepository->findAll()
+        ]);
+    }
+
     /**
      * @param Request $request
      * @param ArticleHandler $articleHandler
@@ -41,8 +57,7 @@ class ArticleController extends AbstractController
                     $article->getTitle()
                 )
             );
-            // TODO redirect
-            return $this->redirectToRoute('default');
+            return $this->redirectToRoute('admin_article_index');
         }
 
         return $this->render('admin/article/new.html.twig', [
@@ -93,7 +108,7 @@ class ArticleController extends AbstractController
                 )
             );
 
-            return $this->redirectToRoute('default');
+            return $this->redirectToRoute('admin_article_index');
         }
 
         return $this->render('admin/article/edit.html.twig', [
@@ -123,6 +138,52 @@ class ArticleController extends AbstractController
             );
         }
 
-        return $this->redirectToRoute('default');
+        return $this->redirectToRoute('admin_article_index');
+    }
+
+    /**
+     * @param Request $request
+     * @param Article $article
+     * @param ArticleHandler $articleHandler
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @Route("/{id}/publishing", name="publishing", methods={"POST"})
+     */
+    public function publishing(
+        Request $request,
+        Article $article,
+        ArticleHandler $articleHandler
+    )
+    {
+        if ($this->isCsrfTokenValid('publishing'.$article->getId(), $request->request->get('_token'))) {
+            $articleHandler->publishHandle($article);
+
+            $this->addFlash('success', "L'article a bien été publié");
+        }
+
+        return $this->redirectToRoute('admin_article_index');
+    }
+
+    /**
+     * @param Request $request
+     * @param Article $article
+     * @param ArticleHandler $articleHandler
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @Route("/{id}/unpublishing", name="unpublishing", methods={"POST"})
+     */
+    public function unpublishing(
+        Request $request,
+        Article $article,
+        ArticleHandler $articleHandler
+    )
+    {
+        if ($this->isCsrfTokenValid('unpublishing'.$article->getId(), $request->request->get('_token'))) {
+            $articleHandler->unpublishHandle($article);
+
+            $this->addFlash('success', "L'article a bien été dépublié");
+        }
+
+        return $this->redirectToRoute('admin_article_index');
     }
 }

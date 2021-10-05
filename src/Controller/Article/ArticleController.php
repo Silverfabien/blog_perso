@@ -2,7 +2,7 @@
 
 namespace App\Controller\Article;
 
-use App\ControllerHandler\Admin\Article\ArticleHandler;
+use App\ControllerHandler\Article\ArticleHandler;
 use App\ControllerHandler\Article\ArticleCommentHandler;
 use App\Entity\Article\Article;
 use App\Entity\Article\Comment;

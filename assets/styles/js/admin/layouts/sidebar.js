@@ -34,4 +34,10 @@ $(document).ready(function () {
         $("#menu-rank").toggleClass("active");
         $("#submenu-rank").toggle();
     })
+
+    $("#menu-article").on("click", "#btn-submenu-article", function (e){
+        e.preventDefault();
+        $("#menu-article").toggleClass("active");
+        $("#submenu-article").toggle();
+    })
 })

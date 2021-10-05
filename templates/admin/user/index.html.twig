@@ -54,7 +54,9 @@
                      <td>{{ user.lastConnectedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</td>
                      <td>
                         {% if not user.deletedDefinitely %}
-                           <a href="{{ path('admin_user_edit', {'id' : user.id}) }}" class="btn btn-info"><i class="fas fa-pencil-alt"></i></a>
+                           <a href="{{ path('admin_user_edit', {'id' : user.id}) }}" class="btn btn-info">
+                              <i class="fas fa-pencil-alt"></i>
+                           </a>
                            {% if user.deleted %}
                               {{ include('admin/user/_unremove_form.html.twig') }}
                               {{ include('admin/user/_remove_definitely_form.html.twig') }}
