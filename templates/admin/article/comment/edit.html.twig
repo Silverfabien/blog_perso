@@ -1,0 +1,13 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+    <div class="admin-content">
+        <div class="admin-form">
+            <h3>Modification du commentaire de <b>{{ comment.user.lastname }} {{ comment.user.firstname }}</b></h3>
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <button class="btn btn-success">{{ button_label|default('Modifier') }}</button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

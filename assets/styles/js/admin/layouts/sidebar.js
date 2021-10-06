@@ -21,9 +21,9 @@ $(document).ready(function () {
         $("#base-admin").removeClass("admin-wrapper-full").addClass("admin-wrapper");
     })
 
-    let data = ['user', 'rank', 'article'];
+    let data = ['user', 'rank', 'article', 'comment'];
     data.forEach(item => {
-        $(`#menu-${item}`).on("click", `#btn-submenu-${item}`, function (){
+        $(`#menu-${item}`).on("click", `#btn-submenu-${item}`, function () {
             $(`#menu-${item}`).toggleClass("active");
             $(`#submenu-${item}`).toggle();
         })
