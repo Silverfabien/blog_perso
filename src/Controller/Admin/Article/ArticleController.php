@@ -6,6 +6,7 @@ use App\ControllerHandler\Admin\Article\ArticleHandler;
 use App\Entity\Article\Article;
 use App\Form\Admin\Article\ArticleType;
 use App\Repository\Article\ArticleRepository;
+use App\Repository\Article\CommentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -73,11 +74,13 @@ class ArticleController extends AbstractController
      * @Route("/{id}", name="show", methods={"GET"})
      */
     public function show(
-        Article $article
+        Article $article,
+        CommentRepository $commentRepository
     ): Response
     {
         return $this->render('admin/article/show.html.twig', [
             'article' => $article,
+            'nbComment' => count($commentRepository->findByArticle($article))
         ]);
     }
 
