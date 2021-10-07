@@ -25,31 +25,22 @@
                      <td>
                         <a class="table-link" href="{{ path('admin_user_show', {'id' : user.id}) }}">
                            <img src="
-                           {% if user.picture.filename %}
-                              {{ vich_uploader_asset(user.picture, 'pictureFile')|imagine_filter('comment') }}
-                           {% else %}
-                              {{ asset('pictures/user/default/noImageAvailable.jpg')|imagine_filter('comment') }}
-                           {% endif %}
-                        " alt="">
+                              {{ user.picture.filename ?
+                                 vich_uploader_asset(user.picture, 'pictureFile')|imagine_filter('comment') :
+                                 asset('pictures/user/default/noImageAvailable.jpg')|imagine_filter('comment')
+                              }}
+                           " alt="">
                            {{ user.lastname }} {{ user.firstname }}
                         </a>
                      </td>
                      <td>{{ user.email }}</td>
                      <td>
-                        {% if user.confirmationAccount %}
-                           Oui
-                        {% else %}
-                           Non
-                        {% endif %}
+                        {{ user.confirmationAccount ? "Oui" : "Non" }}
                      </td>
                      <td>{{ user.ip }}</td>
                      <td>{{ user.createdAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</td>
                      <td>
-                        {% if user.updatedAt %}
-                           {{ user.updatedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
-                        {% else %}
-                           null
-                        {% endif %}
+                        {{ user.updatedAt ? user.updatedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}
                      </td>
                      <td>{{ user.lastConnectedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</td>
                      <td>
