@@ -33,18 +33,10 @@
                         </td>
                         <td>{{ article.createdAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</td>
                         <td>
-                            {% if article.updatedAt %}
-                                {{ article.updatedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
-                            {% else %}
-                                null
-                            {% endif %}
+                            {{ article.updatedAt ? article.updatedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}
                         </td>
                         <td>
-                            {% if article.publishedAt %}
-                                {{ article.publishedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
-                            {% else %}
-                                null
-                            {% endif %}
+                            {{ article.publishedAt ? article.publishedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}
                         </td>
                         <td>{{ article.see }}</td>
                         <td>
@@ -52,11 +44,7 @@
                                 <i class="fas fa-pencil-alt"></i>
                             </a>
                             {{ include('admin/article/_remove_form.html.twig') }}
-                            {% if article.publish %}
-                                {{ include('admin/article/_unpublishing_form.html.twig') }}
-                            {% else %}
-                                {{ include('admin/article/_publishing_form.html.twig') }}
-                            {% endif %}
+                            {{ article.publish ? include('admin/article/_unpublishing_form.html.twig') : include('admin/article/_publishing_form.html.twig') }}
                         </td>
                     </tr>
                 {% endfor %}
