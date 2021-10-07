@@ -1,13 +1,13 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Edit Tags{% endblock %}
+{% extends 'admin/base.html.twig' %}
 
 {% block body %}
-    <h1>Edit Tags</h1>
-
-    {{ include('admin/article/tags/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('admin_tags_article_index') }}">back to list</a>
-
-    {{ include('admin/article/tags/_delete_form.html.twig') }}
+    <div class="admin-content">
+        <div class="admin-form">
+            <h3>Modification deu tage <b>{{ tag.name }}</b></h3>
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <button class="btn btn-success">{{ button_label|default('Modifier') }}</button>
+            {{ form_end(form) }}
+        </div>
+    </div>
 {% endblock %}

@@ -1,26 +1,26 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Tags{% endblock %}
+{% extends 'admin/base.html.twig' %}
 
 {% block body %}
-    <h1>Tags</h1>
-
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ tag.id }}</td>
-            </tr>
-            <tr>
-                <th>Name</th>
-                <td>{{ tag.name }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a href="{{ path('admin_tags_article_index') }}">back to list</a>
-
-    <a href="{{ path('admin_tags_article_edit', {'id': tag.id}) }}">edit</a>
-
-    {{ include('admin/article/tags/_delete_form.html.twig') }}
+    <div class="admin-content">
+        <div class="bg-admin-content">
+            <h3>Information du tag <b>{{ tag.name }}</b></h3>
+            <hr>
+            <p><b>Id</b>: {{ tag.id }}</p>
+            <p><b>Tag</b>: {{ tag.name }}</p>
+            <p><b>Nombre d'article</b>:
+                {% set countTagInArticle = 0 %}
+                {% for article in tag.article %}
+                    {% set countTagInArticle = countTagInArticle + 1 %}
+                {% endfor %}
+                {{ countTagInArticle }}
+            </p>
+            <p><b>Titre des articles</b>:
+                {% for article in tag.article %}
+                    <a href="{{ path('admin_article_show', {'id' : article.id}) }}" class="title-article">
+                        - {{ article.title }}
+                    </a>
+                {% endfor %}
+            </p>
+        </div>
+    </div>
 {% endblock %}
