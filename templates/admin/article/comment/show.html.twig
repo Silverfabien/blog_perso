@@ -1,0 +1,20 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+    <div class="admin-content">
+        <div class="bg-admin-content">
+            <h3>Information du commentaire de <b>{{ comment.user.lastname }} {{ comment.user.firstname }}</b></h3>
+            <hr>
+            <p><b>Id</b>: {{ comment.id }}</p>
+            <p><b>Auteur</b>: {{ comment.user.lastname }} {{ comment.user.firstname }}</p>
+            <p><b>Article</b>: {{ comment.article.title }}</p>
+            <p><b>Envoyer le</b>: {{ comment.createdAt ? comment.createdAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}</p>
+            <p><b>Modifier le</b>: {{ comment.updatedAt ? comment.updatedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}</p>
+            <p><b>Supprimer</b>: {{ comment.deleted ? "Oui" : "Non" }}</p>
+            <p><b>Supprimer le</b>: {{ comment.deletedAt ? comment.deletedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}</p>
+            <p><b>Supprimer par</b>: {{ comment.deletedByUser ? ""~comment.deletedByUser.lastname~" "~comment.user.firstname~"" : "null" }}</p>
+            <p><b>Réabiliter le</b>: {{ comment.undeletedAt ? comment.undeletedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}</p>
+            <p><b>Contenu</b>: {{ comment.content|raw }}</p>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+   <div class="admin-content">
+      <h3>Liste des ranks</h3>
+      <div class="table-responsive-xxl">
+         <table class="table table-striped table-light table-bordered align-middle">
+            <thead>
+               <tr>
+                  <th>Id</th>
+                  <th>Nom du grade</th>
+                  <th>Grade</th>
+                  <th>Nombre d'utilisateur</th>
+               </tr>
+            </thead>
+            <tbody>
+               {% for rank in ranks %}
+                  <tr>
+                     <td>{{ rank.id }}</td>
+                     <td>
+                        <a class="table-link" href="{{ path('admin_rank_show', {'id' : rank.id}) }}">
+                           {{ rank.rolename }}
+                        </a>
+                     </td>
+                     <td>{{ rank.role|json_encode }}</td>
+                     <td>
+                        {% set countUserPerRank = 0 %}
+                        {% for user in rank.users %}
+                           {% if rank.rolename == user.rank.rolename %}
+                              {% set countUserPerRank = countUserPerRank + 1 %}
+                           {% endif %}
+                        {% endfor %}
+                        {{ countUserPerRank }}
+                     </td>
+                  </tr>
+               {% endfor %}
+            </tbody>
+         </table>
+      </div>
+   </div>
+{% endblock %}

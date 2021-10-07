@@ -2,10 +2,12 @@
 
 {% block body %}
    <div class="admin-content">
-      <h3>Modification de l'utilisateur</h3>
-      {{ form_start(form) }}
-      {{ form_widget(form) }}
-      <button class="btn btn-success">{{ button_label|default('Modifier') }}</button>
-      {{ form_end(form) }}
+      <div class="admin-form">
+         <h3>Modification de l'utilisateur</h3>
+         {{ form_start(form) }}
+         {{ form_widget(form) }}
+         <button class="btn btn-success">{{ button_label|default('Modifier') }}</button>
+         {{ form_end(form) }}
+      </div>
    </div>
 {% endblock %}

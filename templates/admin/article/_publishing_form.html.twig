@@ -1,0 +1,5 @@
+<form class="btn-delete-form" method="post" action="{{ path('admin_article_publishing', {'id': article.id}) }}" onsubmit="return confirm('Est-tu sûr de vouloir publier cet article ?');">
+   <input type="hidden" name="_method" value="POST">
+   <input type="hidden" name="_token" value="{{ csrf_token('publishing' ~ article.id) }}">
+   <button class="btn btn-success"><i class="fa fa-eye"></i></button>
+</form>

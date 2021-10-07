@@ -15,8 +15,8 @@
       </div>
       <div class="sidebar-body">
          <ul class="sidebar-list">
-            <li class="sidebar-menu" id="menu-user">
-               <a href="#" class="btn-submenu" id="btn-submenu-user">
+            <li class="sidebar-menu" data-sidebar="user" id="menu-user">
+               <a href="#" class="btn-submenu">
                   <i class="fas fa-user"></i>
                   <span>Utilisateur</span>
                </a>
@@ -29,15 +29,57 @@
                </div>
             </li>
 
-            <li class="sidebar-menu" id="menu-rank">
-               <a href="#" class="btn-submenu" id="btn-submenu-rank">
+            <li class="sidebar-menu" data-sidebar="rank" id="menu-rank">
+               <a href="#" class="btn-submenu">
                   <i class="fas fa-list"></i>
                   <span>Rank</span>
                </a>
                <div class="sidebar-submenu" id="submenu-rank">
                   <ul class="submenu-ul">
                      <li class="submenu-li">
-                        <a href="#" class="btn-submenu-list">Liste des ranks</a>
+                        <a href="{{ path('admin_rank_index') }}" class="btn-submenu-list">Liste des ranks</a>
+                     </li>
+                  </ul>
+               </div>
+            </li>
+
+            <li class="sidebar-menu" data-sidebar="article" id="menu-article">
+               <a href="#" class="btn-submenu">
+                  <i class="fas fa-newspaper"></i>
+                  <span>Article</span>
+               </a>
+               <div class="sidebar-submenu" id="submenu-article">
+                  <ul class="submenu-ul">
+                     <li class="submenu-li">
+                        <a href="{{ path('admin_article_index') }}" class="btn-submenu-list">Liste des articles</a>
+                     </li>
+                  </ul>
+               </div>
+            </li>
+
+            <li class="sidebar-menu" data-sidebar="comment" id="menu-comment">
+               <a href="#" class="btn-submenu">
+                  <i class="fas fa-comment"></i>
+                  <span>Commentaire</span>
+               </a>
+               <div class="sidebar-submenu" id="submenu-comment">
+                  <ul class="submenu-ul">
+                     <li class="submenu-li">
+                        <a href="{{ path('admin_comment_index') }}" class="btn-submenu-list">Liste des commentaires</a>
+                     </li>
+                  </ul>
+               </div>
+            </li>
+
+            <li class="sidebar-menu" data-sidebar="tag" id="menu-tag">
+               <a href="#" class="btn-submenu">
+                  <i class="fas fa-tag"></i>
+                  <span>Tag</span>
+               </a>
+               <div class="sidebar-submenu" id="submenu-tag">
+                  <ul class="submenu-ul">
+                     <li class="submenu-li">
+                        <a href="{{ path('admin_tag_index') }}" class="btn-submenu-list">Liste des tags</a>
                      </li>
                   </ul>
                </div>

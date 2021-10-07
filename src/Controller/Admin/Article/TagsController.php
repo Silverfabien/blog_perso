@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class TagsController
  *
- * @Route("/admin/tags/article", name="admin_tags_article_")
+ * @Route("/admin/tag", name="admin_tag_")
  */
 class TagsController extends AbstractController
 {
@@ -29,7 +29,7 @@ class TagsController extends AbstractController
     ): Response
     {
         return $this->render('admin/article/tags/index.html.twig', [
-            'tags' => $tagsRepository->findAll(),
+            'tags' => $tagsRepository->findAll()
         ]);
     }
 
@@ -56,7 +56,7 @@ class TagsController extends AbstractController
                     $tag->getName()
                 )
             );
-            return $this->redirectToRoute('admin_tags_article_index');
+            return $this->redirectToRoute('admin_tag_index');
         }
 
         return $this->render('admin/article/tags/new.html.twig', [
@@ -76,7 +76,7 @@ class TagsController extends AbstractController
     ): Response
     {
         return $this->render('admin/article/tags/show.html.twig', [
-            'tag' => $tag,
+            'tag' => $tag
         ]);
     }
 
@@ -105,7 +105,7 @@ class TagsController extends AbstractController
                 )
             );
 
-            return $this->redirectToRoute('admin_tags_article_index');
+            return $this->redirectToRoute('admin_tag_index');
         }
 
         return $this->render('admin/article/tags/edit.html.twig', [
@@ -140,6 +140,6 @@ class TagsController extends AbstractController
             );
         }
 
-        return $this->redirectToRoute('admin_tags_article_index');
+        return $this->redirectToRoute('admin_tag_index');
     }
 }

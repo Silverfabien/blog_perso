@@ -1,0 +1,55 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+    <div class="admin-content">
+        <h3>Liste des articles</h3>
+        <div class="table-responsive-xxl">
+            <table class="table table-striped table-light table-bordered align-middle">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Écrit par</th>
+                    <th>Article</th>
+                    <th>Contenu</th>
+                    <th>Envoyer le</th>
+                    <th>Modifier le</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for comment in comments %}
+                    <tr>
+                        <td>{{ comment.id }}</td>
+                        <td>
+                            <a href="{{ path('admin_user_show', {'id' : comment.user.id}) }}">
+                                {{ comment.user.lastname }} {{ comment.user.firstname }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('admin_article_show', {'id' : comment.article.id}) }}" title="{{ comment.article.title }}">
+                                {{ comment.article.title|truncate(60, false) }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('admin_comment_show', {'id' : comment.id}) }}">
+                                {{ comment.content|truncate(60, false)|raw }}
+                            </a>
+                        </td>
+                        <td>{{ comment.createdAt ? comment.createdAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}</td>
+                        <td>{{ comment.updatedAt ? comment.updatedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}</td>
+                        <td>
+                            <a class="btn btn-info" href="{{ path('admin_comment_edit', {'id' : comment.id}) }}">
+                                <i class="fas fa-pencil-alt"></i>
+                            </a>
+                            {{ comment.deleted ?
+                                 include('admin/article/comment/_unremove_form.html.twig') :
+                                 include('admin/article/comment/_remove_form.html.twig')
+                            }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

@@ -12,15 +12,12 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class ArticleHandler
 {
     private $articleRepository;
-    private $likeRepository;
 
     public function __construct(
-        ArticleRepository $articleRepository,
-        LikeRepository $likeRepository
+        ArticleRepository $articleRepository
     )
     {
         $this->articleRepository = $articleRepository;
-        $this->likeRepository = $likeRepository;
     }
 
     public function createArticleHandle(
@@ -67,27 +64,25 @@ class ArticleHandler
         return true;
     }
 
-    public function likeHandle(
-        Like $like,
-        Article $article,
-        UserInterface $user
+    public function publishHandle(
+        Article $article
     )
     {
-        $like->setArticle($article);
-        $like->setUser($user);
+        $article->setPublish(true);
+        $article->setPublishedAt(new \DateTimeImmutable());
 
-        $this->likeRepository->like($like);
+        $this->articleRepository->update($article);
 
         return true;
     }
 
-    public function seeArticleHandle(
+    public function unpublishHandle(
         Article $article
     )
     {
-        $article->setSee($article->getSee()+1);
+        $article->setPublish(false);
 
-        $this->articleRepository->see($article);
+        $this->articleRepository->update($article);
 
         return true;
     }

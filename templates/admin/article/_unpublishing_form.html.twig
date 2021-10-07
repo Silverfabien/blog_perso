@@ -1,0 +1,5 @@
+<form class="btn-delete-form" method="post" action="{{ path('admin_article_unpublishing', {'id': article.id}) }}" onsubmit="return confirm('Est-tu sûr de vouloir dépublier cet article ?');">
+   <input type="hidden" name="_method" value="POST">
+   <input type="hidden" name="_token" value="{{ csrf_token('unpublishing' ~ article.id) }}">
+   <button class="btn btn-warning"><i class="fa fa-eye-slash"></i></button>
+</form>
