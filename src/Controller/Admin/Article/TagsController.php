@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class TagsController
  *
- * @Route("/admin/tags/article", name="admin_tags_article_")
+ * @Route("/admin/tag", name="admin_tag_")
  */
 class TagsController extends AbstractController
 {
