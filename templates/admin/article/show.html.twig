@@ -1,56 +1,31 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Article{% endblock %}
+{% extends 'admin/base.html.twig' %}
 
 {% block body %}
-    <h1>Article</h1>
-
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ article.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ article.title }}</td>
-            </tr>
-            <tr>
-                <th>Filename</th>
-                <td>{{ article.filename }}</td>
-            </tr>
-            <tr>
-                <th>Content</th>
-                <td>{{ article.content }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ article.description }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ article.createdAt ? article.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>UpdatedAt</th>
-                <td>{{ article.updatedAt ? article.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>See</th>
-                <td>{{ article.see }}</td>
-            </tr>
-            <tr>
-                <th>Publish</th>
-                <td>{{ article.publish ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>PublishedAt</th>
-                <td>{{ article.publishedAt ? article.publishedAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a href="{{ path('admin_article_edit', {'id': article.id}) }}">edit</a>
-
-    {{ include('admin/article/_delete_form.html.twig') }}
+   <div class="admin-content">
+      <div class="bg-admin-content">
+         <h3>Information de l'article <b>{{ article.title }}</b></h3>
+         <hr>
+         <p><b>Id</b>: {{ article.id }}</p>
+         <p><b>Auteur</b>: {{ article.author.lastname }} {{ article.author.firstname }}</p>
+         <p><b>Titre</b>: {{ article.title}}</p>
+         <p><b>Date de création</b>: {{ article.createdAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</p>
+         <p><b>Date de modification</b>:
+            {{ article.updatedAt ? article.updatedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}
+         </p>
+         <p><b>Date de publication</b>:
+            {{ article.publishedAt ? article.publishedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}
+         </p>
+         <p><b>Modifier par</b>:
+            {{ article.authorEdit ? ""~article.authorEdit.lastname~" "~article.authorEdit.firstname~"" : "null" }}
+         </p>
+         <p><b>Nombre de visionnage</b>: {{ article.see }}</p>
+         <p><b>Nombre de commentaire</b>: {{ nbComment }}</p>
+         <p><b>Article publier</b>:{{ article.publish ? "Oui" : "Non" }}</p>
+         <p>
+            <img class="picture-article" src="{{ vich_uploader_asset(article, 'pictureFile') | imagine_filter('thumb') }}" alt="">
+         </p>
+         <p><b>Description</b>: {{ article.description|raw }}</p>
+         <p><b>Contenu</b>: {{ article.content|raw }}</p>
+      </div>
+   </div>
 {% endblock %}

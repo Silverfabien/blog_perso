@@ -1,9 +1,13 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}New Article{% endblock %}
+{% extends 'admin/base.html.twig' %}
 
 {% block body %}
-    <h1>Create new Article</h1>
-
-    {{ include('admin/article/_form.html.twig') }}
+   <div class="admin-content">
+      <div class="admin-form">
+         <h3>Ajouter un article</h3>
+         {{ form_start(form) }}
+         {{ form_widget(form) }}
+         <button class="btn btn-success">{{ button_label|default('Envoyer') }}</button>
+         {{ form_end(form) }}
+      </div>
+   </div>
 {% endblock %}

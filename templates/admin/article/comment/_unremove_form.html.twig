@@ -1,0 +1,5 @@
+<form method="post" class="btn-delete-form" action="{{ path('admin_comment_undelete', {'id': comment.id}) }}" onsubmit="return confirm('Êtes-vous sur de vouloir réabiliter ce commentaire ?');">
+   <input type="hidden" name="_method" value="POST">
+   <input type="hidden" name="_token" value="{{ csrf_token('unremove' ~ comment.id) }}">
+   <button class="btn btn-warning"><i class="fa fa-check"></i></button>
+</form>

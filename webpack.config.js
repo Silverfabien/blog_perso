@@ -26,6 +26,10 @@ Encore
     .addEntry('flash', './assets/styles/js/components/_flash.js')
     .addEntry('likeArticle', './assets/styles/js/components/_likeArticle.js')
     .addEntry('editComment', './assets/styles/js/content/editComment.js')
+    //Admin
+    .addEntry('appAdmin', './assets/styles/js/admin/app.js')
+    .addEntry('navbarAdmin', './assets/styles/js/admin/layouts/navbar.js')
+    .addEntry('sidebarAdmin', './assets/styles/js/admin/layouts/sidebar.js')
 
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     //.enableStimulusBridge('./assets/controllers.json')

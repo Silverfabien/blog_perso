@@ -1,0 +1,44 @@
+.row-card {
+  margin: 0 15px;
+
+  .card-deck {
+    margin-bottom: 10px;
+
+    .card-article {
+      background-color: #b10000;
+      border: 2px solid #8e0000;
+    }
+
+    .card-comment {
+      background-color: #de6000;
+      border: 2px solid #ad4700;
+    }
+
+    .card-user {
+      background: #dec700;
+      border: 2px solid #c1ad01;
+    }
+
+    .card-like {
+      background: #2ba100;
+      border: 2px solid #1f7600;
+    }
+
+    .card-see {
+      background: #00d7de;
+      border: 2px solid #019ca0;
+    }
+
+    .icon {
+      position: absolute;
+      font-size: 90px;
+      color: rgba(0, 0, 0, 0.15);
+      top: -10px;
+      right: 25px;
+    }
+
+    .card-footer-info {
+      display: block;
+    }
+  }
+}

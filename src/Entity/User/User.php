@@ -22,23 +22,23 @@ class User implements UserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=180, unique=true)
+     * @ORM\Column(type="string", length=180, unique=true, nullable=true)
      */
     private $email;
 
     /**
      * @var string The hashed password
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=25)
+     * @ORM\Column(type="string", length=25, nullable=true)
      */
     private $firstname;
 
     /**
-     * @ORM\Column(type="string", length=25)
+     * @ORM\Column(type="string", length=25, nullable=true)
      */
     private $lastname;
 
@@ -53,7 +53,7 @@ class User implements UserInterface
     private $updatedAt;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $ip;
 
@@ -142,6 +142,16 @@ class User implements UserInterface
      */
     private $blockeds;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $deletedDefinitely;
+
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private $deletedDefinitelyAt;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -150,6 +160,7 @@ class User implements UserInterface
         $this->connectionAttempt = 0;
         $this->connectionAttemptDef = false;
         $this->blockeds = new ArrayCollection();
+        $this->deletedDefinitely = false;
     }
 
     public function getId(): ?int
@@ -506,6 +517,30 @@ class User implements UserInterface
                 $blocked->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDeletedDefinitely(): ?bool
+    {
+        return $this->deletedDefinitely;
+    }
+
+    public function setDeletedDefinitely(bool $deletedDefinitely): self
+    {
+        $this->deletedDefinitely = $deletedDefinitely;
+
+        return $this;
+    }
+
+    public function getDeletedDefinitelyAt(): ?\DateTimeImmutable
+    {
+        return $this->deletedDefinitelyAt;
+    }
+
+    public function setDeletedDefinitelyAt(?\DateTimeImmutable $deletedDefinitelyAt): self
+    {
+        $this->deletedDefinitelyAt = $deletedDefinitelyAt;
 
         return $this;
     }
