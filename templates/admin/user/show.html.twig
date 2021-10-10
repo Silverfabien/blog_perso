@@ -11,97 +11,47 @@
          <p><b>Ip</b>: {{ user.ip }}</p>
          <p><b>Date de création</b>: {{ user.createdAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</p>
          <p><b>Date de modification</b>:
-            {% if user.updatedAt %}
-               {{ user.updatedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
-            {% else %}
-               null
-            {% endif %}
+            {{ user.updatedAt ? user.updatedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null"  }}
          </p>
-         <p><b>Date de dernière connexion</b>: {{ user.lastConnectedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</p>
+         <p><b>Date de dernière connexion</b>:
+            {{ user.lastConnectedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
+         </p>
          <p><b>Compte confirmé</b>:
-            {% if user.confirmationAccount %}
-               Oui
-            {% else %}
-               Non
-            {% endif %}
+            {{ user.confirmationAccount ? "Oui" : "Non" }}
          </p>
          <p><b>Date de confirmation du compte</b>:
-            {% if user.confirmationAccount %}
-               {{ user.confirmationAccountAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
-            {% else %}
-               null
-            {% endif %}
+            {{ user.confirmationAccount ? user.confirmationAccountAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}
          </p>
          <p><b>Date de la demande de résiliation du mot de passe</b>:
-            {% if user.resetToken %}
-               {{ user.resetTokenCreatedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
-            {% else %}
-               null
-            {% endif %}
+            {{ user.resetToken ? user.resetTokenCreatedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}
          </p>
          <p><b>Date de l'expiration de la résiliation du mot de passe</b>:
-            {% if user.resetToken %}
-               {{ user.resetTokenExpiredAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
-            {% else %}
-               null
-            {% endif %}
+            {{ user.resetToken ? user.resetTokenExpiredAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}
          </p>
          <p><b>Date de dernière résiliation du mot de passe</b>:
-            {% if user.resetLastAt %}
-               {{ user.resetLastAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
-            {% else %}
-               null
-            {% endif %}
+            {{ user.resetLastAt ? user.resetLastAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}
          </p>
          <p><b>Compte supprimer</b>:
-            {% if user.deleted %}
-               Oui
-            {% else %}
-               Non
-            {% endif %}
+            {{ user.deleted ? "Oui" : "Nonn" }}
          </p>
          <p><b>Date de la suppression du compte</b>:
-            {% if user.deleted %}
-               {{ user.deletedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
-            {% else %}
-               null
-            {% endif %}
+            {{ user.deletedAt ? user.deletedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}
          </p>
          <p><b>Compte supprimer définitivement</b>:
-            {% if user.deletedDefinitely %}
-               Oui
-            {% else %}
-               Non
-            {% endif %}
+            {{ user.deletedDefinitely ? "Oui" : "Non" }}
          </p>
          <p><b>Date de la suppression définitif du compte</b>:
-            {% if user.deletedDefinitely %}
-               {{ user.deletedDefinitelyAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
-            {% else %}
-               null
-            {% endif %}
+            {{ user.deletedDefinitely ? user.deletedDefinitelyAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}
          </p>
          <p><b>Date de réouverture du compte supprimer</b>:
-            {% if user.undeletedAt %}
-               {{ user.undeletedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
-            {% else %}
-               null
-            {% endif %}
+            {{ user.undeletedAt ? user.undeletedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}
          </p>
          <p><b>Nombre de tentative de connexion</b>: {{ user.connectionAttempt }}</p>
          <p><b>Fin du bannissement</b>:
-            {% if user.connectionAttemptExpiredAt %}
-               {{ user.connectionAttemptExpiredAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
-            {% else %}
-               null
-            {% endif %}
+            {{ user.connectionAttemptExpiredAt ? user.connectionAttemptExpiredAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}
          </p>
          <p><b>Bannissement définitif</b>:
-            {% if user.connectionAttemptDef %}
-               Oui
-            {% else %}
-               Non
-            {% endif %}
+            {{ user.connectionAttemptDef ? "Oui" : "Non" }}
          </p>
       </div>
    </div>
