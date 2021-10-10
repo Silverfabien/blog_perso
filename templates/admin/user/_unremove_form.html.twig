@@ -1,5 +1,5 @@
 <form method="post" class="btn-delete-form" action="{{ path('admin_user_undelete', {'id': user.id}) }}" onsubmit="return confirm('Êtes-vous sur de vouloir réabiliter le compte ?');">
-    <input type="hidden" name="_method" value="POST">
-    <input type="hidden" name="_token" value="{{ csrf_token('unremove' ~ user.id) }}">
-    <button class="btn btn-success"><i class="fa fa-check"></i></button>
+   <input type="hidden" name="_method" value="POST">
+   <input type="hidden" name="_token" value="{{ csrf_token('unremove' ~ user.id) }}">
+   <button class="btn btn-success"><i class="fa fa-check"></i></button>
 </form>
