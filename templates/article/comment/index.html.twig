@@ -50,9 +50,8 @@
                            {{ include('article/comment/_deleteDefinitely_form.html.twig') }}
                         {% else %}
                         <a
-                           class="btn btn-info me-1"
+                           class="btn btn-info me-1 editComment"
                            href="{{ path('article_edit_comment', {'slug' : article.slug, 'id' : comment.id}) }}"
-                           id="editComment"
                            data-entity-id="{{ comment.id }}"
                            data-csrf-token="{{ csrf_token('comment' ~ comment.id) }}"
                         >
@@ -67,10 +66,11 @@
          </div>
       </div>
    </div>
-   <div id="mod">
-
-   </div>
 {% endfor %}
+
+<div id="mod">
+   {# Injection de la modal via le js #}
+</div>
 
 {% block javascripts %}
    {{ encore_entry_script_tags('editComment') }}

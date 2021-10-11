@@ -1,4 +1,6 @@
-$(document).on('click', '#editComment', function (e) {
+import { Modal } from 'bootstrap'
+
+$(document).on('click', '.editComment', function (e) {
     e.preventDefault();
 
     let $this = $(this);
@@ -14,9 +16,16 @@ $(document).on('click', '#editComment', function (e) {
         url: url,
         success: function (result) {
             console.log(result)
-            document.getElementById('mod').innerHTML = result;
-            if (CKEDITOR.instances["article_edit_comment_content"]) { CKEDITOR.instances["article_edit_comment_content"].destroy(true); delete CKEDITOR.instances["article_edit_comment_content"]; }
-            CKEDITOR.replace("article_edit_comment_content", {"uiColor":"#BBBBBB","toolbar":[["Bold","Italic","Underline","Strike"]],"extraPlugins":"wordcount","wordcount":{"maxCharCount":2000,"showCharCount":true},"language":"fr"});
+            // document.getElementById('mod').innerHTML = result;
+
+            //let myModal = bootstrap.Modal(document.getElementById("#mod"));
+            let myModal = new Modal(document.getElementById("mod"));
+            console.log(myModal);
+            myModal.show();
+
+            //$('#mod').html(result);
+            // if (CKEDITOR.instances["article_edit_comment_content"]) { CKEDITOR.instances["article_edit_comment_content"].destroy(true); delete CKEDITOR.instances["article_edit_comment_content"]; }
+            // CKEDITOR.replace("article_edit_comment_content", {"uiColor":"#BBBBBB","toolbar":[["Bold","Italic","Underline","Strike"]],"extraPlugins":"wordcount","wordcount":{"maxCharCount":2000,"showCharCount":true},"language":"fr"});
         },
         error: function () {}
     });

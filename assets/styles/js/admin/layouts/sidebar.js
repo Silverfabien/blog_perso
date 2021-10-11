@@ -21,10 +21,10 @@ $(document).ready(function () {
         $("#base-admin").removeClass("admin-wrapper-full").addClass("admin-wrapper");
     })
 
-    $(document).on("click", ".sidebar-menu", function () {
-        let sidebar = $(this).attr('data-sidebar');
+    $(document).on("click", ".btn-submenu", function (e) {
+        let currentTarget = $(e.currentTarget);
 
-        $(`#menu-${sidebar}`).toggleClass("active");
-        $(`#submenu-${sidebar}`).toggle();
+        currentTarget.parent().toggleClass("active")
+        currentTarget.next().toggle()
     });
 });
