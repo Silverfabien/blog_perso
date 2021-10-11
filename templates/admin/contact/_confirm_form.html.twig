@@ -1,0 +1,5 @@
+<form class="btn-delete-form" method="post" action="{{ path('admin_contact_confirm', {'id': contact.id}) }}" onsubmit="return confirm('Est-tu sûr de vouloir valider cette demande ?');">
+   <input type="hidden" name="_method" value="POST">
+   <input type="hidden" name="_token" value="{{ csrf_token('confirm' ~ contact.id) }}">
+   <button class="btn btn-success"><i class="fas fa-check"></i></button>
+</form>

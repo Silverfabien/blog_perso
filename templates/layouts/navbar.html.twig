@@ -7,7 +7,7 @@
          <li><a href="{{ path('default') }}">Accueil</a></li>
          <li><a href="#">À propos</a></li>
          <li><a href="{{ path('article_index') }}">Blog</a></li>
-         <li><a href="#">Contact</a></li>
+         <li><a href="{{ path('contact') }}">Contact</a></li>
          {% if app.user %}
             <li><a href="{{ path('user_account') }}">Compte</a></li>
          {% else %}

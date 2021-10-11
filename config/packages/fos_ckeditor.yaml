@@ -20,7 +20,10 @@ fos_ck_editor:
             uiColor: "#BBBBBB"
             toolbar: "article_comment_config"
             extraPlugins: "wordcount"
-
+        contact_config:
+            uiColor: "#BBBBBB"
+            toolbar: "contact_config"
+            extraPlugins: "wordcount"
     toolbars:
         configs:
             article_content_config: [
@@ -41,15 +44,19 @@ fos_ck_editor:
                     'Image'
                 ]
             ]
-
             article_description_config: [
                 [
                     'Bold', 'Italic', 'Underline', 'Strike'
                 ]
             ]
-
             article_comment_config: [
                 [
-                        'Bold', 'Italic', 'Underline', 'Strike'
+                    'Bold', 'Italic', 'Underline', 'Strike'
+                ]
+            ]
+            contact_config: [
+                [
+                        'Bold', 'Italic', 'Underline', 'Strike', '-',
+                        'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'
                 ]
             ]
