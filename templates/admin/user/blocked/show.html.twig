@@ -1,0 +1,18 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+   <div class="admin-content">
+      <div class="bg-admin-content">
+         <h3>Information du compte bloqué de <b>{{ blocked.user.lastname }} {{ blocked.user.firstname }}</b></h3>
+         <hr>
+         <p><b>Id</b>: {{ blocked.user.id }}</p>
+         <p><b>Nom et prénom</b>: {{ blocked.user.lastname }} {{ blocked.user.firstname }}</p>
+         <p><b>Compte bloqué</b>: {{ blocked.blocked ? "Oui" : "Non" }}</p>
+         <p><b>Compte bloqué définitivement</b>: {{ blocked.unblockedAt ? "Non" : "Oui" }}</p>
+         <p><b>Compte bloqué le</b>: {{ blocked.blockedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</p>
+         <p><b>Raison du blocage</b>: {{ blocked.blockedReason }}</p>
+         <p><b>Compte débloqué le</b>: {{ blocked.unblockedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</p>
+         <p><b>Raison du déblocage du compte</b>: {{ blocked.unblockedReason }}</p>
+      </div>
+   </div>
+{% endblock %}
