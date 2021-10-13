@@ -1,0 +1,71 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+   <div class="admin-content">
+      <h3>Liste des comptes avec des tentatives de connection</h3>
+      <div class="table-responsive-xxl">
+         <table class="table table-striped table-light table-bordered align-middle">
+            <thead>
+            <tr>
+               <th>Id</th>
+               <th>Nom et Prénom</th>
+               <th>Tentative de connexion</th>
+               <th>Temps de blocage</th>
+               <th>Heure du blocage</th>
+               <th>Fin du blocage</th>
+               <th>Bloqué</th>
+               <th>Bloqué définitivement</th>
+               <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in users if user.connectionAttempt >= 1 %}
+               <tr>
+                  <td>{{ user.id }}</td>
+                  <td>
+                     <a href="{{ path('admin_user_show', {'id' : user.id}) }}">
+                        {{ user.lastname }} {{ user.firstname }}
+                     </a>
+                  </td>
+                  <td>{{ user.connectionAttempt }}</td>
+                  <td>
+                     {% if user.connectionAttempt == 5 %}
+                        15 Minutes
+                     {% elseif user.connectionAttempt == 10 %}
+                        1 Heure
+                     {% elseif user.connectionAttempt == 15  %}
+                        24 Heures
+                     {% elseif user.connectionAttempt == 20 %}
+                        Définitivement
+                     {% else %}
+                        null
+                     {% endif %}
+                  </td>
+                  <td>
+                     {% if user.connectionAttempt == 5 %}
+                        {{ user.connectionAttemptExpiredAt|date_modify("-15 Minute")|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
+                     {% elseif user.connectionAttempt == 10 %}
+                        {{ user.connectionAttemptExpiredAt|date_modify("-1 Hour")|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
+                     {% elseif user.connectionAttempt == 15  %}
+                        {{ user.connectionAttemptExpiredAt|date_modify("-1 Day")|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
+                     {% elseif user.connectionAttempt == 20 %}
+                        Définitivement
+                     {% else %}
+                        null
+                     {% endif %}
+                  </td>
+                  <td>{{ user.connectionAttemptExpiredAt ? user.connectionAttemptExpiredAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}</td>
+                  <td>{{ date(user.connectionAttemptExpiredAt) > date() or user.connectionAttemptDef == true ? "Oui" : "Non" }}</td>
+                  <td>{{ user.connectionAttemptDef ? "Oui" : "Non" }}</td>
+                  <td>
+                     <a href="{{ path('admin_connection_show', {'id' : user.id}) }}" class="btn btn-info">
+                        <i class="fas fa-eye"></i>
+                     </a>
+                  </td>
+               </tr>
+            {% endfor %}
+            </tbody>
+         </table>
+      </div>
+   </div>
+{% endblock %}

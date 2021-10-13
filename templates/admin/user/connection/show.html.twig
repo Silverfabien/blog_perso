@@ -1,0 +1,53 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+   <div class="admin-content">
+      <div class="bg-admin-content">
+         <h3>Information du compte bloqué de <b>{{ user.lastname }} {{ user.firstname }}</b></h3>
+         <hr>
+         <p><b>Id</b>: {{ user.id }}</p>
+         <p><b>Nom et prénom</b>: {{ user.lastname }} {{ user.firstname }}</p>
+         <p><b>Tentative de connexion</b>: {{ user.connectionAttempt }}</p>
+         <p>
+            <b>Temps de blocage</b>:
+            {% if user.connectionAttempt == 5 %}
+               15 Minutes
+            {% elseif user.connectionAttempt == 10 %}
+               1 Heure
+            {% elseif user.connectionAttempt == 15  %}
+               24 Heures
+            {% elseif user.connectionAttempt == 20 %}
+               Définitivement
+            {% else %}
+               null
+            {% endif %}
+         </p>
+         <p>
+            <b>Heure du blocage</b>
+            {% if user.connectionAttempt == 5 %}
+               {{ user.connectionAttemptExpiredAt|date_modify("-15 Minute")|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
+            {% elseif user.connectionAttempt == 10 %}
+               {{ user.connectionAttemptExpiredAt|date_modify("-1 Hour")|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
+            {% elseif user.connectionAttempt == 15  %}
+               {{ user.connectionAttemptExpiredAt|date_modify("-1 Day")|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}
+            {% elseif user.connectionAttempt == 20 %}
+               Définitivement
+            {% else %}
+               null
+            {% endif %}
+         </p>
+         <p>
+            <b>Fin du blocage</b>:
+            {{ user.connectionAttemptExpiredAt ? user.connectionAttemptExpiredAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}
+         </p>
+         <p>
+            <b>Bloqué</b>:
+            {{ date(user.connectionAttemptExpiredAt) > date() or user.connectionAttemptDef == true ? "Oui" : "Non" }}
+         </p>
+         <p>
+            <b>Bloqué définitivement</b>:
+            {{ user.connectionAttemptDef ? "Oui" : "Non" }}
+         </p>
+      </div>
+   </div>
+{% endblock %}
