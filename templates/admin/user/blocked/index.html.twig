@@ -9,7 +9,7 @@
             <tr>
                <th>Id</th>
                <th>Nom et Prénom</th>
-               <th>Bloqué</th>
+               <th>Bloqué / Définitivement</th>
                <th>Bloqué le</th>
                <th>Raison</th>
                <th>Débloqué le</th>
@@ -25,7 +25,7 @@
                         {{ blocked.user.lastname }} {{ blocked.user.firstname }}
                      </a>
                   </td>
-                  <td>{{ blocked.blocked ? "Oui" : "Non" }}</td>
+                  <td>{{ blocked.blocked ? "Oui" : "Non" }} / {{ blocked.unblockedAt ? "Non" : "Oui" }}</td>
                   <td>{{ blocked.blockedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</td>
                   <td>
                      <a href="{{ path('admin_blocked_show', {'id' : blocked.id}) }}">

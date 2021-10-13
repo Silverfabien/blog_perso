@@ -12,7 +12,7 @@
          <p><b>Compte bloqué le</b>: {{ blocked.blockedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</p>
          <p><b>Raison du blocage</b>: {{ blocked.blockedReason }}</p>
          <p><b>Compte débloqué le</b>: {{ blocked.unblockedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</p>
-         <p><b>Raison du déblocage du compte</b>: {{ blocked.unblockedReason }}</p>
+         <p><b>Raison du déblocage du compte</b>: {{ blocked.unblockedReason ? blocked.unblockedReason : "null" }}</p>
       </div>
    </div>
 {% endblock %}
