@@ -25,6 +25,11 @@ use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
 class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements PasswordAuthenticatedInterface
 {
+    const FIRST_BAN = 5;
+    const SECOND_BAN = 10;
+    const THIRD_BAN = 15;
+    const LAST_BAN = 20;
+
     use TargetPathTrait;
 
     public const LOGIN_ROUTE = 'app_login';
@@ -105,6 +110,18 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
             // Si compte non bloqué
             $this->connectionAttemptHandler->connectAttemptHandle($user);
 
+            $connectionAttempt = $user->getConnectionAttempt();
+
+            if ($connectionAttempt === self::FIRST_BAN ||
+                $connectionAttempt === self::SECOND_BAN ||
+                $connectionAttempt === self::THIRD_BAN ||
+                $connectionAttempt === self::LAST_BAN
+            ) {
+                $userBlocked = $this->blockedRepository->findOneBy(['user' => $user, 'blocked' => true], ['id' => 'DESC']);
+
+                throw new CustomUserMessageAuthenticationException($userBlocked->getBlockedReason());
+            }
+
             return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
         }
 
@@ -115,12 +132,16 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
             }
 
             // Si unblockedat est inférieur à now
-            if ($user->getConnectionAttempt() > 0 && $findUserBlocked->getUnblockedAt() <= new \DateTimeImmutable()) {
+            if ($user->getConnectionAttempt() > 0) {
+               if ($findUserBlocked->getUnblockedAt() >= new \DateTimeImmutable())
+               {
+                   throw new CustomUserMessageAuthenticationException($findUserBlocked->getBlockedReason());
+               }
                 $this->connectionAttemptHandler->resetConnectionAttemptHandle($user);
 
                 return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
             }
-
+            
             // Si unblockedat est supérieur à now
             throw new CustomUserMessageAuthenticationException($findUserBlocked->getBlockedReason());
         }

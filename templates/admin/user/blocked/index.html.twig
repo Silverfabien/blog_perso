@@ -1,0 +1,49 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+   <div class="admin-content">
+      <h3>Liste des comptes bloqués</h3>
+      <div class="table-responsive-xxl">
+         <table class="table table-striped table-light table-bordered align-middle">
+            <thead>
+            <tr>
+               <th>Id</th>
+               <th>Nom et Prénom</th>
+               <th>Bloqué / Définitivement</th>
+               <th>Bloqué le</th>
+               <th>Raison</th>
+               <th>Débloqué le</th>
+               <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for blocked in blockeds %}
+               <tr>
+                  <td>{{ blocked.id }}</td>
+                  <td>
+                     <a href="{{ path('admin_user_show', {'id' : blocked.user.id}) }}">
+                        {{ blocked.user.lastname }} {{ blocked.user.firstname }}
+                     </a>
+                  </td>
+                  <td>{{ blocked.blocked ? "Oui" : "Non" }} / {{ blocked.unblockedAt ? "Non" : "Oui" }}</td>
+                  <td>{{ blocked.blockedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</td>
+                  <td>
+                     <a href="{{ path('admin_blocked_show', {'id' : blocked.id}) }}">
+                        {{ blocked.blockedReason }}
+                     </a>
+                  </td>
+                  <td>{{ blocked.unblockedAt ? blocked.unblockedAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') : "null" }}</td>
+                  <td>
+                     {% if blocked.blocked %}
+                        <a href="{{ path('admin_blocked_unblocked', {'user_id' : blocked.user.id}) }}" class="btn btn-info">
+                           <i class="fas fa-unlock"></i>
+                        </a>
+                     {% endif %}
+                  </td>
+               </tr>
+            {% endfor %}
+            </tbody>
+         </table>
+      </div>
+   </div>
+{% endblock %}

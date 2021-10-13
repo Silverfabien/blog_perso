@@ -53,6 +53,19 @@
                               {{ include('admin/user/_remove_definitely_form.html.twig') }}
                            {% else %}
                               {{ include('admin/user/_remove_form.html.twig') }}
+                              {% set isBlocked = false %}
+                              {% for blocked in user.blockeds %}
+                                 {% set isBlocked = blocked.blocked %}
+                              {% endfor %}
+                              {% if isBlocked %}
+                                 <a href="{{ path('admin_blocked_unblocked', {'user_id' : user.id}) }}" class="btn btn-info">
+                                    <i class="fas fa-unlock"></i>
+                                 </a>
+                              {% else %}
+                                 <a href="{{ path('admin_blocked_blocked', {'user_id' : user.id}) }}" class="btn btn-info">
+                                    <i class="fas fa-lock"></i>
+                                 </a>
+                              {% endif%}
                            {% endif %}
                         {% endif %}
                      </td>

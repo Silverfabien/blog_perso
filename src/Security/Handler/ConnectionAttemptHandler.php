@@ -14,6 +14,11 @@ use App\Repository\User\UserRepository;
  */
 class ConnectionAttemptHandler
 {
+    const FIRST_BAN = 5;
+    const SECOND_BAN = 10;
+    const THIRD_BAN = 15;
+    const LAST_BAN = 20;
+
     private $userRepository;
     private $blockedRepository;
 
@@ -36,34 +41,34 @@ class ConnectionAttemptHandler
         User $user
     ): bool
     {
+        $user->setConnectionAttempt($user->getConnectionAttempt() +1);
         $connectionAttempt = $user->getConnectionAttempt();
 
         if (
-            $connectionAttempt === 4 ||
-            $connectionAttempt === 9 ||
-            $connectionAttempt === 14 ||
-            $connectionAttempt === 19
+            $connectionAttempt === self::FIRST_BAN ||
+            $connectionAttempt === self::SECOND_BAN ||
+            $connectionAttempt === self::THIRD_BAN ||
+            $connectionAttempt === self::LAST_BAN
         ) {
             $blocked = new Blocked();
             $blocked->setUser($user);
             $blocked->setBlocked(true);
             $blocked->setBlockedAt(new \DateTimeImmutable());
-            $blocked->getUser()->setConnectionAttempt($user->getConnectionAttempt() +1);
 
             switch ($user->getConnectionAttempt()) {
-                case 5:
+                case self::FIRST_BAN:
                     $blocked->setBlockedReason('Votre compte est bloqué pendant 15 minutes pour trop de tentative de connexion.');
                     $blocked->setUnblockedAt(new \DateTimeImmutable('+15min'));
                     break;
-                case 10:
+                case self::SECOND_BAN:
                     $blocked->setBlockedReason('Votre compte est bloqué pendant 1 heure pour trop de tentative de connexion.');
                     $blocked->setUnblockedAt(new \DateTimeImmutable('+1hour'));
                     break;
-                case 15:
+                case self::THIRD_BAN:
                     $blocked->setBlockedReason('Votre compte est bloqué pendant 24 heures pour trop de tentative de connexion.');
                     $blocked->setUnblockedAt(new \DateTimeImmutable('+1day'));
                     break;
-                case 20:
+                case self::LAST_BAN:
                     $blocked->setBlockedReason('Votre compte est bloqué définitivement pour trop de tentative de connexion.');
                     break;
             }
@@ -72,8 +77,6 @@ class ConnectionAttemptHandler
 
             return true;
         }
-
-        $user->setConnectionAttempt($user->getConnectionAttempt() +1);
 
         $this->userRepository->update($user);
 
