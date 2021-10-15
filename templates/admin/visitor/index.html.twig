@@ -1,0 +1,41 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+   <div class="admin-content">
+      <h3>Liste des visites</h3>
+      <div class="table-responsive-xxl">
+         <table class="table table-striped table-light table-bordered align-middle">
+            <thead>
+            <tr>
+               <th>Id</th>
+               <th>Utilisateur</th>
+               <th>Ip</th>
+               <th>Première visite</th>
+               <th>Dernière visite</th>
+               <th>Page</th>
+               <th>Nombre de visit</th>
+               <th>Navigateur</th>
+               <th>Système</th>
+               <th>Appareil</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for visitor in visitors %}
+               <tr>
+                  <td>{{ visitor.id }}</td>
+                  <td>{{ visitor.user.lastname }} {{ visitor.user.firstname }}</td>
+                  <td>{{ visitor.ip }}</td>
+                  <td>{{ visitor.firstVisitAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</td>
+                  <td>{{ visitor.lastVisitAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</td>
+                  <td>{{ visitor.routeName }}</td>
+                  <td>{{ visitor.numberVisit }}</td>
+                  <td>{{ visitor.navigator }}</td>
+                  <td>{{ visitor.platform }}</td>
+                  <td>{{ visitor.deviceType }}</td>
+               </tr>
+            {% endfor %}
+            </tbody>
+         </table>
+      </div>
+   </div>
+{% endblock %}

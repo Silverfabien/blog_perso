@@ -48,3 +48,7 @@ services:
     App\EventListener\PictureCacheSubscriber:
         tags:
             - { name: doctrine.event_subscriber }
+
+    App\EventListener\VisitorListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }
