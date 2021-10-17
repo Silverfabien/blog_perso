@@ -50,5 +50,7 @@ services:
             - { name: doctrine.event_subscriber }
 
     App\EventListener\VisitorListener:
+        arguments:
+            $profiler: "@profiler"
         tags:
             - { name: kernel.event_listener, event: kernel.request }

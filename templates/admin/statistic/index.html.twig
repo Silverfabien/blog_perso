@@ -1,0 +1,122 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+   <div class="admin-content">
+      <h3 class="pb-4">Statistique</h3>
+      <h4>Article</h4>
+      <div class="table-responsive-xxl">
+         <table class="table table-striped table-light table-bordered align-middle">
+            <thead>
+            <tr>
+               <th>Nombre d'article</th>
+               <th>Article le plus populaire</th>
+               <th>Article le plus aimé</th>
+               <th>Nombre de commentaire</th>
+               <th>Nombre de vue</th>
+               <th>Nombre de like</th>
+               <th>Nombre de tags</th>
+            </tr>
+            </thead>
+            <tbody>
+               {% set countSeeArticle = 0 %}
+               {% for article in articles %}
+                  {% set countSeeArticle = countSeeArticle + article.see %}
+               {% endfor %}
+               <tr>
+                  <td>{{ nbArticle }}</td>
+                  <td>{{ mostPopular.title }}</td>
+                  <td>{{ mostLike.title }}</td>
+                  <td>{{ nbComment }}</td>
+                  <td>{{ countSeeArticle }}</td>
+                  <td>{{ nbLike }}</td>
+                  <td>{{ nbTag }}</td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+
+      <h4>Contact</h4>
+      <div class="table-responsive-xxl">
+         <table class="table table-striped table-light table-bordered align-middle">
+            <thead>
+               <tr>
+                  <th>Nombre de contact</th>
+                  <th>Nombre de validé</th>
+                  <th>Nombre de non validé</th>
+               </tr>
+            </thead>
+            <tbody>
+               <tr>
+                  <td>{{ nbContact }}</td>
+                  <td>{{ nbContactTrue }}</td>
+                  <td>{{ nbContactFalse }}</td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+
+      <h4>Utilisateur</h4>
+      <div class="table-responsive-xxl">
+         <table class="table table-striped table-light table-bordered align-middle">
+            <thead>
+               <tr>
+                  <th>Nombre d'utilisateur</th>
+                  <th>Nombre d'utilisateur confirmé</th>
+                  <th>Nombre d'utilisateur non confirmé</th>
+                  <th>Nombre d'utilisateur supprimé</th>
+                  <th>Nombre d'utilisateur bloqué</th>
+                  <th>Nombre d'utilisateur par la connexion</th>
+                  <th>Nombre d'utilisateur ayant une image de profil</th>
+                  <th>Nombre de rank</th>
+               </tr>
+            </thead>
+            <tbody>
+            {% set nbManyConnection = 0 %}
+            {% for user in users %}
+               {% if user.connectionAttempt == 5 or user.connectionAttempt == 10 or user.connectionAttempt == 15 or user.connectionAttempt == 20 %}
+                  {% set nbManyConnection = nbManyConnection + 1 %}
+               {% endif %}
+            {% endfor %}
+            {% set nbUserPicture = 0 %}
+            {% for userPicture in userPictures %}
+               {% if userPicture.filename is not null %}
+                  {% set nbUserPicture = nbUserPicture + 1 %}
+               {% endif %}
+            {% endfor %}
+               <tr>
+                  <td>{{ nbUser }}</td>
+                  <td>{{ nbUserEmailConfirm }}</td>
+                  <td>{{ nbUserEmailNotConfirm }}</td>
+                  <td>{{ nbUserDeleted }}</td>
+                  <td>{{ nbUserBlocked }}</td>
+                  <td>{{ nbManyConnection }}</td>
+                  <td>{{ nbUserPicture }}</td>
+                  <td>{{ nbRank }}</td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+
+      <h4>Visiteur</h4>
+      <div class="table-responsive-xxl">
+         <table class="table table-striped table-light table-bordered align-middle">
+            <thead>
+               <tr>
+                  <th>Nombre de visiteur</th>
+                  <th>Nombre de visite</th>
+               </tr>
+            </thead>
+            <tbody>
+               {% set nbVisitor = 0 %}
+               {% for visitor in visitors %}
+                  {% set nbVisitor = nbVisitor + visitor.numberVisit %}
+               {% endfor %}
+               <tr>
+                  <td>{{ nbUserVisitor }}</td>
+                  <td>{{ nbVisitor }}</td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+   </div>
+{% endblock %}

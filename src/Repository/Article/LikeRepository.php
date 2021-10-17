@@ -2,6 +2,7 @@
 
 namespace App\Repository\Article;
 
+use App\Entity\Article\Article;
 use App\Entity\Article\Like;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -29,5 +30,20 @@ class LikeRepository extends ServiceEntityRepository
     {
         $this->_em->persist($like);
         $this->_em->flush();
+    }
+
+    public function mostLike()
+    {
+        $qb = $this->createQueryBuilder('l')
+            ->innerJoin(Article::class, 'a', 'WITH', 'l.article = a.id')
+            ->select('COUNT(l.article) as countLike, a')
+            ->groupBy('l.article')
+            ->orderBy('countLike', 'DESC')
+            ->setMaxResults(1)
+        ;
+
+        $result = $qb->getQuery()->getSingleResult();
+
+        return $result[0];
     }
 }
