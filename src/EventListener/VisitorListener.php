@@ -50,21 +50,25 @@ class VisitorListener
             $visitor = new Visitor();
 
             if ($this->visitorHandler->newIfUserConnected($visitor, $user, $event)) {
+                $this->profiler->enable();
                 return;
             }
         }
 
         if ($user && $visitorUserExist && $this->visitorHandler->updateIfUserConnected($visitorUserExist, $event)) {
+            $this->profiler->enable();
             return;
         }
 
         if (!$user && $visitorIpExist && $this->visitorHandler->updateIfIpExistAndUserDisconnect($visitorIpExist, $event)) {
+            $this->profiler->enable();
             return;
         }
 
         if (!$visitorIpExist) {
             $visitor = new Visitor();
             if ($this->visitorHandler->updateIfIpNotExist($visitor, $event)) {
+                $this->profiler->enable();
                 return;
             }
         }
