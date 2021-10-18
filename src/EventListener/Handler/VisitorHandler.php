@@ -9,6 +9,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class VisitorHandler
 {
+    const ROUTE_DEV_BAR_SYMFONY = "_wdt";
+
     private $visitorRepository;
 
     public function __construct(
@@ -146,6 +148,10 @@ class VisitorHandler
         RequestEvent $event
     )
     {
+        if ($event->getRequest()->get('_route') === self::ROUTE_DEV_BAR_SYMFONY) {
+            return true;
+        }
+
         $visitor->setLastVisitAt(new \DateTimeImmutable());
         $visitor->setRouteName($event->getRequest()->get('_route'));
         $visitor->setNumberVisit($visitor->getNumberVisit()+1);
