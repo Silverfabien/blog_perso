@@ -50,6 +50,10 @@
           color: black;
           line-height: 30px;
         }
+
+        .dropdown-item:focus {
+          background-color: #e9ecef;
+        }
       }
     }
   }
