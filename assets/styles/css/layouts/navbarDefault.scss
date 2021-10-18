@@ -45,6 +45,11 @@
           line-height: 65px;
           font-size: 1.2rem;
         }
+
+        .dropdown-item {
+          color: black;
+          line-height: 30px;
+        }
       }
     }
   }
@@ -142,10 +147,18 @@
         text-align: right;
 
         a {
-          text-align: center;
+          text-align: left;
           width: 100%;
           font-size: 1.2rem;
           padding: 20px;
+        }
+
+        .dropdown-item {
+          line-height: 0!important;
+        }
+
+        .dropdown-item:focus {
+          background-color: #e9ecef;
         }
       }
     }
