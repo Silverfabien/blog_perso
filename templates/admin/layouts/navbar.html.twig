@@ -5,7 +5,15 @@
    <div id="navList" class="navList">
       <ul class="navLinks">
          <li><a href="{{ path('admin_default') }}">Accueil</a></li>
-         <li><a href="{{ path('default') }}">Utilisateur</a></li>
+         <li class="dropdown">
+            <a class="dropdown-toggle" href="#" id="adminNavbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Mon Compte</a>
+            <div class="dropdown-menu" aria-labelledby="adminNavbarDropdown">
+               <a class="dropdown-item" href="{{ path('user_account') }}">Profil</a>
+               <a class="dropdown-item" href="{{ path('app_logout') }}">Déconnexion</a>
+               <hr class="dropdown-divider">
+               <a class="dropdown-item" href="{{ path('default') }}">Utilisateur</a>
+            </div>
+         </li>
       </ul>
    </div>
    <div class="navTrigger">

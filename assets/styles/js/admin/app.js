@@ -14,4 +14,4 @@ import "../../css/admin/app.scss";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "@fortawesome/fontawesome-free/js/all.js";
 
-require('bootstrap/js/dist/modal');
+require('bootstrap');
