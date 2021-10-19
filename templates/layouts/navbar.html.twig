@@ -4,8 +4,12 @@
    </div>
    <div id="navList" class="navList">
       <ul class="navLinks">
-         <li><a href="{{ path('default') }}">Accueil</a></li>
-         <li><a href="#">À propos</a></li>
+         <li>
+            <a href="{{ app.request.get('_route') == 'default' ? "#accueil" : path('default') }}">Accueil</a>
+         </li>
+         <li>
+            <a href="{{ app.request.get('_route') == 'default' ? "#presentation" : path('default')~"#presentation" }}">À propos</a>
+         </li>
          <li><a href="{{ path('article_index') }}">Blog</a></li>
          <li><a href="{{ path('contact') }}">Contact</a></li>
          {% if app.user %}

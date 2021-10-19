@@ -1,4 +1,8 @@
-.blog {
+#presentation {
+  padding: 15px 0;
+}
+
+#blog {
   background-color: #e4e7ea;
   padding: 15px 0;
 
@@ -8,5 +12,10 @@
 
   .card-read-more {
     padding: 0 0 1rem 1rem;
+  }
+
+  .index-blog-more {
+    margin-top: 10px;
+    text-align: center;
   }
 }
