@@ -4,6 +4,7 @@
 @import "layouts/navbar";
 @import "layouts/navbarDefault";
 @import "layouts/footer";
+@import "content/default/index";
 @import "content/user/security";
 @import "content/user/account";
 @import "content/article/article";
@@ -21,5 +22,22 @@ body {
     .wrapper {
         margin-top: 150px;
         margin-bottom: 50px;
+    }
+
+    .typed-block {
+        height: 100vh;
+        text-align: left;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+
+        p {
+            color: $white;
+            text-align: center;
+            font-size: 30px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
     }
 }
