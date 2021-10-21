@@ -47,14 +47,14 @@ class VisitorListener
                 return;
             }
         }
-
-        if ($user && $visitorUserExist && $this->visitorHandler->updateIfUserConnected($visitorUserExist, $event)) {
-            return;
-        }
-
-        if (!$user && $visitorIpExist && $this->visitorHandler->updateIfIpExistAndUserDisconnect($visitorIpExist, $event)) {
-            return;
-        }
+        // TODO A revoir pour debug en dev
+//        if ($user && $visitorUserExist && $this->visitorHandler->updateIfUserConnected($visitorUserExist, $event)) {
+//            return;
+//        }
+//
+//        if (!$user && $visitorIpExist && $this->visitorHandler->updateIfIpExistAndUserDisconnect($visitorIpExist, $event)) {
+//            return;
+//        }
 
         if (!$visitorIpExist) {
             $visitor = new Visitor();

@@ -5,6 +5,7 @@ namespace App\Security;
 use App\Entity\User\User;
 use App\Repository\User\BlockedRepository;
 use App\Security\Handler\ConnectionAttemptHandler;
+use App\Security\Handler\LastConnectionHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,6 +40,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     private $csrfTokenManager;
     private $passwordEncoder;
     private $connectionAttemptHandler;
+    private $lastConnectionHandler;
     private $blockedRepository;
 
     public function __construct(
@@ -47,6 +49,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         CsrfTokenManagerInterface $csrfTokenManager,
         UserPasswordEncoderInterface $passwordEncoder,
         ConnectionAttemptHandler $connectionAttemptHandler,
+        LastConnectionHandler $lastConnectionHandler,
         BlockedRepository $blockedRepository
     )
     {
@@ -55,6 +58,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         $this->csrfTokenManager = $csrfTokenManager;
         $this->passwordEncoder = $passwordEncoder;
         $this->connectionAttemptHandler = $connectionAttemptHandler;
+        $this->lastConnectionHandler = $lastConnectionHandler;
         $this->blockedRepository = $blockedRepository;
     }
 
@@ -117,7 +121,8 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
                 $connectionAttempt === self::THIRD_BAN ||
                 $connectionAttempt === self::LAST_BAN
             ) {
-                $userBlocked = $this->blockedRepository->findOneBy(['user' => $user, 'blocked' => true], ['id' => 'DESC']);
+                $userBlocked = $this->blockedRepository->findOneBy(['user' => $user, 'blocked' => true],
+                    ['id' => 'DESC']);
 
                 throw new CustomUserMessageAuthenticationException($userBlocked->getBlockedReason());
             }
@@ -133,18 +138,21 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
             // Si unblockedat est inférieur à now
             if ($user->getConnectionAttempt() > 0) {
-               if ($findUserBlocked->getUnblockedAt() >= new \DateTimeImmutable())
-               {
-                   throw new CustomUserMessageAuthenticationException($findUserBlocked->getBlockedReason());
-               }
+                if ($findUserBlocked->getUnblockedAt() >= new \DateTimeImmutable()) {
+                    throw new CustomUserMessageAuthenticationException($findUserBlocked->getBlockedReason());
+                }
                 $this->connectionAttemptHandler->resetConnectionAttemptHandle($user);
+                $this->lastConnectionHandler->lastConnection($user);
 
                 return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
             }
-            
+
             // Si unblockedat est supérieur à now
             throw new CustomUserMessageAuthenticationException($findUserBlocked->getBlockedReason());
         }
+
+        $this->lastConnectionHandler->lastConnection($user);
+        $this->connectionAttemptHandler->resetConnectionAttemptHandle($user);
 
         return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
     }
