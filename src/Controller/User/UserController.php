@@ -5,6 +5,8 @@ namespace App\Controller\User;
 use App\ControllerHandler\UserHandler;
 use App\Form\User\ResetPasswordType;
 use App\Form\User\UserEditType;
+use App\Repository\Article\CommentRepository;
+use App\Repository\Article\LikeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +29,9 @@ class UserController extends AbstractController
      */
     public function account(
         Request $request,
-        UserHandler $userHandler
+        UserHandler $userHandler,
+        CommentRepository $commentRepository,
+        LikeRepository $likeRepository
     ): Response
     {
         /* @var $user User */
@@ -61,7 +65,9 @@ class UserController extends AbstractController
 
         return $this->render('user/account.html.twig', [
             'passwordForm' => $passwordForm->createView(),
-            'userForm' => $userForm->createView()
+            'userForm' => $userForm->createView(),
+            'nbComment' => count($commentRepository->findByUser($user)),
+            'nbLike' => count($likeRepository->findByUser($user))
         ]);
     }
 
