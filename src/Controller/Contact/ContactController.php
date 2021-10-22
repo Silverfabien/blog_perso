@@ -10,9 +10,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * Class ContactController
+ */
 class ContactController extends AbstractController
 {
     /**
+     * @param Request $request
+     * @param ContactHandler $contactHandler
+     * @return Response
+     *
      * @Route("/contact", name="contact")
      */
     public function new(

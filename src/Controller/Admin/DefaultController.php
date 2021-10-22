@@ -17,42 +17,31 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class DefaultController extends AbstractController
 {
-    private $articleRepository;
-    private $commentRepository;
-    private $userRepository;
-    private $likeRepository;
-
-    public function __construct(
-        ArticleRepository $articleRepository,
-        CommentRepository $commentRepository,
-        UserRepository $userRepository,
-        LikeRepository $likeRepository
-    )
-    {
-        $this->articleRepository = $articleRepository;
-        $this->commentRepository = $commentRepository;
-        $this->userRepository = $userRepository;
-        $this->likeRepository = $likeRepository;
-    }
-
     /**
-     * Page index
-     *
+     * @param ArticleRepository $articleRepository
+     * @param CommentRepository $commentRepository
+     * @param UserRepository $userRepository
+     * @param LikeRepository $likeRepository
      * @return Response
      *
      * @Route("/admin", name="admin_default")
      */
-    public function index(): Response
+    public function index(
+        ArticleRepository $articleRepository,
+        CommentRepository $commentRepository,
+        UserRepository $userRepository,
+        LikeRepository $likeRepository
+    ): Response
     {
         return $this->render('admin/default/index.html.twig', [
-            'nbArticle' => count($this->articleRepository->findAll()),
-            'articles' => $this->articleRepository->findAll(),
-            'nbComment' => count($this->commentRepository->findAll()),
-            'comments' => $this->commentRepository->findAll(),
-            'nbUser' => count($this->userRepository->findAll()),
-            'users' => $this->userRepository->findAll(),
-            'nbLike' => count($this->likeRepository->findAll()),
-            'likes' => $this->likeRepository->findAll()
+            'nbArticle' => count($articleRepository->findAll()),
+            'articles' => $articleRepository->findAll(),
+            'nbComment' => count($commentRepository->findAll()),
+            'comments' => $commentRepository->findAll(),
+            'nbUser' => count($userRepository->findAll()),
+            'users' => $userRepository->findAll(),
+            'nbLike' => count($likeRepository->findAll()),
+            'likes' => $likeRepository->findAll()
         ]);
     }
 }

@@ -14,10 +14,30 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
+ * Class ArticleController
+ *
  * @Route("/admin/article", name="admin_article_")
  */
 class ArticleController extends AbstractController
 {
+    private Request $request;
+    private Article $article;
+    private ArticleHandler $articleHandler;
+    private UserInterface $user;
+
+    public function __construct(
+        Request $request,
+        Article $article,
+        ArticleHandler $articleHandler,
+        UserInterface $user
+    )
+    {
+        $this->request = $request;
+        $this->article = $article;
+        $this->articleHandler = $articleHandler;
+        $this->user = $user;
+    }
+
     /**
      * @param ArticleRepository $articleRepository
      * @return Response
@@ -26,7 +46,7 @@ class ArticleController extends AbstractController
      */
     public function index(
         ArticleRepository $articleRepository
-    )
+    ): Response
     {
         return $this->render('admin/article/index.html.twig', [
             'articles' => $articleRepository->findAll()
@@ -34,23 +54,16 @@ class ArticleController extends AbstractController
     }
 
     /**
-     * @param Request $request
-     * @param ArticleHandler $articleHandler
-     * @param UserInterface $user
      * @return Response
      *
      * @Route("/new", name="new", methods={"GET","POST"})
      */
-    public function new(
-        Request $request,
-        ArticleHandler $articleHandler,
-        UserInterface $user
-    ): Response
+    public function new(): Response
     {
         $article = new Article();
-        $form = $this->createForm(ArticleType::class, $article)->handleRequest($request);
+        $form = $this->createForm(ArticleType::class, $article)->handleRequest($this->request);
 
-        if ($articleHandler->createArticleHandle($form, $article, $user)) {
+        if ($this->articleHandler->createArticleHandle($form, $article, $this->user)) {
             $this->addFlash(
                 'success',
                 sprintf(
@@ -68,46 +81,36 @@ class ArticleController extends AbstractController
     }
 
     /**
-     * @param Article $article
+     * @param CommentRepository $commentRepository
      * @return Response
      *
      * @Route("/{id}/show", name="show", methods={"GET"})
      */
     public function show(
-        Article $article,
         CommentRepository $commentRepository
     ): Response
     {
         return $this->render('admin/article/show.html.twig', [
-            'article' => $article,
-            'nbComment' => count($commentRepository->findByArticle($article))
+            'article' => $this->article,
+            'nbComment' => count($commentRepository->findBy(['article' => $this->article]))
         ]);
     }
 
     /**
-     * @param Request $request
-     * @param Article $article
-     * @param ArticleHandler $articleHandler
-     * @param UserInterface $user
      * @return Response
      *
      * @Route("/{id}/edit", name="edit", methods={"GET","POST"})
      */
-    public function edit(
-        Request $request,
-        Article $article,
-        ArticleHandler $articleHandler,
-        UserInterface $user
-    ): Response
+    public function edit(): Response
     {
-        $form = $this->createForm(ArticleType::class, $article)->handleRequest($request);
+        $form = $this->createForm(ArticleType::class, $this->article)->handleRequest($this->request);
 
-        if ($articleHandler->editArticleHandle($form, $article, $user)) {
+        if ($this->articleHandler->editArticleHandle($form, $this->article, $this->user)) {
             $this->addFlash(
                 'success',
                 sprintf(
                     "L'édition de l'article \"%s\" à bien été effectué.",
-                    $article->getTitle()
+                    $this->article->getTitle()
                 )
             );
 
@@ -115,28 +118,26 @@ class ArticleController extends AbstractController
         }
 
         return $this->render('admin/article/edit.html.twig', [
-            'article' => $article,
+            'article' => $this->article,
             'form' => $form->createView(),
         ]);
     }
 
     /**
+     * @return Response
+     *
      * @Route("/{id}", name="delete", methods={"DELETE"})
      */
-    public function delete(
-        Request $request,
-        Article $article,
-        ArticleHandler $articleHandler
-    ): Response
+    public function delete(): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$article->getId(), $request->request->get('_token'))) {
-            $articleHandler->deleteArticleHandle($article);
+        if ($this->isCsrfTokenValid('delete'.$this->article->getId(), $this->request->request->get('_token'))) {
+            $this->articleHandler->deleteArticleHandle($this->article);
 
             $this->addFlash(
                 'success',
                 sprintf(
                     "La suppression de l'article \"%s\" à bien été effectué.",
-                    $article->getTitle()
+                    $this->article->getTitle()
                 )
             );
         }
@@ -145,21 +146,14 @@ class ArticleController extends AbstractController
     }
 
     /**
-     * @param Request $request
-     * @param Article $article
-     * @param ArticleHandler $articleHandler
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return Response
      *
      * @Route("/{id}/publishing", name="publishing", methods={"POST"})
      */
-    public function publishing(
-        Request $request,
-        Article $article,
-        ArticleHandler $articleHandler
-    )
+    public function publishing(): Response
     {
-        if ($this->isCsrfTokenValid('publishing'.$article->getId(), $request->request->get('_token'))) {
-            $articleHandler->publishHandle($article);
+        if ($this->isCsrfTokenValid('publishing'.$this->article->getId(), $this->request->request->get('_token'))) {
+            $this->articleHandler->publishHandle($this->article);
 
             $this->addFlash('success', "L'article a bien été publié");
         }
@@ -168,21 +162,14 @@ class ArticleController extends AbstractController
     }
 
     /**
-     * @param Request $request
-     * @param Article $article
-     * @param ArticleHandler $articleHandler
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return Response
      *
      * @Route("/{id}/unpublishing", name="unpublishing", methods={"POST"})
      */
-    public function unpublishing(
-        Request $request,
-        Article $article,
-        ArticleHandler $articleHandler
-    )
+    public function unpublishing(): Response
     {
-        if ($this->isCsrfTokenValid('unpublishing'.$article->getId(), $request->request->get('_token'))) {
-            $articleHandler->unpublishHandle($article);
+        if ($this->isCsrfTokenValid('unpublishing'.$this->article->getId(), $this->request->request->get('_token'))) {
+            $this->articleHandler->unpublishHandle($this->article);
 
             $this->addFlash('success', "L'article a bien été dépublié");
         }

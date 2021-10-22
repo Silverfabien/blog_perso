@@ -8,22 +8,40 @@ use App\Form\Admin\User\UserEditType;
 use App\Repository\User\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Class UserController
+ *
  * @Route("/admin/user", name="admin_user_")
  */
 class UserController extends AbstractController
 {
+    private Request $request;
+    private User $user;
+    private UserHandler $userHandler;
+
+    public function __construct(
+        Request $request,
+        User $user,
+        UserHandler $userHandler
+    )
+    {
+        $this->request = $request;
+        $this->user = $user;
+        $this->userHandler = $userHandler;
+    }
+
     /**
      * @param UserRepository $userRepository
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      *
      * @Route("/", name="index", methods={"GET"})
      */
     public function index(
         UserRepository $userRepository
-    )
+    ): Response
     {
         return $this->render('admin/user/index.html.twig', [
             'users' => $userRepository->findAll()
@@ -31,20 +49,15 @@ class UserController extends AbstractController
     }
 
     /**
-     * @param Request $request
-     * @param User $user
+     * @return Response
      *
      * @Route("/{id}/edit", name="edit", methods={"GET","POST"})
      */
-    public function edit(
-        Request $request,
-        User $user,
-        UserHandler $userHandler
-    )
+    public function edit(): Response
     {
-        $form = $this->createForm(UserEditType::class, $user)->handleRequest($request);
+        $form = $this->createForm(UserEditType::class, $this->user)->handleRequest($this->request);
 
-        if ($userHandler->editUserHandle($form, $user)) {
+        if ($this->userHandler->editUserHandle($form, $this->user)) {
             $this->addFlash('success', "La modification de l'utilisateur à été effectuée.");
 
             return $this->redirectToRoute('admin_user_index');
@@ -56,16 +69,14 @@ class UserController extends AbstractController
     }
 
     /**
+     * @return Response
+     *
      * @Route("/{id}/delete", name="delete", methods={"POST"})
      */
-    public function delete(
-        Request $request,
-        User $user,
-        UserHandler $userHandler
-    )
+    public function delete(): Response
     {
-        if ($this->isCsrfTokenValid('remove'.$user->getId(), $request->request->get('_token'))) {
-            $userHandler->removeUserHandle($user);
+        if ($this->isCsrfTokenValid('remove'.$this->user->getId(), $this->request->request->get('_token'))) {
+            $this->userHandler->removeUserHandle($this->user);
 
             $this->addFlash('success', "L'utilisateur à bien été supprimé.");
         }
@@ -74,34 +85,30 @@ class UserController extends AbstractController
     }
 
     /**
+     * @return Response
+     *
      * @Route("/{id}/undelete", name="undelete", methods={"POST"})
      */
-    public function undelete(
-        Request $request,
-        User $user,
-        UserHandler $userHandler
-    )
+    public function undelete(): Response
     {
-        if ($this->isCsrfTokenValid('unremove'.$user->getId(), $request->request->get('_token'))) {
-            $userHandler->unremoveUserHandle($user);
+        if ($this->isCsrfTokenValid('unremove'.$this->user->getId(), $this->request->request->get('_token'))) {
+            $this->userHandler->unremoveUserHandle($this->user);
 
-            $this->addFlash('success', "L'utilisateur à bien été réabilité.");
+            $this->addFlash('success', "L'utilisateur à bien été réhabilité.");
         }
 
         return $this->redirectToRoute('admin_user_index');
     }
 
     /**
+     * @return Response
+     *
      * @Route("/{id}/deleteDefinitely", name="delete_definitely", methods={"POST"})
      */
-    public function removeUserDefinitely(
-        Request $request,
-        User $user,
-        UserHandler $userHandler
-    )
+    public function removeUserDefinitely(): Response
     {
-        if ($this->isCsrfTokenValid('removeDefinitely'.$user->getId(), $request->request->get('_token'))) {
-            $userHandler->removeUserDefinitely($user);
+        if ($this->isCsrfTokenValid('removeDefinitely'.$this->user->getId(), $this->request->request->get('_token'))) {
+            $this->userHandler->removeUserDefinitely($this->user);
 
             $this->addFlash('success', "L'utilisateur à bien été supprimé définitivement.");
         }
@@ -110,16 +117,14 @@ class UserController extends AbstractController
     }
 
     /**
-     * @param User $user
+     * @return Response
      *
      * @Route("/{id}/show", name="show", methods={"GET"})
      */
-    public function show(
-        User $user
-    )
+    public function show(): Response
     {
        return $this->render('admin/user/show.html.twig', [
-           'user' => $user
+           'user' => $this->user
        ]) ;
     }
 }

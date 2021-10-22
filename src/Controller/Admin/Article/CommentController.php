@@ -8,6 +8,7 @@ use App\Form\Article\ArticleCommentType;
 use App\Repository\Article\CommentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -16,15 +17,30 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class CommentController extends AbstractController
 {
+    private Request $request;
+    private Comment $comment;
+    private CommentHandler $commentHandler;
+
+    public function __construct(
+        Request $request,
+        Comment $comment,
+        CommentHandler $commentHandler
+    )
+    {
+        $this->request = $request;
+        $this->comment = $comment;
+        $this->commentHandler = $commentHandler;
+    }
+
     /**
      * @param CommentRepository $commentRepository
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      *
      * @Route("/", name="index", methods={"GET"})
      */
     public function index(
         CommentRepository $commentRepository
-    )
+    ): Response
     {
         return $this->render('admin/article/comment/index.html.twig', [
             'comments' => $commentRepository->findAll()
@@ -32,37 +48,27 @@ class CommentController extends AbstractController
     }
 
     /**
-     * @param Comment $comment
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      *
      * @Route("/{id}/show", name="show", methods={"GET"})
      */
-    public function show(
-        Comment $comment
-    )
+    public function show(): Response
     {
         return $this->render('admin/article/comment/show.html.twig', [
-            'comment' => $comment
+            'comment' => $this->comment
         ]);
     }
 
     /**
-     * @param Request $request
-     * @param Comment $comment
-     * @param CommentHandler $commentHandler
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return Response
      *
      * @Route("/{id}/edit", name="edit", methods={"GET", "POST"})
      */
-    public function edit(
-        Request $request,
-        Comment $comment,
-        CommentHandler $commentHandler
-    )
+    public function edit(): Response
     {
-        $form = $this->createForm(ArticleCommentType::class, $comment)->handleRequest($request);
+        $form = $this->createForm(ArticleCommentType::class, $this->comment)->handleRequest($this->request);
 
-        if ($commentHandler->editCommentHandle($form, $comment)) {
+        if ($this->commentHandler->editCommentHandle($form, $this->comment)) {
             $this->addFlash("success", "Le commentaire à bien été modifié.");
 
             return $this->redirectToRoute('admin_comment_index');
@@ -70,26 +76,22 @@ class CommentController extends AbstractController
 
         return $this->render('admin/article/comment/edit.html.twig', [
             'form' => $form->createView(),
-            'comment' => $comment
+            'comment' => $this->comment
         ]);
     }
 
     /**
-     * @param Request $request
-     * @param Comment $comment
-     * @param CommentHandler $commentHandler
+     * @param UserInterface $user
+     * @return Response
      *
      * @Route("/{id}/delete", name="delete", methods={"GET", "POST"})
      */
     public function delete(
-        Request $request,
-        Comment $comment,
-        CommentHandler $commentHandler,
         UserInterface $user
-    )
+    ): Response
     {
-        if ($this->isCsrfTokenValid('remove'.$comment->getId(), $request->request->get('_token'))) {
-            $commentHandler->deleteCommentHandle($comment, $user);
+        if ($this->isCsrfTokenValid('remove'.$this->comment->getId(), $this->request->request->get('_token'))) {
+            $this->commentHandler->deleteCommentHandle($this->comment, $user);
 
             $this->addFlash('success', "Le message à bien été supprimé.");
         }
@@ -98,22 +100,16 @@ class CommentController extends AbstractController
     }
 
     /**
-     * @param Request $request
-     * @param Comment $comment
-     * @param CommentHandler $commentHandler
+     * @return Response
      *
      * @Route("/{id}/undelete", name="undelete", methods={"GET", "POST"})
      */
-    public function undelete(
-        Request $request,
-        Comment $comment,
-        CommentHandler $commentHandler
-    )
+    public function undelete(): Response
     {
-        if ($this->isCsrfTokenValid('unremove'.$comment->getId(), $request->request->get('_token'))) {
-            $commentHandler->undeleteCommentHandle($comment);
+        if ($this->isCsrfTokenValid('unremove'.$this->comment->getId(), $this->request->request->get('_token'))) {
+            $this->commentHandler->undeleteCommentHandle($this->comment);
 
-            $this->addFlash('success', "Le message à bien été réabilité.");
+            $this->addFlash('success', "Le message à bien été réhabilité.");
         }
 
         return $this->redirectToRoute('admin_comment_index');

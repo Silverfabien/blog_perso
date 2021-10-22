@@ -8,12 +8,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/admin/visitor", name="admin_visitor_")
+ * Class VisitorController
  */
 class VisitorController extends AbstractController
 {
     /**
-     * @Route("/", name="index")
+     * @param VisitorRepository $visitorRepository
+     * @return Response
+     *
+     * @Route("/admin/visitor", name="admin_visitor_index")
      */
     public function index(
         VisitorRepository $visitorRepository

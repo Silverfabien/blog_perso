@@ -13,6 +13,7 @@ use App\Repository\User\UserPictureRepository;
 use App\Repository\User\UserRepository;
 use App\Repository\Visitor\VisitorRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -21,7 +22,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class StatisticController extends AbstractController
 {
     /**
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param ArticleRepository $articleRepository
+     * @param CommentRepository $commentRepository
+     * @param LikeRepository $likeRepository
+     * @param TagsRepository $tagsRepository
+     * @param ContactRepository $contactRepository
+     * @param UserRepository $userRepository
+     * @param BlockedRepository $blockedRepository
+     * @param RankRepository $rankRepository
+     * @param UserPictureRepository $userPictureRepository
+     * @param VisitorRepository $visitorRepository
+     * @return Response
      *
      * @Route("/", name="index", methods={"GET"})
      */
@@ -36,7 +47,7 @@ class StatisticController extends AbstractController
         RankRepository $rankRepository,
         UserPictureRepository $userPictureRepository,
         VisitorRepository $visitorRepository
-    )
+    ): Response
     {
         return $this->render('admin/statistic/index.html.twig', [
             'articles' => $articleRepository->findAll(),
@@ -48,13 +59,13 @@ class StatisticController extends AbstractController
             'nbLike' => count($likeRepository->findAll()),
             'nbTag' => count($tagsRepository->findAll()),
             'nbContact' => count($contactRepository->findAll()),
-            'nbContactTrue' => count($contactRepository->findByConfirm(true)),
-            'nbContactFalse' => count($contactRepository->findByConfirm(false)),
+            'nbContactTrue' => count($contactRepository->findBy(['confirm' => true])),
+            'nbContactFalse' => count($contactRepository->findBy(['confirm' => false])),
             'nbUser' => count($userRepository->findAll()),
-            'nbUserEmailConfirm' => count($userRepository->findByConfirmationAccount(true)),
-            'nbUserEmailNotConfirm' => count($userRepository->findByConfirmationAccount(false)),
-            'nbUserDeleted' => count($userRepository->findByDeleted(true)),
-            'nbUserBlocked' => count($blockedRepository->findByBlocked(true)),
+            'nbUserEmailConfirm' => count($userRepository->findBy(['confirmationAccount' => true])),
+            'nbUserEmailNotConfirm' => count($userRepository->findBy(['confirmationAccount' => false])),
+            'nbUserDeleted' => count($userRepository->findBy(['deleted' => true])),
+            'nbUserBlocked' => count($blockedRepository->findBy(['blocked' => true])),
             'nbRank' => count($rankRepository->findAll()),
             'nbUserVisitor' => count($visitorRepository->findAll()),
             'mostLike' => $likeRepository->mostLike(),

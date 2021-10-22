@@ -15,11 +15,11 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class DefaultController extends AbstractController
 {
-    const ID_PICTURE_OWNER = 1;
+    public const ID_PICTURE_OWNER = 1;
 
     /**
-     * Page index
-     *
+     * @param ArticleRepository $articleRepository
+     * @param UserPictureRepository $userPictureRepository
      * @return Response
      *
      * @Route("/", name="default")
@@ -31,7 +31,7 @@ class DefaultController extends AbstractController
     {
         return $this->render('default/index.html.twig', [
             'articles' => $articleRepository->findBy(['publish' => true], ['publishedAt' => 'DESC'], 3),
-            'user' => $userPictureRepository->findOneById(self::ID_PICTURE_OWNER)
+            'user' => $userPictureRepository->findOneBy(['id' => self::ID_PICTURE_OWNER])
         ]);
     }
 }

@@ -20,37 +20,58 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Class ArticleController
+ *
  * @Route("/article", name="article_")
  */
 class ArticleController extends AbstractController
 {
-    /**
-     * @Route("/", name="index")
-     */
-    public function index(
+    private ArticleRepository $articleRepository;
+    private CommentRepository $commentRepository;
+    private LikeRepository $likeRepository;
+    private ArticleHandler $articleHandler;
+    private Request $request;
+
+    public function __construct(
         ArticleRepository $articleRepository,
         CommentRepository $commentRepository,
-        LikeRepository $likeRepository
-    ): Response
+        LikeRepository $likeRepository,
+        ArticleHandler $articleHandler,
+        Request $request
+    )
+    {
+        $this->articleRepository = $articleRepository;
+        $this->commentRepository = $commentRepository;
+        $this->likeRepository = $likeRepository;
+        $this->articleHandler = $articleHandler;
+        $this->request = $request;
+    }
+
+    /**
+     * @return Response
+     *
+     * @Route("/", name="index")
+     */
+    public function index(): Response
     {
         return $this->render('article/index.html.twig', [
-            'articles' => $articleRepository->findAll(),
-            'comments' => $commentRepository->findAll(),
-            'likes' => $likeRepository->findAll()
+            'articles' => $this->articleRepository->findAll(),
+            'comments' => $this->commentRepository->findAll(),
+            'likes' => $this->likeRepository->findAll()
         ]);
     }
 
     /**
+     * @param Article $article
+     * @param ArticleCommentHandler $commentHandler
+     * @return Response
+     *
      * @Route("/{slug}", name="show")
      */
     public function show(
         Article $article,
-        LikeRepository $likeRepository,
-        ArticleHandler $articleHandler,
-        Request $request,
-        ArticleCommentHandler $commentHandler,
-        CommentRepository $commentRepository
-    )
+        ArticleCommentHandler $commentHandler
+    ): Response
     {
         /* @var $user User */
         $user = $this->getUser();
@@ -61,7 +82,7 @@ class ArticleController extends AbstractController
 
         // Formulaire des commentaires
         $commentArticle = new Comment();
-        $form = $this->createForm(ArticleCommentType::class, $commentArticle)->handleRequest($request);
+        $form = $this->createForm(ArticleCommentType::class, $commentArticle)->handleRequest($this->request);
 
         if ($this->getUser() && $commentHandler->createCommentHandle($form, $commentArticle, $article, $user)) {
             return $this->redirectToRoute('article_show', ['slug' => $article->getSlug()]);
@@ -69,44 +90,43 @@ class ArticleController extends AbstractController
 
         // Count visitor
         if ($article->getPublish()) {
-            $articleHandler->seeArticleHandle($article);
+            $this->articleHandler->seeArticleHandle($article);
         }
 
 //        // Édition d'un commentaire
-//        $editForm = $this->createForm(ArticleEditCommentType::class, $comment)->handleRequest($request);
-//        if ($commentHandler->editCommentHandle($editForm, $comment)) {
+//        $editForm = $this->createForm(ArticleEditCommentType::class, $commentArticle)->handleRequest($this->request);
+//        if ($commentHandler->editCommentHandle($editForm, $commentArticle)) {
 //            return $this->redirectToRoute('article_show', ['slug' => $article->getSlug()]);
 //        }
 
         return $this->render('article/show.html.twig', [
             'article' => $article,
-            'likes' => $likeRepository->findByArticle($article),
-            'articleLike' => count($likeRepository->findByArticle($article)),
+            'likes' => $this->likeRepository->findBy(['article' => $article]),
+            'articleLike' => count($this->likeRepository->findBy(['article' => $article])),
             'form' => $form->createView(),
-            'comments' => $commentRepository->findByArticle($article),
-            'countComment' => count($commentRepository->findBy(['article' => $article, 'deleted' => false]))
+            'comments' => $this->commentRepository->findBy(['article' => $article]),
+            'countComment' => count($this->commentRepository->findBy(['article' => $article, 'deleted' => false]))
         ]);
     }
 
     /**
-     * @param Request $request
+     * @param ArticleCommentHandler $commentHandler
+     * @return Response
      *
      * @Route("/{slug}/editComment/{id}", name="edit_comment")
      */
     public function editComment(
-        Request $request,
-        CommentRepository $commentRepository,
         ArticleCommentHandler $commentHandler
-    )
+    ): Response
     {
         //TODO A debug
-        if ($this->getUser() && $request->getMethod() === 'POST' && $request->isXmlHttpRequest()) {
-            $commentId = $request->request->get('commentId');
-            $comment = $commentRepository->findOneById($commentId);
+        if ($this->getUser() && $this->request->getMethod() === 'POST' && $this->request->isXmlHttpRequest()) {
+            $commentId = $this->request->request->get('commentId');
+            $comment = $this->commentRepository->findOneBy(['id' => $commentId]);
 
-            $submittedToken = $request->request->get('csrfToken');
-            if ($this->isCsrfTokenValid('comment' . $comment->getId(), $submittedToken)) {
-                $form = $this->createForm(ArticleEditCommentType::class, $comment)->handleRequest($request);
+            $submittedToken = $this->request->request->get('csrfToken');
+            if (!$comment && $this->isCsrfTokenValid('comment'.$comment->getId(), $submittedToken)) {
+                $form = $this->createForm(ArticleEditCommentType::class, $comment)->handleRequest($this->request);
 
                 if ($commentHandler->editCommentHandle($form, $comment)) {
                     return $this->redirectToRoute('article_index');
@@ -122,27 +142,24 @@ class ArticleController extends AbstractController
     }
 
     /**
-     * @param Request $request
-     * @param ArticleHandler $articleHandler
+     * @return JsonResponse
      *
      * @Route("/{slug}/like", name="like_unlike")
      */
-    public function likeUnlike(
-        Request $request,
-        ArticleHandler $articleHandler,
-        LikeRepository $likeRepository
-    ): JsonResponse
+    public function likeUnlike(): JsonResponse
     {
-        if ($this->getUser() && $request->getMethod() === 'POST' && $request->isXmlHttpRequest()) {
+        $result = '';
+
+        if ($this->getUser() && $this->request->getMethod() === 'POST' && $this->request->isXmlHttpRequest()) {
             $em = $this->getDoctrine()->getManager();
-            $articleSlug = $request->request->get('entitySlug');
-            $article = $em->getRepository(Article::class)->findOneBySlug([$articleSlug]);
+            $articleSlug = $this->request->request->get('entitySlug');
+            $article = $em->getRepository(Article::class)->findOneBy(['slug' => $articleSlug]);
 
             if (!$article) {
                 return new JsonResponse();
             }
 
-            $submittedToken = $request->request->get('csrfToken');
+            $submittedToken = $this->request->request->get('csrfToken');
 
             if ($this->isCsrfTokenValid('article' . $article->getSlug(), $submittedToken)) {
                 /* @var $user User */
@@ -153,11 +170,11 @@ class ArticleController extends AbstractController
                 ]);
 
                 if ($articleAlreadyLiked) {
-                    $likeRepository->unlike($articleAlreadyLiked);
+                    $this->likeRepository->unlike($articleAlreadyLiked);
                     $result = 'delete';
                 } else {
                     $like = new Like();
-                    $articleHandler->likeHandle($like, $article, $user);
+                    $this->articleHandler->likeHandle($like, $article, $user);
                     $result = 'create';
                 }
             }

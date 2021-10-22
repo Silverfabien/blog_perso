@@ -18,6 +18,21 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class TagsController extends AbstractController
 {
+    private Request $request;
+    private Tags $tags;
+    private TagsHandler $tagsHandler;
+
+    public function __construct(
+        Request $request,
+        Tags $tag,
+        TagsHandler $tagsHandler
+    )
+    {
+        $this->request = $request;
+        $this->tags = $tag;
+        $this->tagsHandler = $tagsHandler;
+    }
+
     /**
      * @param TagsRepository $tagsRepository
      * @return Response
@@ -34,21 +49,16 @@ class TagsController extends AbstractController
     }
 
     /**
-     * @param Request $request
-     * @param TagsHandler $tagsHandler
      * @return Response
      *
      * @Route("/new", name="new", methods={"GET","POST"})
      */
-    public function new(
-        Request $request,
-        TagsHandler $tagsHandler
-    ): Response
+    public function new(): Response
     {
         $tag = new Tags();
-        $form = $this->createForm(TagsType::class, $tag)->handleRequest($request);
+        $form = $this->createForm(TagsType::class, $tag)->handleRequest($this->request);
 
-        if ($tagsHandler->createTagsHandle($form, $tag)) {
+        if ($this->tagsHandler->createTagsHandle($form, $tag)) {
             $this->addFlash(
                 'success',
                 sprintf(
@@ -66,42 +76,32 @@ class TagsController extends AbstractController
     }
 
     /**
-     * @param Tags $tag
      * @return Response
      *
      * @Route("/{id}", name="show", methods={"GET"})
      */
-    public function show(
-        Tags $tag
-    ): Response
+    public function show(): Response
     {
         return $this->render('admin/article/tags/show.html.twig', [
-            'tag' => $tag
+            'tag' => $this->tags
         ]);
     }
 
     /**
-     * @param Request $request
-     * @param Tags $tag
-     * @param TagsHandler $tagsHandler
      * @return Response
      *
      * @Route("/{id}/edit", name="edit", methods={"GET","POST"})
      */
-    public function edit(
-        Request $request,
-        Tags $tag,
-        TagsHandler $tagsHandler
-    ): Response
+    public function edit(): Response
     {
-        $form = $this->createForm(TagsType::class, $tag)->handleRequest($request);
+        $form = $this->createForm(TagsType::class, $this->tags)->handleRequest($this->request);
 
-        if ($tagsHandler->editTagsHandle($form, $tag)) {
+        if ($this->tagsHandler->editTagsHandle($form, $this->tags)) {
             $this->addFlash(
                 'success',
                 sprintf(
                     "L'édition du tag \"%s\" à bien été effectué.",
-                    $tag->getName()
+                    $this->tags->getName()
                 )
             );
 
@@ -109,33 +109,26 @@ class TagsController extends AbstractController
         }
 
         return $this->render('admin/article/tags/edit.html.twig', [
-            'tag' => $tag,
+            'tag' => $this->tags,
             'form' => $form->createView(),
         ]);
     }
 
     /**
-     * @param Request $request
-     * @param Tags $tag
-     * @param TagsHandler $tagsHandler
      * @return Response
      *
      * @Route("/{id}", name="delete", methods={"POST"})
      */
-    public function delete(
-        Request $request,
-        Tags $tag,
-        TagsHandler $tagsHandler
-    ): Response
+    public function delete(): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$tag->getId(), $request->request->get('_token'))) {
-            $tagsHandler->deleteTasHandle($tag);
+        if ($this->isCsrfTokenValid('delete'.$this->tags->getId(), $this->request->request->get('_token'))) {
+            $this->tagsHandler->deleteTasHandle($this->tags);
 
             $this->addFlash(
                 'success',
                 sprintf(
                     "La suppression du tag \"%s\" à bien été effectué.",
-                    $tag->getName()
+                    $this->tags->getName()
                 )
             );
         }
