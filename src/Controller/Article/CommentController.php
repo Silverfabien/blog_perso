@@ -17,69 +17,77 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class CommentController extends AbstractController
 {
-    private Request $request;
-    private Comment $comment;
     private ArticleCommentHandler $articleCommentHandler;
 
     public function __construct(
-        Request $request,
-        Comment $comment,
         ArticleCommentHandler $articleCommentHandler
     )
     {
-        $this->request = $request;
-        $this->comment = $comment;
         $this->articleCommentHandler = $articleCommentHandler;
     }
 
     /**
      * @param UserInterface $user
+     * @param Request $request
+     * @param Comment $comment
      * @return Response
      *
      * @Route("/{id}/delete", name="delete")
      */
     public function delete(
-        UserInterface $user
+        UserInterface $user,
+        Request $request,
+        Comment $comment
     ): Response
     {
-        if ($this->getUser() !== $this->comment->getUser()) {
+        if ($this->getUser() !== $comment->getUser()) {
             $this->denyAccessUnlessGranted('ROLE_ADMIN');
         }
 
-        if ($this->isCsrfTokenValid('delete'.$this->comment->getId(), $this->request->request->get('_token'))) {
-            $this->articleCommentHandler->removeCommentHandle($this->comment, $user);
+        if ($this->isCsrfTokenValid('delete'.$comment->getId(), $request->request->get('_token'))) {
+            $this->articleCommentHandler->removeCommentHandle($comment, $user);
         }
 
         return $this->redirectToRoute('article_index');
     }
 
     /**
+     * @param Request $request
+     * @param Comment $comment
      * @return Response
      *
      * @Route("/{id}/undelete", name="undelete")
      */
-    public function unDelete(): Response
+    public function unDelete(
+        Request $request,
+        Comment $comment
+    ): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        if ($this->isCsrfTokenValid('unDelete'.$this->comment->getId(), $this->request->request->get('_token'))) {
-            $this->articleCommentHandler->unRemoveCommentHandle($this->comment);
+        if ($this->isCsrfTokenValid('unDelete'.$comment->getId(), $request->request->get('_token'))) {
+            $this->articleCommentHandler->unRemoveCommentHandle($comment);
         }
 
         return $this->redirectToRoute('article_index');
     }
 
     /**
+     * @param Request $request
+     * @param Comment $comment
      * @return Response
      *
      * @Route("/{id}/delete_definitely", name="delete_definitely")
      */
-    public function deleteDefinitely(): Response
+    public function deleteDefinitely(
+        Request $request,
+        Comment $comment
+    ): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        if ($this->isCsrfTokenValid('deleteDefinitely'.$this->comment->getId(), $this->request->request->get('_token'))) {
-            $this->articleCommentHandler->removeDefinitely($this->comment);
+        if ($this->isCsrfTokenValid('deleteDefinitely'.$comment->getId(), $request->request->get('_token'))) {
+            $this->articleCommentHandler->removeDefinitely($comment);
         }
 
         return $this->redirectToRoute('article_index');

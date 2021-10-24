@@ -30,21 +30,18 @@ class ArticleController extends AbstractController
     private CommentRepository $commentRepository;
     private LikeRepository $likeRepository;
     private ArticleHandler $articleHandler;
-    private Request $request;
 
     public function __construct(
         ArticleRepository $articleRepository,
         CommentRepository $commentRepository,
         LikeRepository $likeRepository,
-        ArticleHandler $articleHandler,
-        Request $request
+        ArticleHandler $articleHandler
     )
     {
         $this->articleRepository = $articleRepository;
         $this->commentRepository = $commentRepository;
         $this->likeRepository = $likeRepository;
         $this->articleHandler = $articleHandler;
-        $this->request = $request;
     }
 
     /**
@@ -64,13 +61,15 @@ class ArticleController extends AbstractController
     /**
      * @param Article $article
      * @param ArticleCommentHandler $commentHandler
+     * @param Request $request
      * @return Response
      *
      * @Route("/{slug}", name="show")
      */
     public function show(
         Article $article,
-        ArticleCommentHandler $commentHandler
+        ArticleCommentHandler $commentHandler,
+        Request $request
     ): Response
     {
         /* @var $user User */
@@ -82,7 +81,7 @@ class ArticleController extends AbstractController
 
         // Formulaire des commentaires
         $commentArticle = new Comment();
-        $form = $this->createForm(ArticleCommentType::class, $commentArticle)->handleRequest($this->request);
+        $form = $this->createForm(ArticleCommentType::class, $commentArticle)->handleRequest($request);
 
         if ($this->getUser() && $commentHandler->createCommentHandle($form, $commentArticle, $article, $user)) {
             return $this->redirectToRoute('article_show', ['slug' => $article->getSlug()]);
@@ -94,7 +93,7 @@ class ArticleController extends AbstractController
         }
 
 //        // Édition d'un commentaire
-//        $editForm = $this->createForm(ArticleEditCommentType::class, $commentArticle)->handleRequest($this->request);
+//        $editForm = $this->createForm(ArticleEditCommentType::class, $commentArticle)->handleRequest($request);
 //        if ($commentHandler->editCommentHandle($editForm, $commentArticle)) {
 //            return $this->redirectToRoute('article_show', ['slug' => $article->getSlug()]);
 //        }
@@ -111,22 +110,24 @@ class ArticleController extends AbstractController
 
     /**
      * @param ArticleCommentHandler $commentHandler
+     * @param Request $request
      * @return Response
      *
      * @Route("/{slug}/editComment/{id}", name="edit_comment")
      */
     public function editComment(
-        ArticleCommentHandler $commentHandler
+        ArticleCommentHandler $commentHandler,
+        Request $request
     ): Response
     {
         //TODO A debug
-        if ($this->getUser() && $this->request->getMethod() === 'POST' && $this->request->isXmlHttpRequest()) {
-            $commentId = $this->request->request->get('commentId');
+        if ($this->getUser() && $request->getMethod() === 'POST' && $request->isXmlHttpRequest()) {
+            $commentId = $request->request->get('commentId');
             $comment = $this->commentRepository->findOneBy(['id' => $commentId]);
 
-            $submittedToken = $this->request->request->get('csrfToken');
+            $submittedToken = $request->request->get('csrfToken');
             if (!$comment && $this->isCsrfTokenValid('comment'.$comment->getId(), $submittedToken)) {
-                $form = $this->createForm(ArticleEditCommentType::class, $comment)->handleRequest($this->request);
+                $form = $this->createForm(ArticleEditCommentType::class, $comment)->handleRequest($request);
 
                 if ($commentHandler->editCommentHandle($form, $comment)) {
                     return $this->redirectToRoute('article_index');
@@ -142,24 +143,27 @@ class ArticleController extends AbstractController
     }
 
     /**
+     * @param Request $request
      * @return JsonResponse
      *
      * @Route("/{slug}/like", name="like_unlike")
      */
-    public function likeUnlike(): JsonResponse
+    public function likeUnlike(
+        Request $request
+    ): JsonResponse
     {
         $result = '';
 
-        if ($this->getUser() && $this->request->getMethod() === 'POST' && $this->request->isXmlHttpRequest()) {
+        if ($this->getUser() && $request->getMethod() === 'POST' && $request->isXmlHttpRequest()) {
             $em = $this->getDoctrine()->getManager();
-            $articleSlug = $this->request->request->get('entitySlug');
+            $articleSlug = $request->request->get('entitySlug');
             $article = $em->getRepository(Article::class)->findOneBy(['slug' => $articleSlug]);
 
             if (!$article) {
                 return new JsonResponse();
             }
 
-            $submittedToken = $this->request->request->get('csrfToken');
+            $submittedToken = $request->request->get('csrfToken');
 
             if ($this->isCsrfTokenValid('article' . $article->getSlug(), $submittedToken)) {
                 /* @var $user User */

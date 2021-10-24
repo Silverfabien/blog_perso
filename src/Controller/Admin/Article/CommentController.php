@@ -17,18 +17,12 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class CommentController extends AbstractController
 {
-    private Request $request;
-    private Comment $comment;
     private CommentHandler $commentHandler;
 
     public function __construct(
-        Request $request,
-        Comment $comment,
         CommentHandler $commentHandler
     )
     {
-        $this->request = $request;
-        $this->comment = $comment;
         $this->commentHandler = $commentHandler;
     }
 
@@ -48,27 +42,35 @@ class CommentController extends AbstractController
     }
 
     /**
+     * @param Comment $comment
      * @return Response
      *
      * @Route("/{id}/show", name="show", methods={"GET"})
      */
-    public function show(): Response
+    public function show(
+        Comment $comment
+    ): Response
     {
         return $this->render('admin/article/comment/show.html.twig', [
-            'comment' => $this->comment
+            'comment' => $comment
         ]);
     }
 
     /**
+     * @param Request $request
+     * @param Comment $comment
      * @return Response
      *
      * @Route("/{id}/edit", name="edit", methods={"GET", "POST"})
      */
-    public function edit(): Response
+    public function edit(
+        Request $request,
+        Comment $comment
+    ): Response
     {
-        $form = $this->createForm(ArticleCommentType::class, $this->comment)->handleRequest($this->request);
+        $form = $this->createForm(ArticleCommentType::class, $comment)->handleRequest($request);
 
-        if ($this->commentHandler->editCommentHandle($form, $this->comment)) {
+        if ($this->commentHandler->editCommentHandle($form, $comment)) {
             $this->addFlash("success", "Le commentaire à bien été modifié.");
 
             return $this->redirectToRoute('admin_comment_index');
@@ -76,22 +78,26 @@ class CommentController extends AbstractController
 
         return $this->render('admin/article/comment/edit.html.twig', [
             'form' => $form->createView(),
-            'comment' => $this->comment
+            'comment' => $comment
         ]);
     }
 
     /**
      * @param UserInterface $user
+     * @param Request $request
+     * @param Comment $comment
      * @return Response
      *
      * @Route("/{id}/delete", name="delete", methods={"GET", "POST"})
      */
     public function delete(
-        UserInterface $user
+        UserInterface $user,
+        Request $request,
+        Comment $comment
     ): Response
     {
-        if ($this->isCsrfTokenValid('remove'.$this->comment->getId(), $this->request->request->get('_token'))) {
-            $this->commentHandler->deleteCommentHandle($this->comment, $user);
+        if ($this->isCsrfTokenValid('remove'.$comment->getId(), $request->request->get('_token'))) {
+            $this->commentHandler->deleteCommentHandle($comment, $user);
 
             $this->addFlash('success', "Le message à bien été supprimé.");
         }
@@ -100,14 +106,19 @@ class CommentController extends AbstractController
     }
 
     /**
+     * @param Request $request
+     * @param Comment $comment
      * @return Response
      *
      * @Route("/{id}/undelete", name="undelete", methods={"GET", "POST"})
      */
-    public function undelete(): Response
+    public function undelete(
+        Request $request,
+        Comment $comment
+    ): Response
     {
-        if ($this->isCsrfTokenValid('unremove'.$this->comment->getId(), $this->request->request->get('_token'))) {
-            $this->commentHandler->undeleteCommentHandle($this->comment);
+        if ($this->isCsrfTokenValid('unremove'.$comment->getId(), $request->request->get('_token'))) {
+            $this->commentHandler->undeleteCommentHandle($comment);
 
             $this->addFlash('success', "Le message à bien été réhabilité.");
         }

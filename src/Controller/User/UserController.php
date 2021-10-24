@@ -2,7 +2,7 @@
 
 namespace App\Controller\User;
 
-use App\ControllerHandler\UserHandler;
+use App\ControllerHandler\User\UserHandler;
 use App\Form\User\ResetPasswordType;
 use App\Form\User\UserEditType;
 use App\Repository\Article\CommentRepository;
@@ -22,21 +22,19 @@ use App\Entity\User\User;
  */
 class UserController extends AbstractController
 {
-    private Request $request;
     private UserHandler $userHandler;
 
     public function __construct(
-        Request $request,
         UserHandler $userHandler
     )
     {
-        $this->request = $request;
         $this->userHandler = $userHandler;
     }
 
     /**
      * @param CommentRepository $commentRepository
      * @param LikeRepository $likeRepository
+     * @param Request $request
      * @return Response
      * @throws ORMException
      * @throws OptimisticLockException
@@ -45,7 +43,8 @@ class UserController extends AbstractController
      */
     public function account(
         CommentRepository $commentRepository,
-        LikeRepository $likeRepository
+        LikeRepository $likeRepository,
+        Request $request
     ): Response
     {
         /* @var $user User */
@@ -53,7 +52,7 @@ class UserController extends AbstractController
 
         // TODO Amélioration avec les EventListener
         // Édition des informations
-        $userForm = $this->createForm(UserEditType::class, $user)->handleRequest($this->request);
+        $userForm = $this->createForm(UserEditType::class, $user)->handleRequest($request);
 
         if ($this->userHandler->editUserHandle($userForm, $user)) {
             $this->addFlash(
@@ -66,7 +65,7 @@ class UserController extends AbstractController
 
         // TODO Amélioration avec les EventListener
         // Édition du mot de passe
-        $passwordForm = $this->createForm(ResetPasswordType::class, $user)->handleRequest($this->request);
+        $passwordForm = $this->createForm(ResetPasswordType::class, $user)->handleRequest($request);
 
         if ($this->userHandler->editPasswordHandle($passwordForm, $user)) {
             $this->addFlash(
@@ -87,7 +86,6 @@ class UserController extends AbstractController
 
     /**
      * @param User $user
-     * @param UserHandler $userHandler
      * @param Request $request
      * @return Response
      * @throws ORMException
@@ -97,12 +95,11 @@ class UserController extends AbstractController
      */
     public function deletedAccount(
         User $user,
-        UserHandler $userHandler,
         Request $request
     ): Response
     {
         if ($this->isCsrfTokenValid('remove'.$user->getId(), $request->request->get('_token'))) {
-            $userHandler->deletedHandle($user);
+            $this->userHandler->deletedHandle($user);
 
             $this->container->get('security.token_storage')->setToken();
 

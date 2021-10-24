@@ -19,22 +19,13 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class BlockedController extends AbstractController
 {
-    private Request $request;
     private BlockedHandler $blockedHandler;
-    private Blocked $blocked;
-    private User $user;
 
     public function __construct(
-        Request $request,
-        BlockedHandler $blockedHandler,
-        Blocked $blocked,
-        User $user
+        BlockedHandler $blockedHandler
     )
     {
-        $this->request = $request;
         $this->blockedHandler = $blockedHandler;
-        $this->blocked = $blocked;
-        $this->user = $user;
     }
 
     /**
@@ -53,29 +44,37 @@ class BlockedController extends AbstractController
     }
 
     /**
+     * @param Blocked $blocked
      * @return Response
      *
      * @Route("/{id}/show", name="show", methods={"GET"})
      */
-    public function show(): Response
+    public function show(
+        Blocked $blocked
+    ): Response
     {
         return $this->render('admin/user/blocked/show.html.twig', [
-            'blocked' => $this->blocked
+            'blocked' => $blocked
         ]);
     }
 
     /**
+     * @param Request $request
+     * @param User $user
      * @return Response
      *
      * @Route("/{user_id}/blocked", name="blocked", methods={"GET", "POST"})
      * @ParamConverter("user", options={"id" = "user_id"})
      */
-    public function blocked(): Response
+    public function blocked(
+        Request $request,
+        User $user
+    ): Response
     {
         $blocked = new Blocked();
-        $form = $this->createForm(BlockedType::class, $blocked)->handleRequest($this->request);
+        $form = $this->createForm(BlockedType::class, $blocked)->handleRequest($request);
 
-        if ($this->blockedHandler->blockedHandle($form, $blocked, $this->user)) {
+        if ($this->blockedHandler->blockedHandle($form, $blocked, $user)) {
             $this->addFlash('success', "Le compte a bien été bloqué");
 
             return $this->redirectToRoute('admin_blocked_index');
@@ -83,21 +82,28 @@ class BlockedController extends AbstractController
 
         return $this->render('admin/user/blocked/blocked.html.twig', [
             'form' => $form->createView(),
-            'user' => $this->user
+            'user' => $user
         ]);
     }
 
     /**
+     * @param Request $request
+     * @param Blocked $blocked
+     * @param User $user
      * @return Response
      *
      * @Route("/{user_id}/unblocked", name="unblocked", methods={"GET", "POST"})
      * @ParamConverter("user", options={"id" = "user_id"})
      */
-    public function unblocked(): Response
+    public function unblocked(
+        Request $request,
+        Blocked $blocked,
+        User $user
+    ): Response
     {
-        $form = $this->createForm(UnblockedType::class, $this->blocked)->handleRequest($this->request);
+        $form = $this->createForm(UnblockedType::class, $blocked)->handleRequest($request);
 
-        if ($this->blockedHandler->unblockedHandle($form, $this->blocked)) {
+        if ($this->blockedHandler->unblockedHandle($form, $blocked)) {
             $this->addFlash('success', "Le compte a bien été débloqué");
 
             return $this->redirectToRoute('admin_blocked_index');
@@ -105,7 +111,7 @@ class BlockedController extends AbstractController
 
         return $this->render('admin/user/blocked/unblocked.html.twig', [
             'form' => $form->createView(),
-            'user' => $this->user
+            'user' => $user
         ]);
     }
 }

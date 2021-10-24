@@ -10,8 +10,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class ArticleHandler
 {
-    private $articleRepository;
-    private $likeRepository;
+    private ArticleRepository $articleRepository;
+    private LikeRepository $likeRepository;
 
     public function __construct(
         ArticleRepository $articleRepository,
@@ -22,11 +22,17 @@ class ArticleHandler
         $this->likeRepository = $likeRepository;
     }
 
+    /**
+     * @param Like $like
+     * @param Article $article
+     * @param UserInterface $user
+     * @return bool
+     */
     public function likeHandle(
         Like $like,
         Article $article,
         UserInterface $user
-    )
+    ): bool
     {
         $like->setArticle($article);
         $like->setUser($user);
@@ -36,9 +42,13 @@ class ArticleHandler
         return true;
     }
 
+    /**
+     * @param Article $article
+     * @return bool
+     */
     public function seeArticleHandle(
         Article $article
-    )
+    ): bool
     {
         $article->setSee($article->getSee()+1);
 

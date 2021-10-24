@@ -18,18 +18,12 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class UserController extends AbstractController
 {
-    private Request $request;
-    private User $user;
     private UserHandler $userHandler;
 
     public function __construct(
-        Request $request,
-        User $user,
         UserHandler $userHandler
     )
     {
-        $this->request = $request;
-        $this->user = $user;
         $this->userHandler = $userHandler;
     }
 
@@ -49,15 +43,20 @@ class UserController extends AbstractController
     }
 
     /**
+     * @param Request $request
+     * @param User $user
      * @return Response
      *
      * @Route("/{id}/edit", name="edit", methods={"GET","POST"})
      */
-    public function edit(): Response
+    public function edit(
+        Request $request,
+        User $user
+    ): Response
     {
-        $form = $this->createForm(UserEditType::class, $this->user)->handleRequest($this->request);
+        $form = $this->createForm(UserEditType::class, $user)->handleRequest($request);
 
-        if ($this->userHandler->editUserHandle($form, $this->user)) {
+        if ($this->userHandler->editUserHandle($form, $user)) {
             $this->addFlash('success', "La modification de l'utilisateur à été effectuée.");
 
             return $this->redirectToRoute('admin_user_index');
@@ -69,14 +68,19 @@ class UserController extends AbstractController
     }
 
     /**
+     * @param Request $request
+     * @param User $user
      * @return Response
      *
      * @Route("/{id}/delete", name="delete", methods={"POST"})
      */
-    public function delete(): Response
+    public function delete(
+        Request $request,
+        User $user
+    ): Response
     {
-        if ($this->isCsrfTokenValid('remove'.$this->user->getId(), $this->request->request->get('_token'))) {
-            $this->userHandler->removeUserHandle($this->user);
+        if ($this->isCsrfTokenValid('remove'.$user->getId(), $request->request->get('_token'))) {
+            $this->userHandler->removeUserHandle($user);
 
             $this->addFlash('success', "L'utilisateur à bien été supprimé.");
         }
@@ -85,14 +89,19 @@ class UserController extends AbstractController
     }
 
     /**
+     * @param Request $request
+     * @param User $user
      * @return Response
      *
      * @Route("/{id}/undelete", name="undelete", methods={"POST"})
      */
-    public function undelete(): Response
+    public function undelete(
+        Request $request,
+        User $user
+    ): Response
     {
-        if ($this->isCsrfTokenValid('unremove'.$this->user->getId(), $this->request->request->get('_token'))) {
-            $this->userHandler->unremoveUserHandle($this->user);
+        if ($this->isCsrfTokenValid('unremove'.$user->getId(), $request->request->get('_token'))) {
+            $this->userHandler->unremoveUserHandle($user);
 
             $this->addFlash('success', "L'utilisateur à bien été réhabilité.");
         }
@@ -101,14 +110,19 @@ class UserController extends AbstractController
     }
 
     /**
+     * @param Request $request
+     * @param User $user
      * @return Response
      *
      * @Route("/{id}/deleteDefinitely", name="delete_definitely", methods={"POST"})
      */
-    public function removeUserDefinitely(): Response
+    public function removeUserDefinitely(
+        Request $request,
+        User $user
+    ): Response
     {
-        if ($this->isCsrfTokenValid('removeDefinitely'.$this->user->getId(), $this->request->request->get('_token'))) {
-            $this->userHandler->removeUserDefinitely($this->user);
+        if ($this->isCsrfTokenValid('removeDefinitely'.$user->getId(), $request->request->get('_token'))) {
+            $this->userHandler->removeUserDefinitely($user);
 
             $this->addFlash('success', "L'utilisateur à bien été supprimé définitivement.");
         }
@@ -117,14 +131,17 @@ class UserController extends AbstractController
     }
 
     /**
+     * @param User $user
      * @return Response
      *
      * @Route("/{id}/show", name="show", methods={"GET"})
      */
-    public function show(): Response
+    public function show(
+        User $user
+    ): Response
     {
        return $this->render('admin/user/show.html.twig', [
-           'user' => $this->user
+           'user' => $user
        ]) ;
     }
 }

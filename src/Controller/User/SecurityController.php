@@ -2,8 +2,8 @@
 
 namespace App\Controller\User;
 
-use App\ControllerHandler\RegistrationHandler;
-use App\ControllerHandler\UserHandler;
+use App\ControllerHandler\User\RegistrationHandler;
+use App\ControllerHandler\User\UserHandler;
 use App\Entity\User\User;
 use App\Form\User\ForgotPasswordType;
 use App\Form\User\RegistrationType;
@@ -31,21 +31,18 @@ class SecurityController extends AbstractController
 {
     private RegistrationHandler $registrationHandler;
     private Swift_Mailer $mailer;
-    private Request $request;
     private UserHandler $userHandler;
     private UserRepository $userRepository;
 
     public function __construct(
         RegistrationHandler $registrationHandler,
         Swift_Mailer $mailer,
-        Request $request,
         UserHandler $userHandler,
         UserRepository $userRepository
     )
     {
         $this->registrationHandler = $registrationHandler;
         $this->mailer = $mailer;
-        $this->request = $request;
         $this->userHandler = $userHandler;
         $this->userRepository = $userRepository;
     }
@@ -88,13 +85,17 @@ class SecurityController extends AbstractController
     /**
      * @param GuardAuthenticatorHandler $guardAuthenticatorHandler
      * @param LoginFormAuthenticator $loginFormAuthenticator
+     * @param Request $request
      * @return Response
+     * @throws ORMException
+     * @throws OptimisticLockException
      *
      * @Route("/register", name="app_register", methods={"GET", "POST"})
      */
     public function register(
         GuardAuthenticatorHandler $guardAuthenticatorHandler,
-        LoginFormAuthenticator $loginFormAuthenticator
+        LoginFormAuthenticator $loginFormAuthenticator,
+        Request $request
     ): Response
     {
         if ($this->getUser()) {
@@ -107,7 +108,7 @@ class SecurityController extends AbstractController
         }
 
         $user = new User();
-        $form = $this->createForm(RegistrationType::class, $user)->handleRequest($this->request);
+        $form = $this->createForm(RegistrationType::class, $user)->handleRequest($request);
 
         if ($this->registrationHandler->registerHandle($form, $user)) {
             // Génération du mail via une protected function
@@ -125,7 +126,7 @@ class SecurityController extends AbstractController
 
             return $guardAuthenticatorHandler->authenticateUserAndHandleSuccess(
                 $user,
-                $this->request,
+                $request,
                 $loginFormAuthenticator,
                 'main' // firewall name in security.yaml
             );
@@ -139,6 +140,8 @@ class SecurityController extends AbstractController
     /**
      * @param String $token
      * @return Response
+     * @throws ORMException
+     * @throws OptimisticLockException
      *
      * @Route("/confirmation_account/{token}", name="confirmation_account",methods={"POST"})
      */
@@ -179,6 +182,8 @@ class SecurityController extends AbstractController
 
     /**
      * @return Response
+     * @throws ORMException
+     * @throws OptimisticLockException
      *
      * @Route("/delete_account/{token}", name="delete_account", methods={"POST"})
      */
@@ -219,6 +224,8 @@ class SecurityController extends AbstractController
 
     /**
      * @return Response
+     * @throws ORMException
+     * @throws OptimisticLockException
      *
      * @Route("/reply_confirmation_account", name="reply_confirmation_account", methods={"POST"})
      */
@@ -262,13 +269,16 @@ class SecurityController extends AbstractController
     }
 
     /**
+     * @param Request $request
      * @return Response
      * @throws ORMException
      * @throws OptimisticLockException
      *
      * @Route("/forgot_password", name="forgot_password", methods={"GET", "POST"})
      */
-    public function forgotPassword(): Response
+    public function forgotPassword(
+        Request $request
+    ): Response
     {
         if ($this->getUser()) {
             $this->addFlash(
@@ -279,7 +289,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('default');
         }
 
-        $form = $this->createForm(ForgotPasswordType::class)->handleRequest($this->request);
+        $form = $this->createForm(ForgotPasswordType::class)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $email = $form->getData()->getEmail();
@@ -329,6 +339,7 @@ class SecurityController extends AbstractController
     }
 
     /**
+     * @param Request $request
      * @param $token
      * @return Response
      * @throws ORMException
@@ -337,6 +348,7 @@ class SecurityController extends AbstractController
      * @Route("/reset_forgot_password/{token}", name="reset_forgot_password", methods={"GET", "POST"})
      */
     public function resetForgotPassword(
+        Request $request,
         $token
     ): Response
     {
@@ -349,7 +361,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('default');
         }
 
-        $form = $this->createForm(ResetForgotPasswordType::class)->handleRequest($this->request);
+        $form = $this->createForm(ResetForgotPasswordType::class)->handleRequest($request);
         $user = $this->userRepository->findOneBy(['resetToken' => $token]);
 
         // Si le token n'existe pas

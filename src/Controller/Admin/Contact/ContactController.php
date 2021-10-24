@@ -17,18 +17,12 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ContactController extends AbstractController
 {
-    private Request $request;
-    private Contact $contact;
     private ContactHandler $contactHandler;
 
     public function __construct(
-        Request $request,
-        Contact $contact,
         ContactHandler $contactHandler
     )
     {
-        $this->request = $request;
-        $this->contact = $contact;
         $this->contactHandler = $contactHandler;
     }
 
@@ -48,30 +42,38 @@ class ContactController extends AbstractController
     }
 
     /**
+     * @param Contact $contact
      * @return Response
      *
      * @Route("/{id}/show", name="show", methods={"GET"})
      */
-    public function show(): Response
+    public function show(
+        Contact $contact
+    ): Response
     {
-        if (!$this->contact->getView()) {
-            $this->contactHandler->seeContactHandle($this->contact);
+        if (!$contact->getView()) {
+            $this->contactHandler->seeContactHandle($contact);
         }
 
         return $this->render('admin/contact/show.html.twig', [
-            'contact' => $this->contact
+            'contact' => $contact
         ]);
     }
 
     /**
+     * @param Request $request
+     * @param Contact $contact
      * @return Response
      *
      * @Route("/{id}/confirm", name="confirm", methods={"GET", "POST"})
      */
-    public function confirm(): Response
+    public function confirm(
+        Request $request,
+        Contact $contact
+    ): Response
     {
-        if ($this->isCsrfTokenValid('confirm'.$this->contact->getId(), $this->request->request->get('_token'))) {
-            $this->contactHandler->confirmContactHandle($this->contact);
+        if ($this->isCsrfTokenValid('confirm'.$contact->getId(), $request->request->get('_token'))) {
+            $this->contactHandler->confirmContactHandle($contact);
 
             $this->addFlash("success", "La demande a bien été validé.");
         }
@@ -80,14 +82,19 @@ class ContactController extends AbstractController
     }
 
     /**
+     * @param Request $request
+     * @param Contact $contact
      * @return Response
      *
      * @Route("/{id}/unconfirm", name="unconfirm", methods={"GET", "POST"})
      */
-    public function unconfirm(): Response
+    public function unconfirm(
+        Request $request,
+        Contact $contact
+    ): Response
     {
-        if ($this->isCsrfTokenValid('unconfirm'.$this->contact->getId(), $this->request->request->get('_token'))) {
-            $this->contactHandler->unconfirmContactHandle($this->contact);
+        if ($this->isCsrfTokenValid('unconfirm'.$contact->getId(), $request->request->get('_token'))) {
+            $this->contactHandler->unconfirmContactHandle($contact);
 
             $this->addFlash("success", "La validation de la demande a bien été retiré.");
         }

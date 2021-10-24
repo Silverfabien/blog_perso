@@ -16,7 +16,7 @@ services:
     App\:
         resource: '../src/'
         exclude:
-            - '../src/DependencyInjection/'
+            - '../src/DependencyInjection/Entity'
             - '../src/Kernel.php'
             - '../src/Tests/'
 
@@ -51,3 +51,4 @@ services:
     App\EventListener\VisitorListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request }
+

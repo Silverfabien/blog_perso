@@ -3,15 +3,14 @@
 namespace App\ControllerHandler\Admin\Article;
 
 use App\Entity\Article\Article;
-use App\Entity\Article\Like;
 use App\Repository\Article\ArticleRepository;
-use App\Repository\Article\LikeRepository;
+use DateTimeImmutable;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class ArticleHandler
 {
-    private $articleRepository;
+    private ArticleRepository $articleRepository;
 
     public function __construct(
         ArticleRepository $articleRepository
@@ -20,6 +19,12 @@ class ArticleHandler
         $this->articleRepository = $articleRepository;
     }
 
+    /**
+     * @param FormInterface $form
+     * @param Article $article
+     * @param UserInterface $user
+     * @return bool
+     */
     public function createArticleHandle(
         FormInterface $form,
         Article $article,
@@ -37,6 +42,12 @@ class ArticleHandler
         return false;
     }
 
+    /**
+     * @param FormInterface $form
+     * @param Article $article
+     * @param UserInterface $user
+     * @return bool
+     */
     public function editArticleHandle(
         FormInterface $form,
         Article $article,
@@ -44,7 +55,7 @@ class ArticleHandler
     ): bool
     {
         if ($form->isSubmitted() && $form->isValid()) {
-            $article->setUpdatedAt(new \DateTimeImmutable());
+            $article->setUpdatedAt(new DateTimeImmutable());
             $article->setAuthorEdit($user);
 
             $this->articleRepository->update($article);
@@ -55,6 +66,10 @@ class ArticleHandler
         return false;
     }
 
+    /**
+     * @param Article $article
+     * @return bool
+     */
     public function deleteArticleHandle(
         Article $article
     ): bool
@@ -64,21 +79,29 @@ class ArticleHandler
         return true;
     }
 
+    /**
+     * @param Article $article
+     * @return bool
+     */
     public function publishHandle(
         Article $article
-    )
+    ): bool
     {
         $article->setPublish(true);
-        $article->setPublishedAt(new \DateTimeImmutable());
+        $article->setPublishedAt(new DateTimeImmutable());
 
         $this->articleRepository->update($article);
 
         return true;
     }
 
+    /**
+     * @param Article $article
+     * @return bool
+     */
     public function unpublishHandle(
         Article $article
-    )
+    ): bool
     {
         $article->setPublish(false);
 
