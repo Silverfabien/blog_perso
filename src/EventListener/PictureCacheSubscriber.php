@@ -12,8 +12,8 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class PictureCacheSubscriber implements EventSubscriber
 {
-    private $cacheManager;
-    private $uploaderHelper;
+    private CacheManager $cacheManager;
+    private UploaderHelper $uploaderHelper;
 
     public function __construct(
         CacheManager $cacheManager,
@@ -27,7 +27,7 @@ class PictureCacheSubscriber implements EventSubscriber
     /**
      * @inheritDoc
      */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return ['preRemove', 'preUpdate'];
     }
@@ -50,7 +50,7 @@ class PictureCacheSubscriber implements EventSubscriber
 
     public function preUpdate(
         LifecycleEventArgs $args
-    )
+    ): void
     {
         $entity = $args->getEntity();
 

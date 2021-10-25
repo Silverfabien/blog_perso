@@ -6,7 +6,10 @@ use App\Entity\User\User;
 use App\Repository\User\BlockedRepository;
 use App\Security\Handler\ConnectionAttemptHandler;
 use App\Security\Handler\LastConnectionHandler;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -26,22 +29,22 @@ use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
 class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements PasswordAuthenticatedInterface
 {
-    const FIRST_BAN = 5;
-    const SECOND_BAN = 10;
-    const THIRD_BAN = 15;
-    const LAST_BAN = 20;
+    protected const FIRST_BAN = 5;
+    protected const SECOND_BAN = 10;
+    protected const THIRD_BAN = 15;
+    protected const LAST_BAN = 20;
 
     use TargetPathTrait;
 
     public const LOGIN_ROUTE = 'app_login';
 
-    private $entityManager;
-    private $urlGenerator;
-    private $csrfTokenManager;
-    private $passwordEncoder;
-    private $connectionAttemptHandler;
-    private $lastConnectionHandler;
-    private $blockedRepository;
+    private EntityManagerInterface $entityManager;
+    private UrlGeneratorInterface $urlGenerator;
+    private CsrfTokenManagerInterface $csrfTokenManager;
+    private UserPasswordEncoderInterface $passwordEncoder;
+    private ConnectionAttemptHandler $connectionAttemptHandler;
+    private LastConnectionHandler $lastConnectionHandler;
+    private BlockedRepository $blockedRepository;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -62,13 +65,21 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         $this->blockedRepository = $blockedRepository;
     }
 
-    public function supports(Request $request)
+    /**
+     * @param Request $request
+     * @return bool
+     */
+    public function supports(Request $request): bool
     {
         return self::LOGIN_ROUTE === $request->attributes->get('_route')
             && $request->isMethod('POST');
     }
 
-    public function getCredentials(Request $request)
+    /**
+     * @param Request $request
+     * @return array
+     */
+    public function getCredentials(Request $request): array
     {
         $credentials = [
             'email' => $request->request->get('email'),
@@ -83,6 +94,11 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         return $credentials;
     }
 
+    /**
+     * @param mixed $credentials
+     * @param UserProviderInterface $userProvider
+     * @return User|mixed|object|UserInterface|null
+     */
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
         $token = new CsrfToken('authenticate', $credentials['csrf_token']);
@@ -99,14 +115,21 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         return $user;
     }
 
-    public function checkCredentials($credentials, UserInterface $user)
+    /**
+     * @param mixed $credentials
+     * @param UserInterface $user
+     * @return bool
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function checkCredentials($credentials, UserInterface $user): bool
     {
         $findUserBlocked = $this->blockedRepository->findOneBy(['user' => $user, 'blocked' => true], ['id' => 'DESC']);
 
         if ($this->passwordEncoder->isPasswordValid($user, $credentials['password']) === false) {
             if ($findUserBlocked) {
                 // Si unblockedat est supérieur à now
-                if ($findUserBlocked->getUnblockedAt() >= new \DateTimeImmutable() || !$findUserBlocked->getUnblockedAt()) {
+                if ($findUserBlocked->getUnblockedAt() >= new DateTimeImmutable() || !$findUserBlocked->getUnblockedAt()) {
                     throw new CustomUserMessageAuthenticationException($findUserBlocked->getBlockedReason());
                 }
             }
@@ -138,7 +161,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
             // Si unblockedat est inférieur à now
             if ($user->getConnectionAttempt() > 0) {
-                if ($findUserBlocked->getUnblockedAt() >= new \DateTimeImmutable()) {
+                if ($findUserBlocked->getUnblockedAt() >= new DateTimeImmutable()) {
                     throw new CustomUserMessageAuthenticationException($findUserBlocked->getBlockedReason());
                 }
                 $this->connectionAttemptHandler->resetConnectionAttemptHandle($user);
@@ -165,7 +188,13 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         return $credentials['password'];
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    /**
+     * @param Request $request
+     * @param TokenInterface $token
+     * @param string $providerKey
+     * @return RedirectResponse
+     */
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): RedirectResponse
     {
         if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
             return new RedirectResponse($targetPath);
@@ -174,7 +203,10 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         return new RedirectResponse($this->urlGenerator->generate('default'));
     }
 
-    protected function getLoginUrl()
+    /**
+     * @return string
+     */
+    protected function getLoginUrl(): string
     {
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
     }

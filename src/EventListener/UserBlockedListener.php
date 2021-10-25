@@ -12,8 +12,8 @@ use Symfony\Component\Security\Core\Security;
  */
 class UserBlockedListener
 {
-    private $blockedRepository;
-    private $security;
+    private BlockedRepository $blockedRepository;
+    private Security $security;
 
     /**
      * @param BlockedRepository $blockedRepository
