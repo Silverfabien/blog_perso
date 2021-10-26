@@ -11,22 +11,32 @@ use App\Repository\User\BlockedRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @Route("/admin/blocked", name="admin_blocked_")
  */
 class BlockedController extends AbstractController
 {
+    private BlockedHandler $blockedHandler;
+
+    public function __construct(
+        BlockedHandler $blockedHandler
+    )
+    {
+        $this->blockedHandler = $blockedHandler;
+    }
+
     /**
      * @param BlockedRepository $blockedRepository
+     * @return Response
      *
      * @Route("/", name="index", methods={"GET"})
      */
     public function index(
         BlockedRepository $blockedRepository
-    )
+    ): Response
     {
         return $this->render('admin/user/blocked/index.html.twig', [
             'blockeds' => $blockedRepository->findAll()
@@ -35,13 +45,13 @@ class BlockedController extends AbstractController
 
     /**
      * @param Blocked $blocked
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      *
      * @Route("/{id}/show", name="show", methods={"GET"})
      */
     public function show(
         Blocked $blocked
-    )
+    ): Response
     {
         return $this->render('admin/user/blocked/show.html.twig', [
             'blocked' => $blocked
@@ -50,22 +60,21 @@ class BlockedController extends AbstractController
 
     /**
      * @param Request $request
-     * @param BlockedHandler $blockedHandler
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @param User $user
+     * @return Response
      *
      * @Route("/{user_id}/blocked", name="blocked", methods={"GET", "POST"})
      * @ParamConverter("user", options={"id" = "user_id"})
      */
     public function blocked(
         Request $request,
-        BlockedHandler $blockedHandler,
         User $user
-    )
+    ): Response
     {
         $blocked = new Blocked();
         $form = $this->createForm(BlockedType::class, $blocked)->handleRequest($request);
 
-        if ($blockedHandler->blockedHandle($form, $blocked, $user)) {
+        if ($this->blockedHandler->blockedHandle($form, $blocked, $user)) {
             $this->addFlash('success', "Le compte a bien été bloqué");
 
             return $this->redirectToRoute('admin_blocked_index');
@@ -79,23 +88,22 @@ class BlockedController extends AbstractController
 
     /**
      * @param Request $request
-     * @param BlockedHandler $blockedHandler
      * @param Blocked $blocked
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @param User $user
+     * @return Response
      *
      * @Route("/{user_id}/unblocked", name="unblocked", methods={"GET", "POST"})
      * @ParamConverter("user", options={"id" = "user_id"})
      */
     public function unblocked(
         Request $request,
-        BlockedHandler $blockedHandler,
         Blocked $blocked,
         User $user
-    )
+    ): Response
     {
         $form = $this->createForm(UnblockedType::class, $blocked)->handleRequest($request);
 
-        if ($blockedHandler->unblockedHandle($form, $blocked)) {
+        if ($this->blockedHandler->unblockedHandle($form, $blocked)) {
             $this->addFlash('success', "Le compte a bien été débloqué");
 
             return $this->redirectToRoute('admin_blocked_index');

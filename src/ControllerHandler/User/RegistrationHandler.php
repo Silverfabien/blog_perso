@@ -1,11 +1,14 @@
 <?php
 
-namespace App\ControllerHandler;
+namespace App\ControllerHandler\User;
 
 use App\Entity\User\User;
 use App\Repository\User\RankRepository;
 use App\Repository\User\UserPictureRepository;
 use App\Repository\User\UserRepository;
+use DateTimeImmutable;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -18,19 +21,12 @@ use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
  */
 class RegistrationHandler
 {
-    private $userRepository;
-    private $userPictureRepository;
-    private $userPasswordEncoder;
-    private $rankRepository;
-    private $tokenGenerator;
+    private UserRepository $userRepository;
+    private UserPictureRepository $userPictureRepository;
+    private UserPasswordEncoderInterface $userPasswordEncoder;
+    private RankRepository $rankRepository;
+    private TokenGeneratorInterface $tokenGenerator;
 
-    /**
-     * @param UserRepository $userRepository
-     * @param UserPictureRepository $userPictureRepository
-     * @param UserPasswordEncoderInterface $userPasswordEncoder
-     * @param RankRepository $rankRepository
-     * @param TokenGeneratorInterface $tokenGenerator
-     */
     public function __construct(
         UserRepository $userRepository,
         UserPictureRepository $userPictureRepository,
@@ -50,13 +46,15 @@ class RegistrationHandler
      * @param FormInterface $form
      * @param User $user
      * @return bool
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function registerHandle(
         FormInterface $form,
         User $user
     ): bool
     {
-        $findRank = $this->rankRepository->findOneByRolename('Utilisateur');
+        $findRank = $this->rankRepository->findOneBy(['rolename' => 'Utilisateur']);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $password = $this->userPasswordEncoder->encodePassword($user, $user->getPassword());
@@ -80,6 +78,8 @@ class RegistrationHandler
     /**
      * @param User $user
      * @return bool
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function confirmationAccount(
         User $user
@@ -87,7 +87,7 @@ class RegistrationHandler
     {
         $user->setConfirmationAccountToken(null);
         $user->setConfirmationAccount(true);
-        $user->setConfirmationAccountAt(new \DateTimeImmutable());
+        $user->setConfirmationAccountAt(new DateTimeImmutable());
 
         $this->userRepository->update($user);
 
@@ -97,6 +97,8 @@ class RegistrationHandler
     /**
      * @param User $user
      * @return bool
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function deleteAccount(
         User $user
@@ -111,6 +113,8 @@ class RegistrationHandler
     /**
      * @param User $user
      * @return bool
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function replyToken(
         User $user

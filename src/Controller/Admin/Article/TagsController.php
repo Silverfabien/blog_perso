@@ -18,6 +18,15 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class TagsController extends AbstractController
 {
+    private TagsHandler $tagsHandler;
+
+    public function __construct(
+        TagsHandler $tagsHandler
+    )
+    {
+        $this->tagsHandler = $tagsHandler;
+    }
+
     /**
      * @param TagsRepository $tagsRepository
      * @return Response
@@ -35,20 +44,18 @@ class TagsController extends AbstractController
 
     /**
      * @param Request $request
-     * @param TagsHandler $tagsHandler
      * @return Response
      *
      * @Route("/new", name="new", methods={"GET","POST"})
      */
     public function new(
-        Request $request,
-        TagsHandler $tagsHandler
+        Request $request
     ): Response
     {
         $tag = new Tags();
         $form = $this->createForm(TagsType::class, $tag)->handleRequest($request);
 
-        if ($tagsHandler->createTagsHandle($form, $tag)) {
+        if ($this->tagsHandler->createTagsHandle($form, $tag)) {
             $this->addFlash(
                 'success',
                 sprintf(
@@ -83,20 +90,18 @@ class TagsController extends AbstractController
     /**
      * @param Request $request
      * @param Tags $tag
-     * @param TagsHandler $tagsHandler
      * @return Response
      *
      * @Route("/{id}/edit", name="edit", methods={"GET","POST"})
      */
     public function edit(
         Request $request,
-        Tags $tag,
-        TagsHandler $tagsHandler
+        Tags $tag
     ): Response
     {
         $form = $this->createForm(TagsType::class, $tag)->handleRequest($request);
 
-        if ($tagsHandler->editTagsHandle($form, $tag)) {
+        if ($this->tagsHandler->editTagsHandle($form, $tag)) {
             $this->addFlash(
                 'success',
                 sprintf(
@@ -117,19 +122,17 @@ class TagsController extends AbstractController
     /**
      * @param Request $request
      * @param Tags $tag
-     * @param TagsHandler $tagsHandler
      * @return Response
      *
      * @Route("/{id}", name="delete", methods={"POST"})
      */
     public function delete(
         Request $request,
-        Tags $tag,
-        TagsHandler $tagsHandler
+        Tags $tag
     ): Response
     {
         if ($this->isCsrfTokenValid('delete'.$tag->getId(), $request->request->get('_token'))) {
-            $tagsHandler->deleteTasHandle($tag);
+            $this->tagsHandler->deleteTasHandle($tag);
 
             $this->addFlash(
                 'success',

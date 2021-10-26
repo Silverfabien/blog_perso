@@ -11,7 +11,7 @@ use Symfony\Component\Form\FormInterface;
  */
 class TagsHandler
 {
-    private $tagsRepository;
+    private TagsRepository $tagsRepository;
 
     public function __construct(
         TagsRepository $tagsRepository
@@ -39,6 +39,11 @@ class TagsHandler
         return false;
     }
 
+    /**
+     * @param FormInterface $form
+     * @param Tags $tags
+     * @return bool
+     */
     public function editTagsHandle(
         FormInterface $form,
         Tags $tags
@@ -53,6 +58,10 @@ class TagsHandler
         return false;
     }
 
+    /**
+     * @param Tags $tags
+     * @return bool
+     */
     public function deleteTasHandle(
         Tags $tags
     ): bool

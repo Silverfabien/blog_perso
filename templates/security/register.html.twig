@@ -10,7 +10,13 @@
                <h1 class="h3 mb-3 font-weight-normal">S'inscrire</h1>
 
                {{ form_start(form) }}
-               {{ form_widget(form) }}
+               {{ form_widget(form)}}
+               <div class="pt-3 form-group">
+                  <label>
+                     <input type="checkbox" class="test" name="Acceptation des Mentions légales" required>
+                     J'accepte et affirme avoir lu et compris les <a href="{{ path('mentions_legales') }}" target="_blank">Mentions légales</a> mises en place.
+                  </label>
+               </div>
                <button class="btn btn-primary mt-3">{{ button_label|default("S\inscrire") }}</button>
                {{ form_end(form) }}
             </form>

@@ -1,9 +1,12 @@
 <?php
 
-namespace App\ControllerHandler;
+namespace App\ControllerHandler\User;
 
 use App\Entity\User\User;
 use App\Repository\User\UserRepository;
+use DateTimeImmutable;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
@@ -15,15 +18,10 @@ use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
  */
 class UserHandler
 {
-    private $userPasswordEncoder;
-    private $userRepository;
-    private $tokenGenerator;
+    private UserPasswordEncoderInterface $userPasswordEncoder;
+    private UserRepository $userRepository;
+    private TokenGeneratorInterface $tokenGenerator;
 
-    /**
-     * @param UserPasswordEncoderInterface $userPasswordEncoder
-     * @param UserRepository $userRepository
-     * @param TokenGeneratorInterface $tokenGenerator
-     */
     public function __construct(
         UserPasswordEncoderInterface $userPasswordEncoder,
         UserRepository $userRepository,
@@ -39,8 +37,8 @@ class UserHandler
      * @param FormInterface $form
      * @param User $user
      * @return bool
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function editUserHandle(
         FormInterface $form,
@@ -48,7 +46,7 @@ class UserHandler
     ): bool
     {
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setUpdatedAt(new \DateTimeImmutable());
+            $user->setUpdatedAt(new DateTimeImmutable());
             $user->getPicture()->setFilename($user->getPicture()->getPictureFile());
 
             $this->userRepository->update($user);
@@ -63,8 +61,8 @@ class UserHandler
      * @param FormInterface $form
      * @param User $user
      * @return bool
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function editPasswordHandle(
         FormInterface $form,
@@ -75,7 +73,7 @@ class UserHandler
             $password = $this->userPasswordEncoder->encodePassword($user, $user->getPassword());
 
             $user->setPassword($password);
-            $user->setUpdatedAt(new \DateTimeImmutable());
+            $user->setUpdatedAt(new DateTimeImmutable());
 
             $this->userRepository->update($user);
 
@@ -88,15 +86,15 @@ class UserHandler
     /**
      * @param User $user
      * @return bool
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function deletedHandle(
         User $user
     ): bool
     {
         $user->setDeleted(true);
-        $user->setDeletedAt(new \DateTimeImmutable());
+        $user->setDeletedAt(new DateTimeImmutable());
 
         $this->userRepository->update($user);
 
@@ -106,8 +104,8 @@ class UserHandler
     /**
      * @param User $user
      * @return bool
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function generateResetTokenHandle(
         User $user
@@ -116,8 +114,8 @@ class UserHandler
         $token = $this->tokenGenerator->generateToken();
 
         $user->setResetToken($token);
-        $user->setResetTokenCreatedAt(new \DateTimeImmutable());
-        $user->setResetTokenExpiredAt(new \DateTimeImmutable('+1 Hour'));
+        $user->setResetTokenCreatedAt(new DateTimeImmutable());
+        $user->setResetTokenExpiredAt(new DateTimeImmutable('+1 Hour'));
 
         $this->userRepository->update($user);
 
@@ -127,8 +125,8 @@ class UserHandler
     /**
      * @param User $user
      * @return bool
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function expiredResetTokenHandle(
         User $user
@@ -147,8 +145,8 @@ class UserHandler
      * @param FormInterface $form
      * @param User $user
      * @return bool
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function resetPasswordHandle(
         FormInterface $form,
@@ -160,8 +158,8 @@ class UserHandler
         $user->setResetToken(null);
         $user->setResetTokenCreatedAt(null);
         $user->setResetTokenExpiredAt(null);
-        $user->setResetLastAt(new \DateTimeImmutable());
-        $user->setUpdatedAt(new \DateTimeImmutable());
+        $user->setResetLastAt(new DateTimeImmutable());
+        $user->setUpdatedAt(new DateTimeImmutable());
         $user->setPassword($password);
 
         $this->userRepository->update($user);

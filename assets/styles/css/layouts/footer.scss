@@ -1,4 +1,12 @@
-.footer-copyright {
-  background-color: $bg-black;
+.footer {
+  background-color: #292c30;
   color: $white;
+
+  a {
+    color: $white;
+  }
+
+  .footer-copyright {
+    background-color: $bg-black;
+  }
 }

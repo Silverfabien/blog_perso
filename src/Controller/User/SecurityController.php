@@ -2,14 +2,20 @@
 
 namespace App\Controller\User;
 
-use App\ControllerHandler\RegistrationHandler;
-use App\ControllerHandler\UserHandler;
+use App\ControllerHandler\User\RegistrationHandler;
+use App\ControllerHandler\User\UserHandler;
 use App\Entity\User\User;
 use App\Form\User\ForgotPasswordType;
 use App\Form\User\RegistrationType;
 use App\Form\User\ResetForgotPasswordType;
 use App\Repository\User\UserRepository;
 use App\Security\LoginFormAuthenticator;
+use DateTimeImmutable;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use LogicException;
+use Swift_Mailer;
+use Swift_Message;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,10 +25,28 @@ use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 /**
- * SecurityController
+ * Class SecurityController
  */
 class SecurityController extends AbstractController
 {
+    private RegistrationHandler $registrationHandler;
+    private Swift_Mailer $mailer;
+    private UserHandler $userHandler;
+    private UserRepository $userRepository;
+
+    public function __construct(
+        RegistrationHandler $registrationHandler,
+        Swift_Mailer $mailer,
+        UserHandler $userHandler,
+        UserRepository $userRepository
+    )
+    {
+        $this->registrationHandler = $registrationHandler;
+        $this->mailer = $mailer;
+        $this->userHandler = $userHandler;
+        $this->userRepository = $userRepository;
+    }
+
     /**
      * @param AuthenticationUtils $authenticationUtils
      * @return Response
@@ -55,25 +79,23 @@ class SecurityController extends AbstractController
      */
     public function logout(): void
     {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        throw new LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
     /**
-     * @param Request $request
      * @param GuardAuthenticatorHandler $guardAuthenticatorHandler
      * @param LoginFormAuthenticator $loginFormAuthenticator
-     * @param RegistrationHandler $registrationHandler
-     * @param \Swift_Mailer $mailer
+     * @param Request $request
      * @return Response
+     * @throws ORMException
+     * @throws OptimisticLockException
      *
      * @Route("/register", name="app_register", methods={"GET", "POST"})
      */
     public function register(
-        Request $request,
         GuardAuthenticatorHandler $guardAuthenticatorHandler,
         LoginFormAuthenticator $loginFormAuthenticator,
-        RegistrationHandler $registrationHandler,
-        \Swift_Mailer $mailer
+        Request $request
     ): Response
     {
         if ($this->getUser()) {
@@ -88,31 +110,11 @@ class SecurityController extends AbstractController
         $user = new User();
         $form = $this->createForm(RegistrationType::class, $user)->handleRequest($request);
 
-        if ($registrationHandler->registerHandle($form, $user)) {
-            // Génération du mail
-            $confirmUrl = $this->generateUrl(
-                'confirmation_account',
-                ['token' => $user->getConfirmationAccountToken()],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            );
-            $deleteUrl = $this->generateUrl(
-                'delete_account',
-                ['token' => $user->getConfirmationAccountToken()],
-                UrlGeneratorInterface::ABSOLUTE_URL)
-            ;
+        if ($this->registrationHandler->registerHandle($form, $user)) {
+            // Génération du mail via une protected function
+            $mail = $this->mailConfirmAccount($user);
 
-            $mail = (new \Swift_Message('Validation de votre compte'))
-                ->setFrom('hollebeque.fabien@silversat.ovh')
-                ->setTo($user->getEmail())
-                ->setBody(
-                    $this->renderView(
-                        'security/_confirmationMail.html.twig',
-                        compact('confirmUrl', 'deleteUrl', 'user')
-                    ), 'text/html'
-                )
-            ;
-
-            $mailer->send($mail);
+            $this->mailer->send($mail);
 
             $this->addFlash(
                 'success',
@@ -137,14 +139,14 @@ class SecurityController extends AbstractController
 
     /**
      * @param String $token
-     * @param RegistrationHandler $registrationHandler
      * @return Response
+     * @throws ORMException
+     * @throws OptimisticLockException
      *
-     * @Route("/confirmation_account/{token}", name="confirmation_account",methods={"POST"})
+     * @Route("/confirmation_account/{token}", name="confirmation_account",methods={"GET", "POST"})
      */
     public function confirmationAccount(
-        String $token,
-        RegistrationHandler $registrationHandler
+        String $token
     ): Response
     {
         /* @var $user User */
@@ -160,7 +162,7 @@ class SecurityController extends AbstractController
         }
 
         if ($token === $user->getConfirmationAccountToken()) {
-            $registrationHandler->confirmationAccount($user);
+            $this->registrationHandler->confirmationAccount($user);
 
             $this->addFlash(
                 'success',
@@ -179,14 +181,13 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @param RegistrationHandler $registrationHandler
      * @return Response
+     * @throws ORMException
+     * @throws OptimisticLockException
      *
-     * @Route("/delete_account/{token}", name="delete_account", methods={"POST"})
+     * @Route("/delete_account/{token}", name="delete_account", methods={"GET", "POST"})
      */
-    public function deleteAccountIfInvalid(
-        RegistrationHandler $registrationHandler
-    ): Response
+    public function deleteAccountIfInvalid(): Response
     {
         /* @var $user User */
         $user = $this->getUser();
@@ -202,9 +203,9 @@ class SecurityController extends AbstractController
 
         if ($user->getConfirmationAccount() === false) {
             // Déconnexion forcer de l'utilisateur avant la suppression
-            $this->container->get('security.token_storage')->setToken(null);
+            $this->container->get('security.token_storage')->setToken();
 
-            $registrationHandler->deleteAccount($user);
+            $this->registrationHandler->deleteAccount($user);
 
             $this->addFlash(
                 'success',
@@ -222,16 +223,13 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @param \Swift_Mailer $mailer
-     * @param RegistrationHandler $registrationHandler
      * @return Response
+     * @throws ORMException
+     * @throws OptimisticLockException
      *
-     * @Route("/reply_confirmation_account", name="reply_confirmation_account", methods={"POST"})
+     * @Route("/reply_confirmation_account", name="reply_confirmation_account", methods={"GET", "POST"})
      */
-    public function replyEmailConfirmationAccount(
-        \Swift_Mailer $mailer,
-        RegistrationHandler $registrationHandler
-    ): Response
+    public function replyEmailConfirmationAccount(): Response
     {
         /* @var $user User */
         $user = $this->getUser();
@@ -245,30 +243,11 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('default');
         }
 
-        if ($user->getConfirmationAccount() === false and $registrationHandler->replyToken($user)) {
-            $confirmUrl = $this->generateUrl(
-                'confirmation_account',
-                ['token' => $user->getConfirmationAccountToken()],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            );
-            $deleteUrl = $this->generateUrl(
-                'delete_account',
-                ['token' => $user->getConfirmationAccountToken()],
-                UrlGeneratorInterface::ABSOLUTE_URL)
-            ;
+        if ($user->getConfirmationAccount() === false && $this->registrationHandler->replyToken($user)) {
+            // Génération du mail via une protected function
+            $mail = $this->mailConfirmAccount($user);
 
-            $mail = (new \Swift_Message('Validation de votre compte'))
-                ->setFrom('hollebeque.fabien@silversat.ovh')
-                ->setTo($user->getEmail())
-                ->setBody(
-                    $this->renderView(
-                        'security/_confirmationMail.html.twig',
-                        compact('confirmUrl', 'deleteUrl', 'user')
-                    ), 'text/html'
-                )
-            ;
-
-            $mailer->send($mail);
+            $this->mailer->send($mail);
 
             $this->addFlash(
                 'success',
@@ -291,20 +270,14 @@ class SecurityController extends AbstractController
 
     /**
      * @param Request $request
-     * @param \Swift_Mailer $mailer
-     * @param UserHandler $userHandler
-     * @param UserRepository $userRepository
      * @return Response
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      *
      * @Route("/forgot_password", name="forgot_password", methods={"GET", "POST"})
      */
     public function forgotPassword(
-        Request $request,
-        \Swift_Mailer $mailer,
-        UserHandler $userHandler,
-        UserRepository $userRepository
+        Request $request
     ): Response
     {
         if ($this->getUser()) {
@@ -320,7 +293,7 @@ class SecurityController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $email = $form->getData()->getEmail();
-            $user = $userRepository->findOneByEmail($email);
+            $user = $this->userRepository->findOneBy(['email' => $email]);
 
             if ($user === null) {
                 $this->addFlash(
@@ -331,14 +304,14 @@ class SecurityController extends AbstractController
                 return $this->redirectToRoute('forgot_password');
             }
 
-            if ($userHandler->generateResetTokenHandle($user)) {
+            if ($this->userHandler->generateResetTokenHandle($user)) {
                 $url = $this->generateUrl(
                     'reset_forgot_password',
                     ['token' => $user->getResetToken()],
                     UrlGeneratorInterface::ABSOLUTE_URL
                 );
 
-                $mail = (new \Swift_Message('Reset du mot de passe'))
+                $mail = (new Swift_Message('Reset du mot de passe'))
                     ->setFrom('hollebeque.fabien@silversat.ovh')
                     ->setTo($user->getEmail())
                     ->setBody(
@@ -349,7 +322,7 @@ class SecurityController extends AbstractController
                     )
                 ;
 
-                $mailer->send($mail);
+                $this->mailer->send($mail);
 
                 $this->addFlash(
                     'success',
@@ -367,19 +340,15 @@ class SecurityController extends AbstractController
 
     /**
      * @param Request $request
-     * @param UserRepository $userRepository
-     * @param UserHandler $userHandler
      * @param $token
      * @return Response
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      *
      * @Route("/reset_forgot_password/{token}", name="reset_forgot_password", methods={"GET", "POST"})
      */
     public function resetForgotPassword(
         Request $request,
-        UserRepository $userRepository,
-        UserHandler $userHandler,
         $token
     ): Response
     {
@@ -393,7 +362,7 @@ class SecurityController extends AbstractController
         }
 
         $form = $this->createForm(ResetForgotPasswordType::class)->handleRequest($request);
-        $user = $userRepository->findOneByResetToken($token);
+        $user = $this->userRepository->findOneBy(['resetToken' => $token]);
 
         // Si le token n'existe pas
         if ($user === null) {
@@ -406,8 +375,8 @@ class SecurityController extends AbstractController
         }
 
         // Si le token est expiré
-        if (date_timestamp_get($user->getResetTokenExpiredAt()) <= date_timestamp_get(new \DateTimeImmutable())) {
-            $userHandler->expiredResetTokenHandle($user);
+        if (date_timestamp_get($user->getResetTokenExpiredAt()) <= date_timestamp_get(new DateTimeImmutable())) {
+            $this->userHandler->expiredResetTokenHandle($user);
 
             $this->addFlash(
                 'warning',
@@ -421,7 +390,7 @@ class SecurityController extends AbstractController
             $email = $form->getData()->getEmail();
 
             if ($email === $user->getEmail()) {
-                $userHandler->resetPasswordHandle($form, $user);
+                $this->userHandler->resetPasswordHandle($form, $user);
 
 
                 $this->addFlash(
@@ -441,5 +410,35 @@ class SecurityController extends AbstractController
         return $this->render('security/resetForgotPassword.html.twig', [
             'form' => $form->createView()
         ]);
+    }
+
+    /**
+     * @param User $user
+     * @return Swift_Message
+     */
+    protected function mailConfirmAccount(
+        User $user
+    ): Swift_Message
+    {
+        $confirmUrl = $this->generateUrl(
+            'confirmation_account',
+            ['token' => $user->getConfirmationAccountToken()],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+        $deleteUrl = $this->generateUrl(
+            'delete_account',
+            ['token' => $user->getConfirmationAccountToken()],
+            UrlGeneratorInterface::ABSOLUTE_URL)
+        ;
+
+        return (new Swift_Message('Validation de votre compte'))
+            ->setFrom('hollebeque.fabien@silversat.ovh')
+            ->setTo($user->getEmail())
+            ->setBody(
+                $this->renderView(
+                    'security/_confirmationMail.html.twig',
+                    compact('confirmUrl', 'deleteUrl', 'user')
+                ), 'text/html'
+            );
     }
 }

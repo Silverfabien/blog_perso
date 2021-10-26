@@ -8,18 +8,24 @@ use Symfony\Component\Form\FormInterface;
 
 class ContactHandler
 {
-    private $contactRepository;
+    private ContactRepository $contactRepository;
 
-    public function __construct(ContactRepository $contactRepository)
+    public function __construct(
+        ContactRepository $contactRepository
+    )
     {
         $this->contactRepository = $contactRepository;
     }
 
-
+    /**
+     * @param FormInterface $form
+     * @param Contact $contact
+     * @return bool
+     */
     public function newContactHandle(
         FormInterface $form,
         Contact $contact
-    )
+    ): bool
     {
         if ($form->isSubmitted() && $form->isValid()) {
             $this->contactRepository->save($contact);

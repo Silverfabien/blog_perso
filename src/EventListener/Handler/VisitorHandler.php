@@ -4,14 +4,15 @@ namespace App\EventListener\Handler;
 
 use App\Entity\Visitor\Visitor;
 use App\Repository\Visitor\VisitorRepository;
+use DateTimeImmutable;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class VisitorHandler
 {
-    const ROUTE_DEV_BAR_SYMFONY = "_wdt";
+    protected const ROUTE_DEV_BAR_SYMFONY = "_wdt";
 
-    private $visitorRepository;
+    private VisitorRepository $visitorRepository;
 
     public function __construct(
         VisitorRepository $visitorRepository
@@ -20,7 +21,7 @@ class VisitorHandler
         $this->visitorRepository = $visitorRepository;
     }
 
-    public function browser()
+    public function browser(): string
     {
         $httpUserAgent = $_SERVER['HTTP_USER_AGENT'];
         $browser = 'Inconnu';
@@ -49,7 +50,7 @@ class VisitorHandler
         return $browser;
     }
 
-    public function navigate()
+    public function navigate(): array
     {
         $httpUserAgent = $_SERVER['HTTP_USER_AGENT'];
         $navigate = 'Inconnu';
@@ -103,21 +104,34 @@ class VisitorHandler
         return [$navigate, $osDevice];
     }
 
+    public function updateIfIpExist(
+        Visitor $visitor,
+        UserInterface $user,
+        RequestEvent $event
+    ): bool
+    {
+        $visitor->setUser($user);
+        $visitor->setNumberVisit($visitor->getNumberVisit()+1);
+        $visitor->setConnected(true);
+
+        $this->setInformationVisitor($visitor, $event);
+
+        $this->visitorRepository->update($visitor);
+
+        return true;
+    }
+
     public function newIfUserConnected(
         Visitor $visitor,
         UserInterface $user,
         RequestEvent $event
-    )
+    ): bool
     {
         $visitor->setUser($user);
-        $visitor->setIp($_SERVER['REMOTE_ADDR']);
-        $visitor->setLastVisitAt(new \DateTimeImmutable());
-        $visitor->setRouteName($event->getRequest()->get('_route'));
         $visitor->setNumberVisit(1);
         $visitor->setConnected(true);
-        $visitor->setNavigator($this->browser());
-        $visitor->setPlatform($this->navigate()[0]);
-        $visitor->setDeviceType($this->navigate()[1]);
+
+        $this->setInformationVisitor($visitor, $event);
 
         $this->visitorRepository->save($visitor);
 
@@ -127,16 +141,12 @@ class VisitorHandler
     public function updateIfUserConnected(
         Visitor $visitor,
         RequestEvent $event
-    )
+    ): bool
     {
-        $visitor->setIp($_SERVER['REMOTE_ADDR']);
-        $visitor->setLastVisitAt(new \DateTimeImmutable());
-        $visitor->setRouteName($event->getRequest()->get('_route'));
         $visitor->setNumberVisit($visitor->getNumberVisit()+1);
         $visitor->setConnected(true);
-        $visitor->setNavigator($this->browser());
-        $visitor->setPlatform($this->navigate()[0]);
-        $visitor->setDeviceType($this->navigate()[1]);
+
+        $this->setInformationVisitor($visitor, $event);
 
         $this->visitorRepository->update($visitor);
 
@@ -146,19 +156,16 @@ class VisitorHandler
     public function updateIfIpExistAndUserDisconnect(
         Visitor $visitor,
         RequestEvent $event
-    )
+    ): bool
     {
         if ($event->getRequest()->get('_route') === self::ROUTE_DEV_BAR_SYMFONY) {
             return true;
         }
 
-        $visitor->setLastVisitAt(new \DateTimeImmutable());
-        $visitor->setRouteName($event->getRequest()->get('_route'));
         $visitor->setNumberVisit($visitor->getNumberVisit()+1);
         $visitor->setConnected(false);
-        $visitor->setNavigator($this->browser());
-        $visitor->setPlatform($this->navigate()[0]);
-        $visitor->setDeviceType($this->navigate()[1]);
+
+        $this->setInformationVisitor($visitor, $event);
 
         $this->visitorRepository->update($visitor);
 
@@ -168,18 +175,32 @@ class VisitorHandler
     public function updateIfIpNotExist(
         Visitor $visitor,
         RequestEvent $event
-    )
+    ): bool
     {
-        $visitor->setIp($_SERVER['REMOTE_ADDR']);
-        $visitor->setLastVisitAt(new \DateTimeImmutable());
-        $visitor->setRouteName($event->getRequest()->get('_route'));
+        $this->setInformationVisitor($visitor, $event);
+
         $visitor->setNumberVisit(1);
         $visitor->setConnected(false);
+
+        $this->visitorRepository->save($visitor);
+
+        return true;
+    }
+
+    protected function setInformationVisitor(
+        Visitor $visitor,
+        RequestEvent $event
+    ): bool
+    {
+        $visitor->setIp($_SERVER['REMOTE_ADDR']);
+        $visitor->setLastVisitAt(new DateTimeImmutable());
         $visitor->setNavigator($this->browser());
         $visitor->setPlatform($this->navigate()[0]);
         $visitor->setDeviceType($this->navigate()[1]);
 
-        $this->visitorRepository->save($visitor);
+        $event->getRequest()->get('_route') ?
+            $visitor->setRouteName($event->getRequest()->get('_route')) :
+            $visitor->setRouteName("dev_bar");
 
         return true;
     }
