@@ -1,3 +1,89 @@
-<footer class="footer-copyright">
-   <div class="text-center py-3">© 2021 Copyright, Tous droit réservés, Version 1.0</div>
+<footer class="footer font-small stylish-color-dark pt-4">
+   <div class="container text-center text-md-left">
+      <div class="row">
+         <div class="col-md-4 mx-auto">
+            <h3><u>Liens</u></h3>
+            <ul class="list-unstyled">
+               <li>
+                  <a href="{{ path('default') }}">Accueil</a>
+               </li>
+               <li>
+                  <a href="{{ path('article_index') }}">Blog</a>
+               </li>
+               <li>
+                  <a href="{{ path('contact') }}">Contact</a>
+               </li>
+               {% if app.user %}
+                  <li>
+                     <a href="{{ path('user_account') }}">Mon compte</a>
+                  </li>
+                  {% if is_granted('ROLE_ADMIN') %}
+                     <li>
+                        <a href="{{ path('admin_default') }}">Administration</a>
+                     </li>
+                  {% endif%}
+                  <li>
+                     <a href="{{ path('app_logout') }}">Déconnexion</a>
+                  </li>
+               {% else %}
+                  <li>
+                     <a href="{{ path('app_login') }}">Connexion</a>
+                  </li>
+                  <li>
+                     <a href="{{ path('app_register') }}">Inscription</a>
+                  </li>
+               {% endif %}
+            </ul>
+         </div>
+
+         <hr class="clearfix w-100 d-md-none">
+
+         <div class="col-md-4 mx-auto">
+            <h3><u>Liens utiles</u></h3>
+            <ul class="list-unstyled">
+               <li>
+                  <a href="{{ path('mentions_legales') }}">Mention Legales</a>
+               </li>
+               <li>
+                  <a href="{{ path('contact') }}">Contact</a>
+               </li>
+            </ul>
+         </div>
+
+         <hr class="clearfix w-100 d-md-none">
+
+         <div class="col-md-4 mx-auto">
+            <h3><u>Informations</u></h3>
+            <ul class="list-unstyled">
+               <li>
+                  <p><i class="fas fa-home mr-3"></i> Beauvais, France</p>
+               </li>
+               <li>
+                  <p><i class="fas fa-envelope mr-3"></i> hollebeque.fabien@hotmail.com</p>
+               </li>
+            </ul>
+         </div>
+      </div>
+   </div>
+
+   <hr>
+
+   <ul class="list-unstyled list-inline text-center">
+      <li class="list-inline-item">
+         <a class="btn-floating btn-tw mx-1" href="https://twitter.com/Silversatia" target="_blank">
+            <i class="fab fa-twitter"> </i>
+         </a>
+      </li>
+      <li class="list-inline-item">
+         <a class="btn-floating btn-gplus mx-1" href="https://www.linkedin.com/in/fabien-hollebeque-b21556140" target="_blank">
+            <i class="fab fa-linkedin"> </i>
+         </a>
+      </li>
+      <li class="list-inline-item">
+         <a class="btn-floating btn-gplus mx-1" href="https://github.com/Silverfabien" target="_blank">
+            <i class="fab fa-github"> </i>
+         </a>
+      </li>
+   </ul>
+   <div class="text-center py-3 footer-copyright">© 2021 Copyright, Tous droit réservés, Version 1.0</div>
 </footer>
