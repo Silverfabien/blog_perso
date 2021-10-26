@@ -143,7 +143,7 @@ class SecurityController extends AbstractController
      * @throws ORMException
      * @throws OptimisticLockException
      *
-     * @Route("/confirmation_account/{token}", name="confirmation_account",methods={"POST"})
+     * @Route("/confirmation_account/{token}", name="confirmation_account",methods={"GET", "POST"})
      */
     public function confirmationAccount(
         String $token
@@ -185,7 +185,7 @@ class SecurityController extends AbstractController
      * @throws ORMException
      * @throws OptimisticLockException
      *
-     * @Route("/delete_account/{token}", name="delete_account", methods={"POST"})
+     * @Route("/delete_account/{token}", name="delete_account", methods={"GET", "POST"})
      */
     public function deleteAccountIfInvalid(): Response
     {
@@ -227,7 +227,7 @@ class SecurityController extends AbstractController
      * @throws ORMException
      * @throws OptimisticLockException
      *
-     * @Route("/reply_confirmation_account", name="reply_confirmation_account", methods={"POST"})
+     * @Route("/reply_confirmation_account", name="reply_confirmation_account", methods={"GET", "POST"})
      */
     public function replyEmailConfirmationAccount(): Response
     {

@@ -104,6 +104,23 @@ class VisitorHandler
         return [$navigate, $osDevice];
     }
 
+    public function updateIfIpExist(
+        Visitor $visitor,
+        UserInterface $user,
+        RequestEvent $event
+    ): bool
+    {
+        $visitor->setUser($user);
+        $visitor->setNumberVisit($visitor->getNumberVisit()+1);
+        $visitor->setConnected(true);
+
+        $this->setInformationVisitor($visitor, $event);
+
+        $this->visitorRepository->update($visitor);
+
+        return true;
+    }
+
     public function newIfUserConnected(
         Visitor $visitor,
         UserInterface $user,
@@ -177,10 +194,13 @@ class VisitorHandler
     {
         $visitor->setIp($_SERVER['REMOTE_ADDR']);
         $visitor->setLastVisitAt(new DateTimeImmutable());
-        $visitor->setRouteName($event->getRequest()->get('_route'));
         $visitor->setNavigator($this->browser());
         $visitor->setPlatform($this->navigate()[0]);
         $visitor->setDeviceType($this->navigate()[1]);
+
+        $event->getRequest()->get('_route') ?
+            $visitor->setRouteName($event->getRequest()->get('_route')) :
+            $visitor->setRouteName("dev_bar");
 
         return true;
     }

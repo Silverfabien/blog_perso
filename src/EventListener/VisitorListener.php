@@ -39,17 +39,29 @@ class VisitorListener
         $visitorUserExist = $this->visitorRepository->findOneBy(['user' => $user]);
         $visitorIpExist = $this->visitorRepository->findOneBy(['ip' => $ip]);
 
+        if ($user && $visitorIpExist) {
+            $this->visitorHandler->updateIfIpExist($visitorIpExist, $user, $event);
+
+            return;
+        }
+
         if ($user && !$visitorUserExist) {
             $visitor = new Visitor();
             $this->visitorHandler->newIfUserConnected($visitor, $user, $event);
-        }
-        // TODO A revoir pour debug en dev
-        if ($user && $visitorUserExist) {
-            $this->visitorHandler->updateIfUserConnected($visitorUserExist, $event);
+
+            return;
         }
 
-        if (!$user && $visitorIpExist  ) {
+        if ($user && $visitorUserExist) {
+            $this->visitorHandler->updateIfUserConnected($visitorUserExist, $event);
+
+            return;
+        }
+
+        if (!$user && $visitorIpExist) {
             $this->visitorHandler->updateIfIpExistAndUserDisconnect($visitorIpExist, $event);
+
+            return;
         }
 
         if (!$visitorIpExist) {
