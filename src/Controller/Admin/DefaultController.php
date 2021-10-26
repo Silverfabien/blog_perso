@@ -6,6 +6,7 @@ use App\Repository\Article\ArticleRepository;
 use App\Repository\Article\CommentRepository;
 use App\Repository\Article\LikeRepository;
 use App\Repository\User\UserRepository;
+use App\Repository\Visitor\VisitorRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,6 +23,7 @@ class DefaultController extends AbstractController
      * @param CommentRepository $commentRepository
      * @param UserRepository $userRepository
      * @param LikeRepository $likeRepository
+     * @param VisitorRepository $visitorRepository
      * @return Response
      *
      * @Route("/admin", name="admin_default")
@@ -30,7 +32,8 @@ class DefaultController extends AbstractController
         ArticleRepository $articleRepository,
         CommentRepository $commentRepository,
         UserRepository $userRepository,
-        LikeRepository $likeRepository
+        LikeRepository $likeRepository,
+        VisitorRepository $visitorRepository
     ): Response
     {
         return $this->render('admin/default/index.html.twig', [
@@ -41,7 +44,9 @@ class DefaultController extends AbstractController
             'nbUser' => count($userRepository->findAll()),
             'users' => $userRepository->findAll(),
             'nbLike' => count($likeRepository->findAll()),
-            'likes' => $likeRepository->findAll()
+            'likes' => $likeRepository->findAll(),
+            'nbUniqueVisitor' => count($visitorRepository->findAll()),
+            'visitors' => $visitorRepository->findAll()
         ]);
     }
 }

@@ -22,8 +22,8 @@
                </div>
             </div>
             <div class="card-footer">
-               <span class="card-footer-info">+{{ newArticleLastDay}} dans les dernières 24h</span>
-               <span>+{{ newArticleLastWeek}} dans les derniers 7 jours</span>
+               <span class="card-footer-info">+{{ newArticleLastDay }} dans les dernières 24h</span>
+               <span>+{{ newArticleLastWeek }} dans les derniers 7 jours</span>
             </div>
          </div>
       </div>
@@ -48,8 +48,8 @@
                </div>
             </div>
             <div class="card-footer">
-               <span class="card-footer-info">+{{ newCommentLastDay}} dans les dernières 24h</span>
-               <span>+{{ newCommentLastWeek}} dans les derniers 7 jours</span>
+               <span class="card-footer-info">+{{ newCommentLastDay }} dans les dernières 24h</span>
+               <span>+{{ newCommentLastWeek }} dans les derniers 7 jours</span>
             </div>
          </div>
       </div>
@@ -74,8 +74,8 @@
                </div>
             </div>
             <div class="card-footer">
-               <span class="card-footer-info">+{{ newUserLastDay}} dans les dernières 24h</span>
-               <span>+{{ newUserLastWeek}} dans les derniers 7 jours</span>
+               <span class="card-footer-info">+{{ newUserLastDay }} dans les dernières 24h</span>
+               <span>+{{ newUserLastWeek }} dans les derniers 7 jours</span>
             </div>
          </div>
       </div>
@@ -100,8 +100,8 @@
                </div>
             </div>
             <div class="card-footer">
-               <span class="card-footer-info">+{{ newLikeLastDay}} dans les dernières 24h</span>
-               <span>+{{ newLikeLastWeek}} dans les derniers 7 jours</span>
+               <span class="card-footer-info">+{{ newLikeLastDay }} dans les dernières 24h</span>
+               <span>+{{ newLikeLastWeek }} dans les derniers 7 jours</span>
             </div>
          </div>
       </div>
@@ -122,6 +122,34 @@
             <div class="card-footer">
                <span class="card-footer-info">&nbsp;</span>
                <span>&nbsp;</span>
+            </div>
+         </div>
+      </div>
+
+      {% set nbVisitors = 0 %}
+      {% set newVisitorsLastDay = 0 %}
+      {% set newVisitorsLastWeek = 0 %}
+      {% for visitor in visitors %}
+         {% set nbVisitors = nbVisitors + visitor.numberVisit %}
+         {% if visitor.lastVisitAt.timestamp >= date().timestamp - 86400 %}
+            {% set newVisitorsLastDay = newVisitorsLastDay + 1 %}
+         {% endif %}
+         {% if visitor.lastVisitAt.timestamp >= date().timestamp - 604800 %}
+            {% set newVisitorsLastWeek = newVisitorsLastWeek + 1 %}
+         {% endif %}
+      {% endfor %}
+      <div class="card-deck col-md-4 col-sm-6 col-12">
+         <div class="card card-visitor">
+            <div class="card-body">
+               <h5 class="card-title">Nombre de visiteur / Total de visite</h5>
+               <p class="card-text">{{ nbUniqueVisitor }} / {{ nbVisitors }}</p>
+               <div class="icon">
+                  <i class="fas fa-chart-line"></i>
+               </div>
+            </div>
+            <div class="card-footer">
+               <span class="card-footer-info">+{{ newVisitorsLastDay }} dans les dernières 24h</span>
+               <span>+{{ newVisitorsLastWeek }} dans les derniers 7 jours</span>
             </div>
          </div>
       </div>
