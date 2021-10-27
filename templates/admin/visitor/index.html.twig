@@ -27,7 +27,7 @@
                   <td>{{ visitor.ip }}</td>
                   <td>{{ visitor.firstVisitAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</td>
                   <td>{{ visitor.lastVisitAt|localizeddate('none', 'none', null, null, 'dd MMMM Y à HH:mm') }}</td>
-                  <td>{{ visitor.routeName }}</td>
+                  <td>{{ visitor.routeName }} => {{ visitor.url }}</td>
                   <td>{{ visitor.numberVisit }}</td>
                   <td>{{ visitor.navigator }}</td>
                   <td>{{ visitor.platform }}</td>

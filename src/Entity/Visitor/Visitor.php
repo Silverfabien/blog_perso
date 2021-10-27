@@ -68,6 +68,11 @@ class Visitor
      */
     private $user;
 
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $url;
+
     public function __construct()
     {
         $this->firstVisitAt = new \DateTimeImmutable();
@@ -195,6 +200,18 @@ class Visitor
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(string $url): self
+    {
+        $this->url = $url;
 
         return $this;
     }

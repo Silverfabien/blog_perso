@@ -10,7 +10,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class VisitorHandler
 {
-    protected const ROUTE_DEV_BAR_SYMFONY = "_wdt";
+    protected const ERROR_404 = "_wdt";
 
     private VisitorRepository $visitorRepository;
 
@@ -158,7 +158,7 @@ class VisitorHandler
         RequestEvent $event
     ): bool
     {
-        if ($event->getRequest()->get('_route') === self::ROUTE_DEV_BAR_SYMFONY) {
+        if ($event->getRequest()->get('_route') === self::ERROR_404) {
             return true;
         }
 
@@ -197,10 +197,11 @@ class VisitorHandler
         $visitor->setNavigator($this->browser());
         $visitor->setPlatform($this->navigate()[0]);
         $visitor->setDeviceType($this->navigate()[1]);
+        $visitor->setUrl($event->getRequest()->getPathInfo());
 
         $event->getRequest()->get('_route') ?
             $visitor->setRouteName($event->getRequest()->get('_route')) :
-            $visitor->setRouteName("dev_bar");
+            $visitor->setRouteName("Error 404");
 
         return true;
     }
