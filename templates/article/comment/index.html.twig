@@ -50,7 +50,7 @@
                            {{ include('article/comment/_deleteDefinitely_form.html.twig') }}
                         {% else %}
                         <a
-                           class="btn btn-info me-1 editComment"
+                           class="btn btn-info me-1 editComment disabled"
                            href="{{ path('article_edit_comment', {'slug' : article.slug, 'id' : comment.id}) }}"
                            data-entity-id="{{ comment.id }}"
                            data-csrf-token="{{ csrf_token('comment' ~ comment.id) }}"
